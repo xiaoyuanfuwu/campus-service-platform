@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 
+# WorkBuddy local data
+.workbuddy/
+
 # Logs
 logs
 *.log
