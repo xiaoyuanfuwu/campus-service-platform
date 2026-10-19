@@ -1,0 +1,24 @@
+<!-- subpkg/_shared/mine-tab.wxml — 我的页面（lost / rental 共用） -->
+<!-- 使用方式：在 <swiper-item> 内 <include src="相对路径/subpkg/_shared/mine-tab.wxml" /> -->
+<scroll-view class="tab-scroll mine-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="mine-page">
+    <!-- 用户信息 -->
+    <view class="mine-header">
+      <image class="mine-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+      <view class="mine-info">
+        <text class="mine-name">{{userInfo.nickName || '未登录'}}</text>
+        <text class="mine-school" wx:if="{{userInfo.school}}">{{userInfo.school}}</text>
+      </view>
+      <view class="mine-edit tap-shrink" bindtap="onEditProfile">编辑</view>
+    </view>
+
+    <!-- 统计栏 -->
+    <view class="mine-stats">
+      <view class="mine-stat"><text class="ms-num">{{stats.posts || 0}}</text><text class="ms-label">发布</text></view>
+      <view class="mine-stat"><text class="ms-num">{{stats.orders || 0}}</text><text class="ms-label">已接单</text></view>
+      <view class="mine-stat"><text class="ms-num">{{stats.favorites || 0}}</text><text class="ms-label">收藏</text></view>
+    </view>
+
+    <view class="tab-bottom-space"></view>
+  </view>
+</scroll-view>

@@ -1,0 +1,258 @@
+/* pages/yellowpage/yellowpage.wxss — 校园黄页 · 深空星河风格 */
+
+page { background: #F5F5F7 !important; overflow: hidden; }
+
+/* ===== Container ===== */
+.yp-page {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: transparent; overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+}
+
+/* ===== 彩虹渐变背景 ===== */
+.yp-bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+
+/* ===== 状态栏 ===== */
+.status-pad { width: 100%; position: relative; z-index: 10; }
+
+/* ===== 顶部导航 ===== */
+.yp-nav {
+  position: relative; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 88rpx; padding: 0 24rpx;
+}
+.nav-btn {
+  width: 60rpx; height: 60rpx;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.back-arrow {
+  width: 20rpx; height: 20rpx;
+  border-left: 4rpx solid rgba(0,0,0,0.8);
+  border-bottom: 4rpx solid rgba(0,0,0,0.8);
+  transform: rotate(45deg); margin-left: 6rpx;
+}
+.nav-title { flex: 1; text-align: center; }
+.nav-title-text {
+  font-size: 32rpx; font-weight: 700;
+  letter-spacing: 6rpx;
+  color: rgba(0,0,0,0.85);
+}
+.bell-icon { position: relative; width: 32rpx; height: 32rpx; }
+.bell-top {
+  width: 20rpx; height: 16rpx;
+  border: 3rpx solid rgba(0,0,0,0.7);
+  border-radius: 10rpx 10rpx 0 0; margin: 0 auto;
+}
+.bell-bottom {
+  width: 26rpx; height: 4rpx;
+  background: rgba(0,0,0,0.7);
+  border-radius: 2rpx; margin: 2rpx auto 0;
+}
+.bell-dot {
+  position: absolute; top: -2rpx; right: -2rpx;
+  width: 16rpx; height: 16rpx;
+  background: #FF3B30; border-radius: 50%;
+}
+
+.tap-shrink { transition: transform 0.1s; }
+.tap-shrink:active { transform: scale(0.92); }
+
+/* ===== 搜索栏（正常流） ===== */
+.yp-search-wrap {
+  position: relative; z-index: 40;
+  display: flex; align-items: center;
+  margin: 4rpx 28rpx 0;
+  padding: 0 24rpx;
+  height: 68rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 36rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+.yp-search-icon {
+  font-size: 26rpx; margin-right: 12rpx;
+  opacity: 0.4; flex-shrink: 0;
+}
+.yp-search-input {
+  flex: 1; font-size: 27rpx;
+  height: 68rpx; min-width: 0;
+  color: #333;
+}
+.yp-search-ph { color: #999; }
+
+/* ===== 分类标签（正常流） ===== */
+.yp-cat-scroll {
+  position: relative; z-index: 39;
+  height: 60rpx;
+  white-space: nowrap;
+  margin-top: 12rpx;
+}
+.yp-cat-list {
+  display: flex; flex-wrap: nowrap;
+  padding: 0 28rpx;
+  height: 60rpx;
+  align-items: center;
+}
+.yp-cat-tag {
+  display: inline-block;
+  padding: 6rpx 22rpx;
+  margin-right: 12rpx;
+  font-size: 24rpx;
+  color: #666;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 28rpx;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: all 0.2s;
+}
+.yp-cat-tag.active {
+  color: #fff;
+  background: linear-gradient(135deg, #FF9500, #FF7A00);
+  font-weight: 600;
+}
+
+/* ===== 黄页列表（fixed bottom） ===== */
+.yp-list-scroll {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 5;
+}
+
+.yp-card-list { padding: 0 28rpx; }
+
+/* ===== 分类分隔 ===== */
+.yp-section {
+  display: flex; align-items: center;
+  padding: 16rpx 0 8rpx;
+  margin-top: 4rpx;
+}
+.yp-section-bar {
+  width: 4rpx; height: 28rpx;
+  background: #FF9500;
+  border-radius: 2rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+.yp-section-name {
+  font-size: 28rpx; font-weight: 700;
+  letter-spacing: 3rpx;
+  color: #333;
+  flex-shrink: 0;
+}
+.yp-section-line {
+  flex: 1; height: 1rpx;
+  background: linear-gradient(90deg, rgba(255,149,0,0.3), transparent);
+  margin-left: 16rpx;
+}
+
+/* ===== 黄页卡片 ===== */
+.yp-card {
+  padding: 22rpx;
+  margin-bottom: 12rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.06);
+  transition: background 0.2s;
+}
+.yp-card:active { background: rgba(255, 255, 255, 1); }
+
+.yp-card-name {
+  font-size: 30rpx; font-weight: 600;
+  color: #222;
+  line-height: 1.4;
+  margin-bottom: 6rpx;
+}
+
+.yp-card-desc {
+  font-size: 24rpx; line-height: 1.6;
+  color: #888;
+  margin-bottom: 12rpx;
+}
+
+/* 信息行 */
+.yp-card-info { margin-bottom: 12rpx; }
+.yp-info-row {
+  display: flex; align-items: flex-start;
+  font-size: 25rpx; line-height: 1.5;
+  margin-bottom: 6rpx;
+}
+.yp-info-label {
+  color: #999;
+  width: 70rpx; flex-shrink: 0;
+  font-size: 23rpx;
+}
+.yp-info-value {
+  color: #555;
+  flex: 1; min-width: 0;
+  word-break: break-all;
+}
+.yp-phone {
+  color: #FF7A00;
+  font-weight: 600;
+}
+.yp-phone.uncollected { color: #aaa; font-weight: 400; }
+
+/* 操作按钮 */
+.yp-card-actions {
+  display: flex;
+  margin-top: 8rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+.yp-call-btn {
+  display: flex; align-items: center; justify-content: center;
+  flex: 1; height: 64rpx;
+  background: linear-gradient(135deg, #FF9500, #FF7A00);
+  color: #fff; font-size: 26rpx; font-weight: 600;
+  border-radius: 33rpx;
+  margin-right: 14rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 149, 0, 0.2);
+}
+.yp-copy-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 130rpx; height: 64rpx;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 24rpx;
+  border-radius: 33rpx;
+  flex-shrink: 0;
+}
+
+.yp-card-note {
+  font-size: 22rpx;
+  color: #c8a000;
+  padding: 8rpx 0 0;
+  line-height: 1.5;
+}
+
+/* ===== 空状态 ===== */
+.yp-empty {
+  text-align: center; padding: 120rpx 0;
+}
+.yp-empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ===== 底部 ===== */
+.yp-footer {
+  text-align: center;
+  padding: 40rpx 0 20rpx;
+}
+.yp-footer-text {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.5);
+}
+.yp-footer-sub {
+  display: block;
+  font-size: 20rpx;
+  color: rgba(255,255,255,0.35);
+  margin-top: 4rpx;
+}

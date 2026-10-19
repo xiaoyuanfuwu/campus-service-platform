@@ -1,0 +1,93 @@
+<!-- pages/publish-center/publish-center.wxml -->
+<view class="page-pub">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <view class="pub-top-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-copy">
+        <text class="nav-title">发布</text>
+        <text class="nav-caption">让校园生活更简单</text>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view
+    scroll-y
+    enhanced
+    show-scrollbar="{{false}}"
+    class="pub-scroll"
+    style="top: {{navBarHeight}}px;"
+    bindscrolltoupper="onScrollToUpper"
+    upper-threshold="50"
+  >
+    <view class="pub-inner">
+      <view class="pub-hero">
+        <text class="hero-title">今天想发布什么？</text>
+        <text class="hero-desc">选择合适的类别，更快找到需要的人</text>
+      </view>
+
+      <view
+        class="forum-entry"
+        role="button"
+        aria-label="发布校园帖子"
+        hover-class="is-pressed"
+        hover-stay-time="80"
+        bindtap="onForumPostTap"
+      >
+        <view class="forum-copy">
+          <view class="forum-label-row">
+            <text class="forum-kicker">校园广场</text>
+            <text class="forum-label-line"></text>
+          </view>
+          <text class="forum-title">发布校园帖子</text>
+          <text class="forum-desc">分享新鲜事、求助、表白与校园见闻</text>
+        </view>
+        <view class="forum-action">
+          <text class="forum-plus">＋</text>
+        </view>
+      </view>
+
+      <view class="service-section">
+        <view class="section-head">
+          <text class="section-title">更多发布</text>
+          <text class="section-desc">选择对应服务</text>
+        </view>
+
+        <view class="service-list">
+          <view
+            wx:for="{{publishTypes}}"
+            wx:key="key"
+            class="service-item"
+            role="button"
+            aria-label="{{item.title}}，{{item.desc}}"
+            hover-class="is-pressed"
+            hover-stay-time="80"
+            data-key="{{item.key}}"
+            bindtap="onPublishTap"
+          >
+            <view class="service-icon {{item.tone}}">
+              <text>{{item.symbol}}</text>
+            </view>
+            <view class="service-copy">
+              <text class="service-title">{{item.title}}</text>
+              <text class="service-desc">{{item.desc}}</text>
+            </view>
+            <view class="service-arrow" aria-hidden="true">
+              <text>›</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="publish-notice">
+        <view class="notice-mark"><text>✓</text></view>
+        <view class="notice-copy">
+          <text class="notice-title">真实发布，友善交流</text>
+          <text class="notice-desc">请勿发布广告、虚假或违规内容</text>
+        </view>
+      </view>
+
+      <view class="pub-bottom-safe"></view>
+    </view>
+  </scroll-view>
+</view>

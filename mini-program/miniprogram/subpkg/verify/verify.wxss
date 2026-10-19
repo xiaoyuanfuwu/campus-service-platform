@@ -1,0 +1,155 @@
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* 顶部导航：透明，与背景融为一体（与首页/设置/我的页的透明 top-bar 风格一致） */
+.nav-bar {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+}
+
+/* ===== 内容区 ===== */
+.content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+  padding-bottom: 60rpx;
+  /* 全屏彩虹背景图（page-bg--full）顶部为亮黄白高光，白色状态卡片在上面会"隐身"；
+     在内容区铺一层半透明白色蒙板，把高光区淡化，让白卡片有足够对比度。
+     蒙板不影响全局背景（背景图仍在，只是被淡化），保证 verify 与其他页面背景统一。 */
+  background: rgba(245,245,247,0.78);
+}
+
+/* 状态卡片 */
+.status-card {
+  margin: 24rpx 0;
+  padding: 32rpx 28rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+.status-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  font-weight: 700;
+}
+.status-icon.approved { background: rgba(34,197,94,0.12); color: #22C55E; }
+.status-icon.pending { background: rgba(251,191,36,0.15); color: #FBBF24; }
+.status-icon.rejected { background: rgba(239,68,68,0.12); color: #EF4444; }
+.status-icon.none { background: rgba(156,163,175,0.12); color: #9CA3AF; }
+
+.status-text { flex: 1; }
+.status-title { font-size: 32rpx; font-weight: 600; color: #222; margin-bottom: 8rpx; }
+.status-desc { font-size: 26rpx; color: #888; line-height: 1.5; }
+
+/* 区块 */
+.section {
+  margin: 0 0 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 20rpx;
+}
+
+/* 类型选择网格 */
+.type-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.type-item {
+  width: calc(33.33% - 12rpx);
+  padding: 24rpx 0;
+  text-align: center;
+  background: #F8F8F8;
+  border-radius: 14rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+.type-item.selected {
+  background: rgba(255,149,0,0.08);
+  border-color: #FF9500;
+}
+.type-label { font-size: 28rpx; color: #444; }
+.type-item.selected .type-label { color: #FF9500; font-weight: 500; }
+
+.type-desc {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #888;
+}
+
+/* 上传区域 */
+.upload-area {
+  width: 100%;
+  min-height: 320rpx;
+  background: #FAFAFA;
+  border-radius: 16rpx;
+  border: 2rpx dashed #DDD;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.upload-icon {
+  font-size: 72rpx;
+  color: #CCC;
+  line-height: 1;
+  margin-bottom: 16rpx;
+}
+.upload-text { font-size: 28rpx; color: #AAA; }
+
+.preview-img {
+  width: 100%;
+  height: 320rpx;
+}
+.reupload-btn {
+  position: absolute;
+  bottom: 20rpx;
+  right: 20rpx;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+/* 提交按钮 */
+.submit-btn {
+  margin: 48rpx 0;
+  background: linear-gradient(135deg, #FF9500, #FF6B00);
+  color: #fff;
+  text-align: center;
+  padding: 28rpx 0;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  box-shadow: 0 8rpx 24rpx rgba(255,149,0,0.25);
+}
+.submit-btn.disabled {
+  background: #CCC;
+  box-shadow: none;
+}

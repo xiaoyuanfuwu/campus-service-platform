@@ -1,0 +1,226 @@
+/* pages/announcement/announcement.wxss */
+page { background: #F5F5F7 !important; }
+.page-announcement { min-height: 100vh; background: transparent !important; }
+
+/* ===== 顶部栏（与其他页面一致的鸭子风格） ===== */
+.msg-status-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  background: transparent;
+}
+.msg-top-bar {
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+  left: 0; right: 0;
+}
+.msg-top-bar .top-bar-inner {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24rpx;
+}
+.msg-top-bar .nav-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.msg-top-bar .back-arrow {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 3rpx solid var(--text-primary);
+  border-bottom: 3rpx solid var(--text-primary);
+  transform: rotate(45deg);
+  margin-left: 4rpx;
+}
+.msg-top-bar .brand-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.msg-top-bar .brand-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FF9500;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+}
+.msg-top-bar .top-duck-icon {
+  position: relative;
+  width: 36rpx;
+  height: 36rpx;
+}
+.msg-top-bar .td-head {
+  position: absolute; top: 4rpx; left: 6rpx;
+  width: 22rpx; height: 22rpx;
+  background: #FFC54A;
+  border-radius: 50%;
+}
+.msg-top-bar .td-eye {
+  position: absolute; top: 12rpx; left: 18rpx;
+  width: 4rpx; height: 4rpx;
+  background: #333;
+  border-radius: 50%;
+}
+.msg-top-bar .td-beak {
+  position: absolute; top: 18rpx; left: 24rpx;
+  width: 8rpx; height: 5rpx;
+  background: #FF9500;
+  border-radius: 0 4rpx 4rpx 0;
+}
+.msg-top-bar .td-body {
+  position: absolute; bottom: 0; left: 4rpx;
+  width: 28rpx; height: 18rpx;
+  background: #FFFFFF;
+  border-radius: 14rpx 14rpx 12rpx 12rpx;
+  border: 2rpx solid #FFC54A;
+  box-sizing: border-box;
+}
+.msg-top-bar .td-wing {
+  position: absolute; bottom: 6rpx; left: 14rpx;
+  width: 12rpx; height: 8rpx;
+  background: #FFE0A0;
+  border-radius: 6rpx;
+}
+.msg-top-bar .td-tail {
+  position: absolute; bottom: 8rpx; left: 0;
+  width: 6rpx; height: 6rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #FFC54A;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.msg-top-bar-spacer {}
+
+/* 内容区 */
+.content { min-height: 100vh; padding: 24rpx 32rpx; box-sizing: border-box; position: relative; z-index: 1; }
+
+/* 公告卡片 */
+.ann-top { display: flex; align-items: center; gap: 16rpx; margin-bottom: 12rpx; }
+.ann-title { font-size: var(--font-lg); font-weight: 600; flex: 1; }
+.ann-badge { font-size: var(--font-xs); padding: 4rpx 16rpx; border-radius: 999rpx; background: var(--warning-border); color: var(--warning); }
+.ann-summary { font-size: var(--font-sm); color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ann-footer { display: flex; justify-content: space-between; margin-top: 16rpx; }
+.ann-time { font-size: var(--font-xs); color: var(--text-hint); }
+.ann-views { font-size: var(--font-xs); color: var(--text-hint); }
+
+/* ===== 公告详情弹窗 ===== */
+.ann-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.ann-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ann-modal-mask {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.45);
+}
+.ann-modal-card {
+  position: relative;
+  width: 100%;
+  max-height: 75vh;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform .3s ease;
+  /* 防内容（rich-text 宽元素）向右溢出屏幕 */
+  overflow: hidden;
+  box-sizing: border-box;
+  left: 0;
+  right: 0;
+}
+.ann-modal.show .ann-modal-card {
+  transform: translateY(0);
+}
+.ann-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 36rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+}
+.ann-modal-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+  padding-right: 20rpx;
+}
+.ann-modal-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: var(--text-hint);
+  border-radius: 50%;
+  background: #f5f5f5;
+  flex-shrink: 0;
+}
+.ann-modal-body {
+  flex: 1;
+  padding: 28rpx 36rpx;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.ann-modal-content {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 30rpx;
+  color: var(--text-primary);
+  line-height: 1.8;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
+.ann-modal-meta {
+  display: flex;
+  gap: 24rpx;
+  padding: 16rpx 36rpx;
+  font-size: 24rpx;
+  color: var(--text-hint);
+  border-top: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+}
+.ann-modal-actions {
+  padding: 20rpx 36rpx 40rpx;
+  flex-shrink: 0;
+}
+.ann-modal-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #FF9500, #FF6B35);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+}

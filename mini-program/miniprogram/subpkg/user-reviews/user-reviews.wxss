@@ -1,0 +1,15 @@
+/* pages/user-reviews/user-reviews.wxss */
+.page-reviews { min-height: 100vh; background: transparent; }
+
+/* 内容区 */
+.content { min-height: 100vh; padding: 24rpx 32rpx; box-sizing: border-box; }
+
+/* 评价卡片 */
+.review-top { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
+.avatar-sm { width: 56rpx; height: 56rpx; border-radius: 50%; background: var(--border); }
+.reviewer-name { font-size: var(--font-md); font-weight: 600; flex: 1; }
+.stars { font-size: var(--font-md); color: #FF9F0A; }
+.review-content { font-size: var(--font-md); color: var(--text-secondary); line-height: 1.6; display: block; margin-bottom: 12rpx; }
+.review-tags { display: flex; flex-wrap: wrap; gap: 12rpx; margin-bottom: 12rpx; }
+.tag-chip { font-size: var(--font-xs); padding: 6rpx 20rpx; border-radius: 999rpx; background: var(--border-light); color: var(--text-secondary); }
+.review-time { font-size: var(--font-xs); color: var(--text-hint); }

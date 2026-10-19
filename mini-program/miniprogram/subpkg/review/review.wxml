@@ -1,0 +1,38 @@
+<!-- pages/review/review.wxml -->
+<view class="page-review">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">评价</text>
+    <view class="nav-placeholder"></view>
+  </view>
+  <view class="form-content" style="padding-top: {{navBarHeight}}px;">
+    <view class="form-group glass-card">
+      <text class="form-label">评分 *</text>
+      <view class="star-row">
+        <text class="star {{rating >= item ? 'active' : ''}}" wx:for="{{[1,2,3,4,5]}}" wx:key="*this" data-val="{{item}}" bindtap="onStarTap">★</text>
+      </view>
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">评价类型 *</text>
+      <picker mode="selector" range="{{reviewTypes}}" range-key="label" value="{{reviewTypeIndex}}" bindchange="onTypeChange">
+        <view class="picker">{{reviewTypes[reviewTypeIndex].label}}</view>
+      </picker>
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">评价内容</text>
+      <textarea class="form-textarea" placeholder="说点什么..." value="{{content}}" bindinput="onContentInput" maxlength="300" />
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">标签</text>
+      <view class="tag-select">
+        <text class="tag-chip {{selectedTags.includes(item) ? 'active' : ''}}" wx:for="{{availableTags}}" wx:key="*this" data-tag="{{item}}" bindtap="onTagTap">{{item}}</text>
+      </view>
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">匿名评价</text>
+      <switch checked="{{isAnonymous}}" bindchange="onAnonymousChange" color="var(--primary)" />
+    </view>
+    <view class="btn-primary" bindtap="onSubmit">提交评价</view>
+  </view>
+</view>

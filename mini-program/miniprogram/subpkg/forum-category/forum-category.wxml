@@ -1,0 +1,75 @@
+<!-- subpkg/forum-category/forum-category.wxml -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand nav-brand-center">
+        <text class="section-icon-header">{{categoryIcon}}</text>
+        <text class="brand-name">{{categoryName}}</text>
+      </view>
+      <view class="nav-bell"></view>
+    </view>
+  </view>
+
+  <view class="page-nav-spacer" style="height:{{navBarHeight}}px;"></view>
+
+  <scroll-view class="cat-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <!-- 板块简介 -->
+    <view class="cat-header" style="--section-color: {{color}};">
+      <text class="cat-header-icon">{{categoryIcon}}</text>
+      <view class="cat-header-info">
+        <text class="cat-header-name">{{categoryName}}</text>
+        <text class="cat-header-desc">{{categoryInfo.desc}}</text>
+      </view>
+    </view>
+
+    <!-- 子标签 -->
+    <view class="cat-subtags" wx:if="{{categoryInfo.subTags}}">
+      <view
+        wx:for="{{categoryInfo.subTags}}" wx:key="*this"
+        class="subtag-chip tap-shrink"
+        data-tag="{{item}}"
+        bindtap="onSubTagTap"
+      >{{item}}</view>
+    </view>
+
+    <!-- 列表 -->
+    <view class="cat-list">
+      <view
+        wx:for="{{list}}" wx:key="_id"
+        class="cat-item tap-shrink"
+        data-id="{{item._id}}"
+        data-module="forum"
+        bindtap="tapDetail"
+      >
+        <view class="cat-item-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+          <text class="cat-tag" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+        </view>
+        <text class="cat-item-title">{{item.title}}</text>
+        <text class="cat-item-desc">{{item.summary || item.content || ''}}</text>
+        <view class="cat-item-meta">
+          <view class="pc-user">
+            <view class="pc-avatar"></view>
+            <text class="pc-nick">{{item.creator.nickName || '匿名'}}</text>
+          </view>
+          <text class="pc-time">{{item._timeAgo || ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!loading && list.length === 0}}" class="cat-empty">
+      <text class="cat-empty-icon"><view class="svg-ico svg-ico-mailbox-empty"></view></text>
+      <text class="cat-empty-text">暂无帖子，快去发第一篇吧～</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="cat-loading">加载中…</view>
+    <view class="tab-bottom-space"></view>
+  </scroll-view>
+</view>

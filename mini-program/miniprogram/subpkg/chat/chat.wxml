@@ -1,0 +1,221 @@
+<!-- pages/chat/chat.wxml -->
+<view class="page-chat">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="nav-back-icon"></view>
+    </view>
+    <view class="nav-title-box" bindtap="onTapAvatar">
+      <text class="nav-title">{{displayName || otherUserName}}</text>
+      <text class="nav-subtitle" wx:if="{{remark}}">昵称: {{otherUserName}}</text>
+      <text class="nav-subtitle" wx:elif="{{otherUserCode}}">ID: {{otherUserCode}}</text>
+    </view>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <scroll-view
+    scroll-y
+    class="msg-list"
+    style="padding-top: {{navBarHeight}}px; padding-bottom: {{keyboardHeight > 0 ? (keyboardHeight + 80) : 156}}rpx;"
+    scroll-into-view="{{scrollIntoView}}"
+    scroll-with-animation="{{scrollAnimated}}"
+    bindscroll="onScroll"
+  >
+    <view class="msg-list-inner">
+    <!-- 安全提示卡片 -->
+    <view class="chat-notice-card">
+      <view class="chat-notice-icon">
+        <view class="cni-shield"></view>
+      </view>
+      <text class="chat-notice-text">本聊天框仅用于校内师生互助沟通，请友好交流，注意隐私，谨防上当受骗。禁止辱骂、发送广告骚扰他人；如遇骚扰、诈骗，请立即点击对方头像进行举报。</text>
+    </view>
+
+    <view class="msg-loading" wx:if="{{loading}}">加载中...</view>
+
+    <block wx:for="{{messages}}" wx:key="_key">
+      <!-- 时间分隔线 -->
+      <view wx:if="{{item._type === 'time'}}" class="msg-time-divider">
+        <text>{{item.text}}</text>
+      </view>
+
+      <!-- 普通消息 -->
+      <view wx:else class="msg-row {{item.isMine ? 'mine' : 'other'}}" id="m-{{item._key}}">
+        <view wx:if="{{!item.isMine}}" class="msg-sender-col">
+          <image class="msg-avatar" src="{{item.senderAvatar || '/images/default-avatar.png'}}" mode="aspectFill" bindtap="onTapAvatar"/>
+        </view>
+
+        <image wx:if="{{item.isMine}}" class="msg-avatar msg-avatar-mine" src="{{item.senderAvatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+
+        <!-- 图片消息：无气泡，直接展示 -->
+        <block wx:if="{{item.type === 'image' && item.imageUrl}}">
+          <image
+            class="msg-image"
+            src="{{item.imageUrl}}"
+            mode="aspectFit"
+            data-url="{{item.imageUrl}}"
+            bindtap="onPreviewImage"
+            catchlongpress="onLongPressMsg"
+            data-id="{{item._id || item.id}}"
+            data-time="{{item.createTime}}"
+          />
+          <view wx:if="{{item.uploading}}" class="msg-image-uploading">上传中...</view>
+        </block>
+        <!-- 名片消息 -->
+        <view
+          wx:elif="{{item.type === 'card' && item.cardData}}"
+          class="msg-card {{item.isMine ? 'mine' : 'other'}}"
+          data-id="{{item._id || item.id}}"
+          data-time="{{item.createTime}}"
+          catchlongpress="onLongPressMsg"
+        >
+          <image class="msg-card-avatar" src="{{item.cardData.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+          <view class="msg-card-body">
+            <text class="msg-card-name">{{item.cardData.nickName}}</text>
+            <text class="msg-card-label" wx:if="{{item.cardData.userCode}}">ID: {{item.cardData.userCode}}</text>
+            <text class="msg-card-label" wx:if="{{item.cardData.phone}}">手机: {{item.cardData.phone}}</text>
+          </view>
+          <text wx:if="{{item.failed}}" class="msg-card-failed">发送失败</text>
+        </view>
+        <!-- 普通/撤回消息：带气泡 -->
+        <view
+          wx:else
+          class="msg-bubble {{item.isMine ? 'mine' : 'other'}} {{item.isRecalled ? 'recalled' : ''}}"
+          data-id="{{item._id || item.id}}"
+          data-time="{{item.createTime}}"
+          catchlongpress="onLongPressMsg"
+        >
+          <block wx:if="{{item.isRecalled}}">
+            <text class="recalled-text">消息已撤回</text>
+          </block>
+          <block wx:else>
+            <text class="msg-content">{{item.content}}</text>
+          </block>
+        </view>
+
+        <!-- 已读状态文字（仅最新一条自己发的消息） -->
+        <view wx:if="{{item.isMine && !item.isRecalled && item._key === lastSentKey}}" class="msg-read-tag {{item.isRead ? 'read' : 'unread'}}">{{item.isRead ? '已读' : '未读'}}</view>
+      </view>
+    </block>
+    <view id="bottom-anchor" class="msg-list-anchor"></view>
+    </view>
+  </scroll-view>
+
+  <!-- ===== 遮罩（在底部区域外面，只覆盖聊天区） ===== -->
+  <view class="extend-backdrop {{showExtendPanel ? 'show' : ''}}" bindtap="onCloseExtend"></view>
+
+  <!-- ===== 底部区域（输入栏 + 拓展面板一体，一起升降） ===== -->
+  <view class="bottom-bar-wrap {{showExtendPanel ? 'open' : ''}}">
+  <view class="input-bar">
+    <view class="input-plus-btn" bindtap="onToggleExtend">
+      <view class="plus-icon-h"></view>
+      <view class="plus-icon-v"></view>
+    </view>
+    <input
+      class="msg-input {{inputDisabled ? 'disabled' : ''}}"
+      placeholder="{{inputPlaceholder}}"
+      value="{{inputText}}"
+      bindinput="onInput"
+      confirm-type="send"
+      bindconfirm="onSend"
+      adjust-position
+      cursor-spacing="20"
+      hold-keyboard="{{true}}"
+      confirm-hold="{{true}}"
+      disabled="{{inputDisabled}}"
+    />
+    <view class="send-btn {{inputText && !inputDisabled ? 'active' : ''}}" bindtap="onSend">发送</view>
+  </view>
+
+  <view class="extend-panel">
+    <view class="extend-tabs">
+      <view class="extend-tab {{extendTab === 'image' ? 'active' : ''}}" bindtap="onSwitchExtendTab" data-tab="image">
+        <image class="extend-tab-icon-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEsMTUgMTYsMTAgNSwyMSIvPjwvc3ZnPg=="/>
+      </view>
+      <view class="extend-tab {{extendTab === 'sticker' ? 'active' : ''}}" bindtap="onSwitchExtendTab" data-tab="sticker">
+        <text class="extend-tab-icon">☆</text>
+      </view>
+      <view class="extend-tab {{extendTab === 'card' ? 'active' : ''}}" bindtap="onSwitchExtendTab" data-tab="card">
+        <text class="extend-tab-icon">◉</text>
+      </view>
+      <block wx:if="{{false}}">
+      <view class="extend-tab {{extendTab === 'contact' ? 'active' : ''}}" bindtap="onSwitchExtendTab" data-tab="contact">
+        <text class="extend-tab-icon">☰</text>
+        <text>联系人</text>
+      </view>
+      </block>
+      <view class="extend-tab-close" bindtap="onCloseExtend">
+        <text class="extend-close-icon">✕</text>
+      </view>
+    </view>
+
+    <view class="extend-content">
+      <!-- 图片 -->
+      <view wx:if="{{extendTab === 'image'}}" class="extend-tab-content extend-tab-photo">
+        <view class="extend-action-btn" bindtap="onSendImage">
+          <image class="extend-action-icon-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOTk5IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ii8+PHBvbHlsaW5lIHBvaW50cz0iMjEsMTUgMTYsMTAgNSwyMSIvPjwvc3ZnPg=="/>
+          <text class="extend-action-label">选择图片发送</text>
+        </view>
+      </view>
+
+      <!-- 表情 -->
+      <view wx:if="{{extendTab === 'sticker'}}" class="extend-tab-content">
+        <scroll-view class="sticker-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+          <view wx:if="{{stickerLoading}}" class="sticker-loading">加载中...</view>
+          <view wx:else class="sticker-grid">
+            <image
+              wx:for="{{stickerList}}"
+              wx:key="name"
+              class="sticker-item"
+              src="{{item.url}}"
+              mode="widthFix"
+              bindtap="onSendSticker"
+              data-url="{{item.url}}"
+            />
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 名片 -->
+      <view wx:if="{{extendTab === 'card'}}" class="extend-tab-content extend-tab-photo">
+        <view class="extend-action-btn" bindtap="onSendCard">
+          <text class="extend-action-icon">◉</text>
+          <text class="extend-action-label">发送自己的名片</text>
+        </view>
+      </view>
+
+      <!-- 联系人（暂隐藏） -->
+      <block wx:if="{{false}}">
+      <view wx:if="{{extendTab === 'contact'}}" class="extend-tab-content extend-tab-photo">
+        <view class="extend-action-btn" bindtap="onAddContact">
+          <text class="extend-action-icon">☰</text>
+          <text class="extend-action-label">添加到联系人</text>
+        </view>
+      </view>
+      </block>
+    </view>
+  </view>
+  </view>
+  <!-- 安全区占位（始终固定在屏幕底部，不跟随面板升降） -->
+  <view class="bottom-safe-spacer"></view>
+
+  <!-- ===== 用户资料弹窗 ===== -->
+  <view class="profile-overlay {{showProfile ? 'show' : ''}}" bindtap="onCloseProfile">
+    <view class="profile-modal" catchtap="">
+      <image class="profile-avatar" src="{{profileUser.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+      <text class="profile-name">{{profileUser.nickName || '用户'}}</text>
+      <text class="profile-id">ID: {{profileUser.userCode || '未设置'}}</text>
+
+      <view class="profile-remark-box" bindtap="onEditRemark">
+        <text class="profile-remark-value">{{profileUser.remark || '点击设置备注'}}</text>
+      </view>
+
+      <view class="profile-actions">
+        <view class="profile-act-btn tap-shrink profile-act-report" bindtap="onReportUser">
+          <text>投诉举报</text>
+        </view>
+      </view>
+
+      <view class="profile-close tap-shrink" bindtap="onCloseProfile">关闭</view>
+    </view>
+  </view>
+</view>

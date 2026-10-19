@@ -1,0 +1,103 @@
+<!-- pages/tools/photo-id/photo-id.wxml — 证件照 -->
+<view class="page-tool">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="tool-nav" style="padding-top:{{statusBarHeight}}px;">
+    <view class="tool-nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="tool-brand-center">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <text class="tool-brand-name">证件照</text>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+
+  <scroll-view class="tool-scroll" scroll-y enhanced show-scrollbar="{{false}}" style="top:{{navBarHeight}}px;">
+
+    <!-- Hero -->
+    <view class="tool-hero" style="background:{{accentBg}};">
+      <view class="tool-hero-icon" style="background:#FFFFFF;"><view class="svg-ico svg-ico-camera"></view></view>
+      <view class="tool-hero-info">
+        <text class="tool-hero-title">证件照</text>
+        <text class="tool-hero-sub">一寸 / 两寸证件照自助拍摄，蓝白红三色背景，校内拍照点 5 分钟出片，支持电子版下载。</text>
+      </view>
+    </view>
+
+    <!-- 办理流程 -->
+    <view class="tool-section">
+      <view class="tool-section-title">办理流程</view>
+      <block wx:for="{{steps}}" wx:key="*this">
+        <view class="step-item">
+          <view class="step-num">{{index + 1}}</view>
+          <text class="step-text">{{item}}</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 所需材料 -->
+    <view class="tool-section">
+      <view class="tool-section-title">所需材料</view>
+      <block wx:for="{{materials}}" wx:key="*this">
+        <view class="material-item">
+          <view class="material-bullet"></view>
+          <text>{{item}}</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 常见问题 -->
+    <view class="tool-section">
+      <view class="tool-section-title">常见问题</view>
+      <view
+        wx:for="{{faqs}}"
+        wx:for-item="faq"
+        wx:key="q"
+        class="faq-item {{faq.open ? 'open' : ''}}"
+        data-index="{{index}}"
+        bindtap="onFaqToggle"
+      >
+        <view class="faq-q">
+          <text>{{faq.q}}</text>
+          <text class="faq-arrow">›</text>
+        </view>
+        <view class="faq-a" wx:if="{{faq.open}}">{{faq.a}}</view>
+      </view>
+    </view>
+
+    <!-- 联系 / 网点 -->
+    <view class="contact-list">
+      <view
+        wx:for="{{contacts}}"
+        wx:key="label"
+        class="contact-item tap-shrink {{item.tap === '' ? 'info' : ''}}"
+        data-tap="{{item.tap}}"
+        data-value="{{item.value}}"
+        bindtap="onContactTap"
+      >
+        <view class="contact-info">
+          <text class="contact-label">{{item.label}}</text>
+          <text class="contact-value">{{item.value}}</text>
+        </view>
+        <view class="contact-action">{{item.tap === 'call' ? '拨打' : (item.tap === 'navigate' ? '导航' : (item.tap === 'webview' ? '访问' : '查看'))}}</view>
+      </view>
+    </view>
+
+    <!-- 底部 -->
+    <view class="tool-footer">
+      <text>有信息更新？欢迎点底部反馈告诉我们 · 示例大学</text>
+    </view>
+    <view class="bottom-safe"></view>
+  </scroll-view>
+</view>

@@ -1,0 +1,64 @@
+<!-- subpkg/freshman/guide-detail.wxml — 新生攻略详情 -->
+<view class="page-guide">
+
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">{{title}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <scroll-view class="guide-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+
+    <!-- 头部卡片 -->
+    <view class="guide-head" style="background:linear-gradient(135deg, {{color}}, {{color}}CC);">
+      <image class="guide-head-icon" src="{{icon}}" mode="aspectFit" />
+      <text class="guide-head-title">{{title}}</text>
+      <text class="guide-head-summary">{{summary}}</text>
+    </view>
+
+    <!-- 正文 -->
+    <view class="guide-body">
+      <view class="guide-section" wx:for="{{sections}}" wx:key="h">
+        <view class="guide-h">
+          <view class="guide-h-dot" style="background:{{color}}"></view>
+          <text class="guide-h-text">{{item.h}}</text>
+        </view>
+        <text class="guide-p" user-select>{{item.p}}</text>
+      </view>
+
+      <!-- 去提问 -->
+      <view class="guide-ask tap-shrink" bindtap="onAskTap">
+        <image class="guide-ask-icon" src="/images/freshman-icons/qa.png" mode="aspectFit" />
+        <view class="guide-ask-text">
+          <text class="guide-ask-title">还有疑问？</text>
+          <text class="guide-ask-sub">去论坛「答疑」板块问问学长学姐</text>
+        </view>
+        <text class="guide-ask-arrow">›</text>
+      </view>
+
+      <text class="guide-disclaimer">* 以上内容仅供参考，具体政策以学校官方最新通知为准</text>
+    </view>
+
+    <view class="bottom-space"></view>
+  </scroll-view>
+</view>

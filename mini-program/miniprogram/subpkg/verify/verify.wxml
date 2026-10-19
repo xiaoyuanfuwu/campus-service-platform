@@ -1,0 +1,87 @@
+<view class="page">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 自定义导航栏（复用全局 .nav-bar 毛玻璃样式，padding 撑状态栏 + 44px 导航 + 三栏 flex 居中） -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="nav-back-icon"></view>
+    </view>
+    <text class="nav-title">学生身份认证</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 内容区（从导航栏下方开始） -->
+  <view class="content" style="padding-top: {{navBarHeight}}px;">
+    <!-- 状态卡片 -->
+    <view class="status-card {{status || 'none'}}">
+      <block wx:if="{{status === 'approved'}}">
+        <view class="status-icon approved">✓</view>
+        <view class="status-text">
+          <view class="status-title">已认证</view>
+          <view class="status-desc">感谢您的配合，您可以正常使用所有功能</view>
+        </view>
+      </block>
+      <block wx:elif="{{status === 'pending'}}">
+        <view class="status-icon pending">⏳</view>
+        <view class="status-text">
+          <view class="status-title">审核中</view>
+          <view class="status-desc">通常 1-3 个工作日内完成审核，请耐心等待</view>
+        </view>
+      </block>
+      <block wx:elif="{{status === 'rejected'}}">
+        <view class="status-icon rejected">✕</view>
+        <view class="status-text">
+          <view class="status-title">审核未通过</view>
+          <view class="status-desc">原因：{{rejectReason || '材料不符合要求'}}</view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="status-icon none">!</view>
+        <view class="status-text">
+          <view class="status-title">未认证</view>
+          <view class="status-desc">上传学生证/身份证等材料完成认证</view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 已通过不显示表单 -->
+    <block wx:if="{{status !== 'approved'}}">
+      <!-- 认证类型选择 -->
+      <view class="section">
+        <view class="section-title">选择认证材料</view>
+        <view class="type-grid">
+          <view
+            wx:for="{{['student_card','id_card','xuexin','yi_campus','campus_card']}}"
+            wx:key="*this"
+            class="type-item {{selectedType === item ? 'selected' : ''}}"
+            data-key="{{item}}"
+            bindtap="selectType"
+          >
+            <text class="type-label">{{item === 'student_card' ? '学生证' : item === 'id_card' ? '身份证' : item === 'xuexin' ? '学信网' : item === 'yi_campus' ? '易校园' : '校园卡'}}</text>
+          </view>
+        </view>
+        <view class="type-desc" wx:if="{{typeDesc}}">{{typeDesc}}</view>
+      </view>
+
+      <!-- 图片上传 -->
+      <view class="section">
+        <view class="section-title">上传认证图片</view>
+        <view class="upload-area" bindtap="chooseImage">
+          <block wx:if="{{previewUrl || imageUrl}}">
+            <image class="preview-img" src="{{previewUrl || imageUrl}}" mode="aspectFill" bindtap="previewImage" catchtap="previewImage"></image>
+            <view class="reupload-btn" catchtap="chooseImage">重新选择</view>
+          </block>
+          <block wx:else>
+            <view class="upload-icon">+</view>
+            <view class="upload-text">点击上传图片</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit">
+        {{submitting ? '提交中...' : (status === 'rejected' ? '重新提交' : '提交认证')}}
+      </view>
+    </block>
+  </view>
+</view>

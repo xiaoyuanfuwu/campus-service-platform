@@ -1,0 +1,42 @@
+<!-- 设置：背景颜色 + 背景图片 -->
+<view class="page-settings">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景 -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏（与其他页面一致的 profile-top-bar 风格） -->
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">设置</view>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="content" style="padding-top: {{statusBarHeight + 50}}px;">
+    <!-- 背景样式（颜色 / 渐变 / 彩色渐变 合并） -->
+    <view class="set-card glass-card">
+      <view class="set-title">背景样式</view>
+      <view class="set-desc">选择全局背景：纯色 / 柔和渐变 / 彩色渐变图</view>
+      <view class="color-list">
+        <view class="color-item tap-shrink" wx:for="{{colors}}" wx:key="value" bindtap="onColorTap" data-value="{{item.value}}">
+          <view class="color-dot" style="background:{{item.color}};"></view>
+          <text class="color-name {{bgColor === item.value ? 'active' : ''}}">{{item.name}}</text>
+          <view wx:if="{{bgColor === item.value}}" class="color-check">✓</view>
+        </view>
+      </view>
+    </view>
+
+    <button class="save-btn tap-shrink" bindtap="onSave">保存设置</button>
+    <view class="bottom-space"></view>
+  </scroll-view>
+</view>

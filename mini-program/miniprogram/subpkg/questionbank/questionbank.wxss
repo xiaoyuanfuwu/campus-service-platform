@@ -1,0 +1,345 @@
+/* pages/questionbank/questionbank.wxss */
+@import "../_shared/base.wxss";
+
+page { background: #F5F5F7 !important; }
+.page-module { background: transparent !important; height: 100vh; overflow: hidden; }
+
+/* 渐变背景 */
+.page-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 状态栏填充 */
+.page-status-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  background: transparent;
+}
+
+/* 导航栏覆盖 - 透明 */
+.shared-nav {
+  position: fixed !important;
+  top: 0; left: 0; right: 0;
+  z-index: 100 !important;
+  background: transparent !important;
+  flex-shrink: 0 !important;
+}
+
+/* 导航栏品牌区居中 + 鸭子图标 */
+.nav-brand-center {
+  flex: 1;
+  justify-content: center;
+}
+.shared-nav .top-duck-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+.shared-nav .brand-name {
+  color: #FF9500;
+}
+
+/* Spacer & Scroll */
+.tab-scroll {
+  position: fixed !important;
+  left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  padding: 16rpx 0 0;
+  box-sizing: border-box;
+}
+
+/* ===== 题库卡片列表 ===== */
+.qb-list {
+  padding: 8rpx 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.qb-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-card);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  border: 1rpx solid var(--border-light);
+  gap: 20rpx;
+  opacity: 0.88;
+}
+
+/* 左侧信息 */
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  min-width: 0;
+}
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+}
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-cat-badge {
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255,149,0,0.1);
+  font-size: 20rpx;
+  color: #FF9500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+.meta-item {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+.meta-item.count {
+  color: #FF9500;
+  font-weight: 500;
+}
+.card-tags {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+.card-tag-chip {
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255,149,0,0.06);
+  border: 1rpx solid rgba(255,149,0,0.15);
+  font-size: 22rpx;
+  color: #b36a00;
+}
+.card-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+/* 右侧缩略图 */
+.card-thumb {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 14rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.thumb-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 分类占位图（纯CSS） */
+.card-thumb.placeholder {
+  background: linear-gradient(135deg, rgba(255,149,0,0.08), rgba(255,149,0,0.03));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.thumb-placeholder {
+  width: 60rpx;
+  height: 60rpx;
+  position: relative;
+}
+/* 数学 - 三角尺 */
+.ph-math::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 30rpx solid transparent;
+  border-right: 30rpx solid transparent;
+  border-bottom: 50rpx solid rgba(255,149,0,0.25);
+  bottom: 0;
+  left: 0;
+}
+/* 英语 - A字母 */
+.ph-english::before {
+  content: 'A';
+  font-size: 52rpx;
+  font-weight: 800;
+  color: rgba(255,149,0,0.2);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* 思政 - 书本 */
+.ph-politics::before {
+  content: '';
+  position: absolute;
+  width: 36rpx;
+  height: 46rpx;
+  border: 3rpx solid rgba(255,149,0,0.25);
+  border-radius: 3rpx 8rpx 8rpx 3rpx;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ph-politics::after {
+  content: '';
+  position: absolute;
+  width: 3rpx;
+  height: 40rpx;
+  background: rgba(255,149,0,0.2);
+  left: calc(50% - 15rpx);
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* 专业课 - 代码括号 */
+.ph-cs::before {
+  content: '<>';
+  font-size: 36rpx;
+  font-weight: 700;
+  color: rgba(255,149,0,0.25);
+  font-family: monospace;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* 其他 - 问号 */
+.ph-other::before {
+  content: '?';
+  font-size: 48rpx;
+  font-weight: 800;
+  color: rgba(255,149,0,0.2);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0 60rpx;
+  gap: 16rpx;
+}
+.empty-icon {
+  width: 100rpx;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+.empty-book {
+  width: 60rpx;
+  height: 70rpx;
+  border: 4rpx solid rgba(255,149,0,0.3);
+  border-radius: 4rpx 12rpx 12rpx 4rpx;
+  position: relative;
+}
+.empty-book::before {
+  content: '';
+  position: absolute;
+  left: -4rpx;
+  top: 8rpx;
+  width: 4rpx;
+  height: 50rpx;
+  background: rgba(255,149,0,0.3);
+  border-radius: 2rpx;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.empty-sub {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 0;
+  gap: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+.loading-spinner {
+  width: 40rpx;
+  height: 40rpx;
+  border: 3rpx solid rgba(255,149,0,0.2);
+  border-top-color: #FF9500;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== 发布浮动按钮 ===== */
+.fab-publish {
+  position: fixed;
+  right: 36rpx;
+  bottom: 120rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9500, #FFB340);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 28rpx rgba(255,149,0,0.4);
+  z-index: 50;
+}
+.fab-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+.fab-h,
+.fab-v {
+  position: absolute;
+  background: #fff;
+  border-radius: 3rpx;
+}
+.fab-h {
+  width: 40rpx;
+  height: 5rpx;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+.fab-v {
+  width: 5rpx;
+  height: 40rpx;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+/* 降低搜索和过滤不透明度 */
+.search-bar,
+.filter-tags {
+  opacity: 0.85;
+}

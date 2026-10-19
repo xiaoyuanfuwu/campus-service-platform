@@ -1,0 +1,57 @@
+<!-- custom-tab-bar/index.wxml — 极简 tab-bar（图片图标 + 冒泡泡动画） -->
+<view class="tab-bar-wrap safe-bottom">
+  <view class="tab-bar">
+    <!-- 首页 -->
+    <view class="tab-item {{_activeIdx == 0 ? 'active' : ''}}" data-index="0" data-path="{{list[0].pagePath}}" bindtap="switchTab">
+      <image class="tab-icon {{_bubble == 0 ? 'icon-pop' : ''}}" src="{{_activeIdx == 0 ? list[0].selectedIconPath : list[0].iconPath}}" mode="aspectFit" />
+      <view wx:if="{{_bubble == 0}}" class="bubble-group">
+        <view class="bubble b1" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b2" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b3" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+      </view>
+      <text class="tab-label" style="{{_activeIdx == 0 ? 'color:' + themeStrong : ''}}">首页</text>
+    </view>
+
+    <!-- 互助 -->
+    <view class="tab-item {{_activeIdx == 1 ? 'active' : ''}}" data-index="1" data-path="{{list[1].pagePath}}" bindtap="switchTab">
+      <image class="tab-icon {{_bubble == 1 ? 'icon-pop' : ''}}" src="{{_activeIdx == 1 ? list[1].selectedIconPath : list[1].iconPath}}" mode="aspectFit" />
+      <view wx:if="{{_bubble == 1}}" class="bubble-group">
+        <view class="bubble b1" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b2" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b3" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+      </view>
+      <text class="tab-label" style="{{_activeIdx == 1 ? 'color:' + themeStrong : ''}}">互助</text>
+    </view>
+
+    <!-- 发布：圆形主题色按钮 + 加号，突出显示 -->
+    <view class="tab-item tab-publish {{_activeIdx == 2 ? 'active' : ''}}" data-index="2" data-path="{{list[2].pagePath}}" bindtap="switchTab">
+      <view class="publish-btn {{_bubble == 2 ? 'publish-pop' : ''}}" style="background: {{themeColor}};">
+        <view class="plus-h"></view>
+        <view class="plus-v"></view>
+      </view>
+    </view>
+
+    <!-- 消息 -->
+    <view class="tab-item {{_activeIdx == 3 ? 'active' : ''}}" data-index="3" data-path="{{list[3].pagePath}}" bindtap="switchTab">
+      <image class="tab-icon {{_bubble == 3 ? 'icon-pop' : ''}}" src="{{_activeIdx == 3 ? list[3].selectedIconPath : list[3].iconPath}}" mode="aspectFit" />
+      <view wx:if="{{unreadMsg > 0}}" class="tab-badge">{{unreadMsg > 99 ? '99+' : unreadMsg}}</view>
+      <view wx:if="{{_bubble == 3}}" class="bubble-group">
+        <view class="bubble b1" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b2" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b3" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+      </view>
+      <text class="tab-label" style="{{_activeIdx == 3 ? 'color:' + themeStrong : ''}}">消息</text>
+    </view>
+
+    <!-- 我的 -->
+    <view class="tab-item {{_activeIdx == 4 ? 'active' : ''}}" data-index="4" data-path="{{list[4].pagePath}}" bindtap="switchTab">
+      <image class="tab-icon {{_bubble == 4 ? 'icon-pop' : ''}}" src="{{_activeIdx == 4 ? list[4].selectedIconPath : list[4].iconPath}}" mode="aspectFit" />
+      <view wx:if="{{_bubble == 4}}" class="bubble-group">
+        <view class="bubble b1" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b2" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+        <view class="bubble b3" style="background: {{themeColor}}; border-color: {{themeColor}};"></view>
+      </view>
+      <text class="tab-label" style="{{_activeIdx == 4 ? 'color:' + themeStrong : ''}}">我的</text>
+    </view>
+  </view>
+</view>

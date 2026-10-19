@@ -1,0 +1,111 @@
+<!-- pages/agreement/agreement.wxml -->
+<view class="agreement-page">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 自定义导航栏 — 与收藏页对齐 -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">{{title}}</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 协议内容 -->
+  <scroll-view scroll-y class="agreement-content" style="padding-top: {{navBarHeight}}px;">
+    <block wx:if="{{type === 'user'}}">
+      <view class="section">
+        <text class="section-title">校园服务平台用户服务协议（模板）</text>
+        <text class="update-date">更新日期：请按实际上线日期填写</text>
+      </view>
+      <view class="section">
+        <text class="para-title">一、平台简介</text>
+        <text class="para">校园服务平台是一款面向高校学生的校园生活互助与信息服务平台，提供拼车出行、跑腿代办、快递代取、二手交易、失物招领、租房合租、校园论坛、新生指南、校园地图等多种校园生活服务功能。用户在使用本平台前，请仔细阅读并同意本协议。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">二、用户注册与账号</text>
+        <text class="para">1. 用户通过微信授权登录本平台，即视为注册成功。</text>
+        <text class="para">2. 用户应提供真实身份信息，不得冒用他人身份。</text>
+        <text class="para">3. 用户账号仅限本人使用，不得出借、转让或售卖。</text>
+        <text class="para">4. 用户可随时在个人中心退出登录或注销账号。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">三、用户行为规范</text>
+        <text class="para">1. 用户不得发布违法、虚假、欺诈性质的信息。</text>
+        <text class="para">2. 拼车行为属于民事互助，非营运性质，用户应遵守交通法规。</text>
+        <text class="para">3. 二手交易由买卖双方自行协商，本平台仅提供信息展示服务。</text>
+        <text class="para">4. 论坛发帖应遵守公序良俗，禁止发布违法违规、人身攻击或侵犯他人隐私的内容。</text>
+        <text class="para">5. 用户应尊重其他用户，不得骚扰、辱骂、威胁他人。</text>
+        <text class="para">6. 用户不得利用本平台从事任何违法犯罪活动。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">四、内容管理</text>
+        <text class="para">1. 本平台有权对用户发布的内容进行审核，删除违规信息。</text>
+        <text class="para">2. 如发现违规内容，用户可通过投诉功能进行举报。</text>
+        <text class="para">3. 对于严重违规的用户，本平台有权限制或封禁其账号。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">五、免责声明</text>
+        <text class="para">1. 本平台仅提供信息发布与匹配服务，不对用户之间的交易、拼车等实际行为承担责任。</text>
+        <text class="para">2. 用户应自行判断信息的真实性，注意人身和财产安全。</text>
+        <text class="para">3. 因不可抗力导致的服务中断，本平台不承担责任。</text>
+        <text class="para">4. 本平台提供的校园便民链接（如教务系统等）均为外部网站，本平台不对其内容负责。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">六、协议变更</text>
+        <text class="para">本平台有权根据法律法规及运营需要修改本协议，修改后的协议自发布之日起生效。用户继续使用即视为同意修改后的协议。</text>
+      </view>
+    </block>
+
+    <block wx:if="{{type === 'privacy'}}">
+      <view class="section">
+        <text class="section-title">校园服务平台隐私政策（模板）</text>
+        <text class="update-date">更新日期：请按实际上线日期填写</text>
+      </view>
+      <view class="section">
+        <text class="para-title">一、引言</text>
+        <text class="para">本内容为源码演示模板，运营方上线前应按实际业务、运营主体、第三方服务与个人信息处理情况完成修改。校园服务平台（以下简称"我们"）非常重视用户隐私保护。本政策说明我们如何收集、使用、存储和保护您的个人信息。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">二、信息收集</text>
+        <text class="para">1. 微信授权信息：OpenID、头像、昵称，用于账号注册与身份识别。</text>
+        <text class="para">2. 手机号：在您主动授权的情况下获取，用于联系和安全验证。</text>
+        <text class="para">3. 位置信息：在您主动授权的情况下获取，用于拼车匹配和服务推荐。</text>
+        <text class="para">4. 发布内容：您发布的拼车、跑腿、快递代取、二手、失物招领、论坛等互助信息。</text>
+        <text class="para">5. 互动数据：点赞、评论、收藏等互动行为记录。</text>
+        <text class="para">6. 设备信息：设备型号、操作系统版本等，用于服务优化和安全保障。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">三、信息使用</text>
+        <text class="para">1. 为您提供信息发布、匹配、沟通等核心服务。</text>
+        <text class="para">2. 用于保障平台安全和防范欺诈行为。</text>
+        <text class="para">3. 用于优化产品体验和推荐相关内容。</text>
+        <text class="para">4. 经您单独同意后，用于推送服务通知。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">四、信息存储与保护</text>
+        <text class="para">1. 您的信息存储在安全的云服务器中，采用加密传输和存储。</text>
+        <text class="para">2. 未经您授权，我们不会向第三方共享、转让您的个人信息。</text>
+        <text class="para">3. 法律法规要求披露的除外。</text>
+        <text class="para">4. 超出必要期限的信息将予以删除或匿名化处理。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">五、您的权利</text>
+        <text class="para">1. 查阅、复制、更正、删除您的个人信息。</text>
+        <text class="para">2. 撤回授权或注销账号，退出登录。</text>
+        <text class="para">3. 对隐私相关问题进行投诉和反馈。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">六、未成年人保护</text>
+        <text class="para">未成年人请在监护人陪同下阅读本政策，并在取得监护人同意后使用本服务。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">七、政策变更</text>
+        <text class="para">本政策可能不时更新，更新后自发布之日起生效，我们将通过适当方式通知您。</text>
+      </view>
+      <view class="section">
+        <text class="para-title">八、联系我们</text>
+        <text class="para">如对本政策有任何疑问，可通过小程序内的"意见反馈"功能联系我们。</text>
+      </view>
+    </block>
+
+    <view class="footer-space"></view>
+  </scroll-view>
+</view>

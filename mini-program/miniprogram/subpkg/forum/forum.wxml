@@ -1,0 +1,301 @@
+<!-- pages/forum/forum.wxml — 校园墙（示例大学） -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+  <!-- 品牌导航栏 -->
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand nav-brand-center">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <text class="brand-name">校园墙</text>
+      </view>
+      <view class="nav-bell tap-shrink" bindtap="goMsg">
+        <view class="bell-icon"><view class="bell-top"></view><view class="bell-bottom"></view></view>
+        <view wx:if="{{systemUnread > 0}}" class="bell-red-dot"></view>
+      </view>
+    </view>
+  </view>
+
+
+  <!-- Swiper 四Tab -->
+  <view class="page-nav-spacer" style="height:{{navBarHeight}}px;"></view>
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+
+    <!-- ========== Tab 0: 首页 ========== -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+        <!-- 搜索栏 -->
+        <view class="search-bar">
+          <input class="search-input" placeholder="搜问题、找答案…" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+
+        <!-- 分类筛选标签 -->
+        <scroll-view class="forum-filter-bar" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="forum-filter-list">
+            <view class="forum-filter-chip {{activeFilter === 'all' ? 'active' : ''}}" data-cat="all" bindtap="onFilterTap">
+              <text class="ffc-icon"><view class="svg-ico svg-ico-fire"></view></text>
+              <text class="ffc-name">全部</text>
+            </view>
+            <view
+              wx:for="{{homeCategories}}" wx:key="key"
+              class="forum-filter-chip {{activeFilter === item.key ? 'active' : ''}}"
+              data-cat="{{item.key}}"
+              bindtap="onFilterTap"
+            >
+              <view class="svg-ico svg-ico-{{item.icon}}"></view>
+              <text class="ffc-name">{{item.name}}</text>
+            </view>
+          </view>
+        </scroll-view>
+
+        <!-- 加载中 -->
+        <view wx:if="{{homeLoading && !homeLoaded}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!homeLoading && homeList.length === 0}}" class="empty-state">
+          <image class="empty-icon-img" src="/images/icon-grid-forum.png" mode="aspectFit" />
+          <text class="empty-text">空空如也</text>
+          <text class="empty-hint">快来发布第一条帖子吧</text>
+        </view>
+        <!-- 帖子列表 -->
+        <block wx:else>
+          <view class="module-list">
+            <view wx:for="{{homeList}}" wx:key="_id" class="module-card tap-shrink" data-id="{{item._id}}" data-module="forum" bindtap="tapDetail">
+              <view class="module-card-header">
+                <text class="module-card-title">{{item.title}}</text>
+                <view class="module-card-badge {{item.status === 'active' ? 'badge-active' : 'badge-done'}}">{{item.status === 'active' ? '进行中' : '已结束'}}</view>
+              </view>
+              <view class="module-card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                <text class="mct-tag" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+              </view>
+              <view class="module-card-body">{{item.summary || item.content || '暂无描述'}}</view>
+              <view class="module-card-footer">
+                <view class="module-card-user">
+                  <image class="module-card-avatar" src="{{item.creator && item.creator.avatarUrl ? item.creator.avatarUrl : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <text class="module-card-nick">{{item.creator ? (item.creator.nickName || '匿名') : '匿名'}}</text>
+                </view>
+                <text class="module-card-meta">{{item._timeAgo || item.createTime || ''}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="page-footer">
+            <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+            <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+          </view>
+        </block>
+
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ========== Tab 1: 发布 ========== -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <!-- 编辑模式横条 -->
+          <view class="edit-mode-bar" wx:if="{{editMode}}">
+            <view class="edit-mode-cancel tap-shrink" bindtap="onCancelEdit">✕</view>
+            <text class="edit-mode-title">编辑模式</text>
+            <view class="edit-mode-placeholder"></view>
+          </view>
+          <!-- 1. 话题标签 -->
+          <view class="card form-card">
+            <view class="form-label"><text>话题标签</text><text class="form-required">*</text></view>
+            <view class="forum-tag-list">
+              <view
+                wx:for="{{publishTags}}" wx:key="name"
+                class="forum-tag-chip {{item.active ? 'active' : ''}}"
+                data-name="{{item.name}}"
+                bindtap="onPublishTagTap"
+              >{{item.name}}</view>
+            </view>
+
+            <!-- 现成模板提示：选中二手/失物寻物/拼车/租求时显示 -->
+            <view class="forum-template-hint" wx:if="{{templateHint}}">
+              <view class="fth-text">
+                <text class="fth-title">「{{templateHint.name}}」有现成的模板</text>
+                <text class="fth-sub">快速填写，一键发布</text>
+              </view>
+              <view class="fth-btn tap-shrink" bindtap="onGoTemplate">
+                <text class="fth-btn-label">去发布</text>
+                <text class="fth-btn-arrow">›</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 2. 投稿内容 + 图片 -->
+          <view class="card form-card">
+            <view class="form-field-wrap form-field-wrap-textarea merge-textarea-wrap">
+              <textarea class="form-textarea merge-textarea" placeholder="请输入投稿内容…" value="{{publishDesc}}" bindinput="onMergePublishInput" maxlength="1000"/>
+              <text class="form-counter">{{publishDesc.length || 0}}/1000</text>
+            </view>
+            <view class="merge-divider"></view>
+            <view class="image-picker">
+              <view wx:for="{{publishImages}}" wx:key="*this" class="img-item">
+                <image class="img-preview" src="{{item}}" mode="aspectFill"/>
+                <view class="img-delete tap-shrink" data-index="{{index}}" catchtap="onRemovePublishImage">✕</view>
+              </view>
+              <view wx:if="{{publishImages.length < 9}}" class="img-add tap-shrink" bindtap="onChoosePublishImage">
+                <text class="img-add-icon">+</text>
+                <text class="img-add-text">{{publishImages.length}}/9</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 3. 联系方式 -->
+          <view class="card form-card">
+            <view class="form-label"><text>联系方式</text><text class="form-hint">（选填，方便对方联系你）</text></view>
+            <input class="form-input" placeholder="微信号 / QQ / 手机号" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="50"/>
+          </view>
+
+          <!-- 4. 匿名发布 -->
+          <view class="card form-card">
+            <view class="option-row">
+              <view class="option-info">
+                <text class="option-label">匿名发布</text>
+                <text class="option-hint">开启后不会显示你的昵称和头像</text>
+              </view>
+              <switch checked="{{publishAnonymous}}" bindchange="onPublishAnonymousChange" color="#00b894"/>
+            </view>
+          </view>
+
+          <!-- 发布按钮 -->
+          <view class="publish-btn tap-shrink" bindtap="onSubmitPublish" wx:if="{{!editMode}}">发 布</view>
+          <view class="publish-btn publish-btn-edit tap-shrink" bindtap="onSaveEdit" wx:if="{{editMode}}">保存修改</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ========== Tab 2: 消息 ========== -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="msg-page">
+          <view class="msg-categories">
+            <view class="msg-cat-item tap-shrink" bindtap="onSystemNotices">
+              <view class="cat-icon cat-icon-system"><view class="ci-bell"></view></view>
+              <view class="cat-info"><text class="cat-name">系统通知</text><text class="cat-desc">审核结果、违规提醒等</text></view>
+              <view wx:if="{{systemUnread > 0}}" class="cat-badge">{{systemUnread > 99 ? '99+' : systemUnread}}</view>
+              <text class="cat-arrow">›</text>
+            </view>
+            <view class="msg-cat-item tap-shrink" bindtap="onChatList">
+              <view class="cat-icon cat-icon-chat"><view class="ci-bubble"></view></view>
+              <view class="cat-info"><text class="cat-name">私信</text><text class="cat-desc">与其他用户的对话</text></view>
+              <text class="cat-arrow">›</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ========== Tab 3: 我的 ========== -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <!-- 子标签切换 -->
+          <view class="mine-subtap-bar">
+            <view class="mine-subtap-item {{mineSubTab === 0 ? 'active' : ''}}" data-index="0" bindtap="onMineSubTabTap">
+              <text class="mine-subtap-num">{{myPostsTotal}}</text>
+              <text class="mine-subtap-label">我的发布</text>
+              <view class="mine-subtap-indicator"></view>
+            </view>
+            <view class="mine-subtap-item {{mineSubTab === 1 ? 'active' : ''}}" data-index="1" bindtap="onMineSubTabTap">
+              <text class="mine-subtap-num">{{replyToMeTotal}}</text>
+              <text class="mine-subtap-label">回复我的</text>
+              <view class="mine-subtap-indicator"></view>
+            </view>
+          </view>
+
+          <!-- 加载中 -->
+          <view wx:if="{{mineLoading}}" class="mine-empty-state">
+            <text class="mine-empty-text">加载中...</text>
+          </view>
+
+          <!-- 空状态 -->
+          <view wx:elif="{{mineSubTab === 0 && myPosts.length === 0}}" class="mine-empty-state">
+            <text class="mine-empty-icon"><view class="svg-ico svg-ico-memo"></view></text>
+            <text class="mine-empty-text">还没有发布过帖子</text>
+          </view>
+          <view wx:elif="{{mineSubTab === 1 && replyList.length === 0}}" class="mine-empty-state">
+            <text class="mine-empty-icon"><view class="svg-ico svg-ico-chat"></view></text>
+            <text class="mine-empty-text">暂无回复消息</text>
+          </view>
+
+          <!-- 我的发布列表 -->
+          <view wx:elif="{{mineSubTab === 0}}" class="mine-list">
+            <view wx:for="{{myPosts}}" wx:key="_id" class="mine-list-card tap-shrink" data-id="{{item._id}}" data-module="forum" bindtap="tapDetail">
+              <view class="mine-card-header">
+                <text class="mine-card-title">{{item.title}}</text>
+                <view class="mine-card-badge {{item.status === 'active' ? 'mine-card-badge-active' : 'mine-card-badge-done'}}">{{item.status === 'active' ? '进行中' : '已结束'}}</view>
+              </view>
+              <view class="mine-card-content">{{item.summary || item.content || '暂无内容'}}</view>
+              <view class="mine-card-user-row">
+                <image class="mine-card-avatar" src="{{item.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="mine-card-nick">{{item.creator.nickName || '匿名'}}</text>
+                <text class="mine-card-time">{{item._timeAgo || ''}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 回复我的列表 -->
+          <view wx:elif="{{mineSubTab === 1}}" class="mine-list">
+            <view wx:for="{{replyList}}" wx:key="id" class="mine-list-card tap-shrink" data-id="{{item.relatedPost_id}}" data-module="forum" bindtap="tapDetail">
+              <view class="mine-card-header">
+                <text class="mine-card-title">{{item.title || '帖子回复'}}</text>
+                <view class="mine-card-badge mine-card-badge-active">新回复</view>
+              </view>
+              <view class="mine-card-content">{{item.content}}</view>
+              <view class="mine-card-user-row">
+                <image class="mine-card-avatar" src="{{item.sender_avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="mine-card-nick">{{item.sender_nickName || '匿名'}}</text>
+                <text class="mine-card-time">{{item._timeAgo || ''}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部 TabBar -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">首页</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">发布</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 3 ? 'active' : ''}}" data-index="3" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

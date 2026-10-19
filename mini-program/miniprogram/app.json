@@ -1,0 +1,139 @@
+{
+  "lazyCodeLoading": "requiredComponents",
+  "pages": [
+    "pages/index/index",
+    "pages/publish-center/publish-center",
+    "pages/message/index",
+    "pages/profile/index",
+    "pages/hall-task/hall-task"
+  ],
+  "window": {
+    "backgroundColor": "#F5F5F7",
+    "backgroundTextStyle": "dark",
+    "navigationBarTitleText": "校园服务平台",
+    "navigationBarBackgroundColor": "#FF9500",
+    "navigationBarTextStyle": "white",
+    "backgroundColorTop": "#FF9500"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "校园手绘地图实时定位、校内楼栋导航、拼车出行距离参考"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "onLocationChange"
+  ],
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF9500",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/hall-task/hall-task",
+        "text": "互助",
+        "iconPath": "images/tabbar/help.png",
+        "selectedIconPath": "images/tabbar/help-active.png"
+      },
+      {
+        "pagePath": "pages/publish-center/publish-center",
+        "text": "发布",
+        "iconPath": "images/tabbar/publish.png",
+        "selectedIconPath": "images/tabbar/publish-active.png"
+      },
+      {
+        "pagePath": "pages/message/index",
+        "text": "消息",
+        "iconPath": "images/tabbar/message.png",
+        "selectedIconPath": "images/tabbar/message-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tabbar/profile.png",
+        "selectedIconPath": "images/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "subPackages": [
+    {
+      "root": "subpkg",
+      "name": "subpkg-pages",
+      "pages": [
+        "settings/settings",
+        "agreement/agreement",
+        "achievement/achievement",
+        "achievement-detail/achievement-detail",
+        "announcement-detail/announcement-detail",
+        "announcement/announcement",
+        "bind-phone/bind-phone",
+        "bulletin/bulletin",
+        "calendar/calendar",
+        "carpool/carpool",
+        "charity/charity",
+        "chat/chat",
+        "complaint/complaint",
+        "contact/contact",
+        "credit/index",
+        "detail/detail",
+        "express/express",
+        "favorites/favorites",
+        "feedback/feedback",
+        "food/food",
+        "forum/forum",
+        "guide/guide",
+        "questionbank/questionbank",
+        "questionbank/questionbank-publish",
+        "group-chat/group-chat",
+        "life/parttime/parttime",
+        "location-picker/location-picker",
+        "login/login",
+        "lost/lost",
+        "map/map",
+        "messages/messages",
+        "my-complaints/my-complaints",
+        "my-list/my-list",
+        "notification/index",
+        "print/print",
+        "profile-edit/profile-edit",
+        "recommend/recommend",
+        "rental/rental",
+        "review/review",
+        "search/search",
+        "secondhand/secondhand",
+        "substitute/substitute",
+        "tools/admin/admin",
+        "tools/card-loss/card-loss",
+        "tools/card-recharge/card-recharge",
+        "tools/card-replace/card-replace",
+        "tools/cert-in-school/cert-in-school",
+        "tools/cert-status/cert-status",
+        "tools/cert-transcript/cert-transcript",
+        "tools/loan/loan",
+        "tools/medical/medical",
+        "tools/photo-id/photo-id",
+        "tools/reimburs/reimburs",
+        "tools/scholar/scholar",
+        "tools/tools",
+        "user-profile/user-profile",
+        "user-reviews/user-reviews",
+        "user-search/user-search",
+        "yellowpage/yellowpage",
+        "forum-category/forum-category",
+        "verify/verify",
+        "freshman/freshman",
+        "freshman/guide-detail"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+<!-- pages/charity/charity.wxml — 爱心公益 -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">爱心公益</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 双Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 大厅 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+        <view class="search-bar">
+          <input class="search-input" placeholder="{{config.desc}}" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+        <!-- 骨架加载 -->
+        <view wx:if="{{loading && list.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <!-- 错误 -->
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy-face"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+          <view class="retry-btn tap-shrink" bindtap="onRetry">点击重试</view>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-charity-heart"></view></view>
+          <text class="empty-text">{{config.empty}}</text>
+          <text class="empty-hint">暂无内容</text>
+        </view>
+        <!-- 列表 -->
+        <block wx:else>
+          <view class="module-list">
+            <view wx:for="{{list}}" wx:key="_id" class="module-card tap-shrink" data-id="{{item._id}}" data-module="{{moduleName}}" bindtap="tapDetail">
+              <view class="module-card-header">
+                <text class="module-card-title">{{item.title}}</text>
+                <view class="module-card-badge {{item.status === 'closed' ? 'badge-done' : 'badge-active'}}">{{item.status === 'closed' ? '已结束' : '进行中'}}</view>
+              </view>
+              <view class="module-card-body">{{item.desc || item.content || item.note || '暂无描述'}}</view>
+              <view class="module-card-footer">
+                <view class="module-card-user">
+                  <image class="module-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <text class="module-card-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                </view>
+                <text class="module-card-meta">{{item._timeAgo || item.createTime || ''}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 加载更多 -->
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{!hasMore && list.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <!-- 底部 -->
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 我的 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <view class="mine-header">
+            <image class="mine-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="mine-info">
+              <text class="mine-name">{{userInfo.nickName || '未登录'}}</text>
+              <text class="mine-school" wx:if="{{userInfo.school}}">{{userInfo.school}}</text>
+            </view>
+          </view>
+          <!-- 我的参与 -->
+          <view class="my-participate">
+            <view class="mp-header">
+              <view class="mp-title-wrap">
+                <text class="mp-icon"><view class="svg-ico svg-ico-charity-heart"></view></text>
+                <text class="mp-title">我的参与</text>
+                <text class="mp-count" wx:if="{{myParticipateList.length > 0}}">{{myParticipateList.length}}</text>
+              </view>
+              <view class="mp-refresh tap-shrink" bindtap="loadMyParticipate">刷新</view>
+            </view>
+            <view wx:if="{{myParticipateLoading && myParticipateList.length === 0}}" class="mp-loading">加载中…</view>
+            <view wx:elif="{{myParticipateList.length === 0}}" class="mp-empty">
+              <text class="mp-empty-emoji"><view class="svg-ico svg-ico-handshake"></view></text>
+              <text class="mp-empty-text">还没有参与过公益活动</text>
+              <text class="mp-empty-hint">去大厅看看感兴趣的公益项目吧</text>
+            </view>
+            <view wx:else class="mp-list">
+              <view class="mp-card" wx:for="{{myParticipateList}}" wx:key="id" data-id="{{item.id}}" bindtap="onMyParticipateTap">
+                <view class="mp-card-tag {{item.status}}">{{item.statusText}}</view>
+                <view class="mp-card-body">
+                  <text class="mp-card-title">{{item.title}}</text>
+                  <text class="mp-card-meta">{{item._timeAgo}}</text>
+                </view>
+                <text class="mp-card-arrow">›</text>
+              </view>
+            </view>
+          </view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 右下角悬浮按钮：联系发布 -->
+  <view class="contact-fab tap-shrink" catchtap="onOpenContactModal">
+    <view class="fab-icon"><view class="svg-ico svg-ico-envelope-white"></view></view>
+    <text class="fab-text">联系发布</text>
+  </view>
+
+  <!-- 联系发布弹窗 -->
+  <view class="publish-modal-mask" wx:if="{{showContactModal}}" catchtap="onCloseContactModal">
+    <view class="publish-modal" catchtap="">
+      <view class="publish-header">
+        <text class="publish-title">联系发布公益活动</text>
+        <view class="publish-close tap-shrink" bindtap="onCloseContactModal">✕</view>
+      </view>
+      <view class="publish-form">
+        <view class="pf-item">
+          <text class="pf-label">描述你想发布的公益活动</text>
+          <textarea class="pf-textarea" placeholder="详细描述活动主题、时间、地点、参与方式等，管理员看到后会帮你发布..." value="{{contactForm.content}}" bindinput="onContactInput" data-field="content" maxlength="500"/>
+        </view>
+        <view class="pf-item">
+          <text class="pf-label">联系方式（选填）</text>
+          <input class="pf-input" placeholder="微信 / QQ / 手机号，方便管理员联系你" value="{{contactForm.contact}}" bindinput="onContactInput" data-field="contact" maxlength="50"/>
+        </view>
+        <view class="pf-submit tap-shrink" bindtap="onSubmitContact">提交</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部 TabBar（双Tab：大厅 / 我的，样式同 food） -->
+  <view class="shared-tabbar safe-bottom">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">大厅</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,92 @@
+<!-- pages/feedback/feedback.wxml -->
+<view class="page-feedback">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景 -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏（与"我的信息"一致） -->
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">{{isList ? '我的反馈' : '提交反馈'}}</view>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+
+
+  <scroll-view scroll-y class="content" style="padding-top: {{statusBarHeight + 50}}px;" wx:if="{{isList}}">
+    <view wx:if="{{list.length === 0 && !loading}}" class="empty-state">
+      <view class="empty-icon"><text><view class="svg-ico svg-ico-chat"></view></text></view>
+      <text class="empty-text">暂无反馈</text>
+    </view>
+    <view class="fb-card glass-card" wx:for="{{list}}" wx:key="_id" data-id="{{item._id}}" bindtap="viewDetail">
+      <view class="card-top">
+        <text class="card-title">{{item.title}}</text>
+        <text class="status-tag {{item.status}}">{{statusMap[item.status] || item.status}}</text>
+      </view>
+      <text class="card-meta">类型: {{item.category}}</text>
+      <text class="card-time">{{item._timeText}}</text>
+    </view>
+    <view class="loading-more" wx:if="{{loading}}">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+    <view class="btn-primary" bindtap="goCreate">提交新反馈</view>
+  </scroll-view>
+
+  <view class="form-content" style="padding-top: {{statusBarHeight + 50}}px;" wx:else>
+    <view class="form-group glass-card">
+      <text class="form-label">反馈类型 *</text>
+      <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker">{{categories[categoryIndex]}}</view>
+      </picker>
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">标题 *</text>
+      <input class="form-input" placeholder="简要描述" value="{{title}}" bindinput="onTitleInput" />
+    </view>
+    <view class="form-group glass-card">
+      <text class="form-label">详细内容 *</text>
+      <textarea class="form-textarea" placeholder="请详细描述..." value="{{content}}" bindinput="onContentInput" maxlength="500" />
+    </view>
+    <view class="btn-primary" bindtap="onSubmit">提交反馈</view>
+  </view>
+
+  <!-- 弹窗 -->
+  <view class="detail-mask" wx:if="{{showPopup}}" bindtap="onClosePopup"></view>
+  <view class="detail-modal {{showPopup ? 'show' : ''}}">
+    <view class="detail-card">
+      <view class="detail-close tap-shrink" bindtap="onClosePopup">✕</view>
+      <block wx:if="{{popupItem}}">
+        <view class="detail-meta">
+          <text class="status-tag {{popupItem.status}}">{{statusMap[popupItem.status] || popupItem.status}}</text>
+          <text class="info-time">{{popupItem._timeText}}</text>
+        </view>
+        <text class="detail-title">{{popupItem.title || '反馈详情'}}</text>
+        <view class="detail-rows">
+          <text class="detail-row">类型：{{popupItem.category || '-'}}</text>
+        </view>
+        <scroll-view class="detail-scroll" scroll-y>
+          <text class="detail-label">详细内容</text>
+          <text class="detail-content">{{popupItem.content || '暂无内容'}}</text>
+          <block wx:if="{{popupItem.reply}}">
+            <text class="detail-label" style="margin-top:24rpx">管理员回复</text>
+            <text class="detail-content">{{popupItem.reply}}</text>
+          </block>
+        </scroll-view>
+      </block>
+      <view class="popup-loading" wx:elif="{{popupLoading}}">
+        <text>加载中...</text>
+      </view>
+    </view>
+  </view>
+</view>

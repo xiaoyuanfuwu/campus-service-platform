@@ -1,0 +1,104 @@
+<!-- pages/notification/index.wxml — 双标签页 -->
+<view class="page-notif">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 顶部栏 -->
+  <view class="notif-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="back-btn tap-shrink" bindtap="onBack">‹</view>
+      <view class="top-title">消息中心</view>
+      <view class="top-action tap-shrink" bindtap="onMarkAllRead" wx:if="{{activeTab === 0 && notifList.length > 0}}">
+        <text class="mark-all-text">全部已读</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签栏 -->
+  <view class="tag-bar" style="top:{{tagBarTop}}rpx;">
+    <view class="tag-bar-inner">
+      <view class="tag-item {{activeTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+        <text>系统通知</text>
+      </view>
+      <view class="tag-item {{activeTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+        <text>公告</text>
+      </view>
+    </view>
+  </view>
+  <view class="tag-bar-spacer"></view>
+
+  <!-- ========== 系统通知列表 ========== -->
+  <view class="notif-list" wx:if="{{activeTab === 0}}">
+    <block wx:for="{{notifList}}" wx:key="_id">
+      <view
+        class="notif-item tap-shrink {{item.isRead ? 'is-read' : 'is-unread'}}"
+        data-id="{{item._id || item.id}}"
+        bindtap="onNotifTap"
+      >
+        <view class="notif-icon">{{item._typeIcon}}</view>
+        <view class="notif-body">
+          <view class="notif-header">
+            <text class="notif-type-label">{{item._typeLabel}}</text>
+            <text class="notif-time">{{item._time}}</text>
+          </view>
+          <text class="notif-title">{{item.title || '通知'}}</text>
+          <text class="notif-content">{{item.content || ''}}</text>
+        </view>
+        <view class="notif-dot" wx:if="{{!item.isRead}}"></view>
+      </view>
+    </block>
+
+    <view class="load-more tap-shrink" wx:if="{{notifHasMore}}" bindtap="loadMoreNotifs">
+      <text>{{notifLoading ? '加载中...' : '加载更多'}}</text>
+    </view>
+
+    <view class="empty-state" wx:if="{{!notifLoading && notifList.length === 0}}">
+      <view class="empty-icon"><view class="svg-ico svg-ico-bell"></view></view>
+      <text class="empty-text">暂无通知</text>
+    </view>
+  </view>
+
+  <!-- ========== 公告列表 ========== -->
+  <view class="notif-list" wx:if="{{activeTab === 1}}">
+    <block wx:for="{{annList}}" wx:key="_id">
+      <view
+        class="notif-item tap-shrink"
+        data-id="{{item._id || item.id}}"
+        bindtap="onAnnTap"
+      >
+        <view class="notif-icon"><view class="svg-ico svg-ico-megaphone"></view></view>
+        <view class="notif-body">
+          <view class="notif-header">
+            <text class="notif-type-label">公告</text>
+            <text class="notif-time">{{item._time}}</text>
+          </view>
+          <text class="notif-title">{{item.title || '公告'}}</text>
+          <text class="notif-content">{{item.content || item.summary || ''}}</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="load-more tap-shrink" wx:if="{{annHasMore}}" bindtap="loadMoreAnns">
+      <text>{{annLoading ? '加载中...' : '加载更多'}}</text>
+    </view>
+
+    <view class="empty-state" wx:if="{{!annLoading && annList.length === 0}}">
+      <view class="empty-icon"><view class="svg-ico svg-ico-clipboard"></view></view>
+      <text class="empty-text">暂无公告</text>
+    </view>
+  </view>
+
+  <view class="bottom-safe"></view>
+
+  <!-- 居中弹窗：通知详情 -->
+  <view class="detail-mask" wx:if="{{showDetail}}" bindtap="onCloseDetail"></view>
+  <view class="detail-modal {{showDetail ? 'show' : ''}}">
+    <view class="detail-card">
+      <view class="detail-close tap-shrink" bindtap="onCloseDetail">✕</view>
+      <view class="detail-tag">{{detailItem._typeIcon}} {{detailItem._typeLabel}}</view>
+      <text class="detail-title">{{detailItem.title || '通知详情'}}</text>
+      <scroll-view class="detail-body" scroll-y>
+        <text class="detail-content">{{detailItem.content || '暂无详细内容'}}</text>
+      </scroll-view>
+      <text class="detail-time">{{detailItem._time}}</text>
+    </view>
+  </view>
+</view>

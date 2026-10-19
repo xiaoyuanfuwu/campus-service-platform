@@ -1,0 +1,209 @@
+<!-- pages/map/map.wxml — 手绘地图 + 手势缩放 + GPS -->
+<view class="map-page">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 地图容器（承载手势） -->
+  <view
+    class="map-stage"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+  >
+    <!-- 手绘地图（2K 快速显示，8K 就绪后自动切换） -->
+    <view
+      class="map-img-wrapper"
+      style="transform: translate({{tx}}px, {{ty}}px) scale({{scale}}); transform-origin: 0 0; transition: {{animating ? 'transform 0.25s ease' : 'none'}};"
+    >
+      <image
+        class="map-img"
+        src="{{hiResReady ? imgSrc8k : imgSrc2k}}"
+        style="width: {{imgW}}px; height: {{imgH}}px;"
+        bindload="onImgLoad"
+        binderror="onImgError"
+      />
+      <!-- 边缘柔化遮罩（白色渐变→融入背景） -->
+      <view class="map-fade-top"></view>
+      <view class="map-fade-bottom"></view>
+      <view class="map-fade-left"></view>
+      <view class="map-fade-right"></view>
+    </view>
+
+    <!-- GPS 定位标记（扁平矢量风格） -->
+    <view
+      class="gps-dot"
+      wx:if="{{hasGps && gps.x >= 0}}"
+      style="left: {{gps.x}}px; top: {{gps.y}}px; transition: {{animating ? 'left 0.25s ease, top 0.25s ease' : 'none'}};"
+    >
+      <view class="gps-dir" style="transform: rotate({{compassDeg}}deg);"></view>
+    </view>
+
+    <!-- 地标标记 -->
+    <text
+      class="landmark-marker"
+      wx:for="{{landmarkMarkers}}"
+      wx:key="index"
+      style="left: {{item.x}}px; top: {{item.y}}px;"
+    ><view class="svg-ico svg-ico-pin"></view></text>
+
+    <!-- 校园地标标签（始终显示） -->
+    <view
+      class="poi-label {{flashPoiName === item.name ? 'poi-label--flash' : ''}}"
+      wx:for="{{poiLabels}}"
+      wx:key="index"
+      wx:if="{{showPoi}}"
+      style="left: {{item.x}}px; top: {{item.y}}px;"
+    >
+      <text style="font-size: {{labelFontSize}}rpx;">{{item.name}}</text>
+    </view>
+
+    <!-- 宿舍楼号标签（仅放大后显示） -->
+    <view
+      class="poi-label dorm-label {{flashPoiName === item.name ? 'poi-label--flash' : ''}}"
+      wx:for="{{dormLabels}}"
+      wx:key="index"
+      wx:if="{{showDorm}}"
+      style="left: {{item.x}}px; top: {{item.y}}px;"
+    >
+      <text style="font-size: {{labelFontSize}}rpx;">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 返回按钮（左上） -->
+  <view class="map-back" bindtap="onClose">
+    <text>✕</text>
+  </view>
+
+  <!-- 顶部标题（居中，长按清除地标） -->
+  <text class="map-title" bindlongpress="onClearLandmarks">示例大学校园地图</text>
+
+  <!-- 菜单按钮（左上，与指北针对称） -->
+  <view class="map-menu-btn" bindtap="onMenuTap">
+    <image class="menu-btn-icon" src="/subpkg/map/menu.svg" mode="aspectFit" />
+  </view>
+
+  <!-- 菜单下拉面板 -->
+  <view class="menu-panel" wx:if="{{showMenu}}">
+    <view class="menu-item" bindtap="onMenuItemTap" data-key="checkin">
+      <text><view class="svg-ico svg-ico-pin"></view> 校园打卡点</text>
+      <text class="menu-badge">开发中</text>
+    </view>
+    <view class="menu-item" bindtap="onMenuItemTap" data-key="cats">
+      <text><view class="svg-ico svg-ico-cat"></view> 猫咪出没图</text>
+      <text class="menu-badge">开发中</text>
+    </view>
+    <view class="menu-item" bindtap="onMenuItemTap" data-key="bus">
+      <text><view class="svg-ico svg-ico-bus"></view> 校园公交路线</text>
+      <text class="menu-badge">开发中</text>
+    </view>
+    <view class="menu-item menu-item-disabled">
+      <text><view class="svg-ico svg-ico-bulb"></view> 更多功能构思中…</text>
+    </view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      value="{{searchKeyword}}"
+      placeholder="搜索地点…"
+      placeholder-style="color:#999"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchFirst"
+    />
+    <view class="search-clear" wx:if="{{searchKeyword}}" catchtap="onSearchClear">
+      <text>✕</text>
+    </view>
+    <view class="search-btn" catchtap="onSearchBtnTap">
+      <image class="search-btn-icon" src="/subpkg/map/search.svg" mode="aspectFit" />
+    </view>
+  </view>
+  <!-- 搜索结果 -->
+  <scroll-view
+    class="search-results"
+    wx:if="{{searchResults.length > 0 && searchKeyword}}"
+    scroll-y
+  >
+    <view
+      class="search-item {{searchFlashIndex === index ? 'search-item--flash' : ''}}"
+      wx:for="{{searchResults}}"
+      wx:key="name"
+      data-u="{{item.u}}"
+      data-v="{{item.v}}"
+      data-index="{{index}}"
+      bindtap="onSearchSelect"
+    >{{item.name}}</view>
+  </scroll-view>
+
+  <!-- 指北针（右上，静态） -->
+  <view class="map-compass">
+    <text class="compass-icon">▲</text>
+  </view>
+
+  <!-- 8K 预加载（1px 离屏触发浏览器缓存，display:none 不触发加载） -->
+  <image
+    wx:if="{{hiResPreloading}}"
+    src="{{imgSrc8k}}"
+    style="position:fixed; left:-1px; top:0; width:1px; height:1px; opacity:0;"
+    bindload="onHiResLoaded"
+    binderror="onHiResError"
+  />
+  <!-- 缩放比例 -->
+  <view class="zoom-percent">{{zoomPercent}}%</view>
+  <!-- 8K 加载指示 -->
+  <view class="hires-loading" wx:if="{{!hiResDone}}">
+    <text class="hires-loading-dot">●</text>
+  </view>
+  <view class="hires-done {{hiResDoneShow ? '' : 'hires-done--hide'}}" wx:if="{{hiResDone && hiResReady}}">
+    <text class="hires-done-text">✓ 高清地图已加载</text>
+  </view>
+  <view class="hires-done hires-fail" wx:if="{{hiResDone && !hiResReady}}">
+    <text class="hires-done-text">高清图加载失败</text>
+  </view>
+  <view class="zoom-btns">
+    <view class="zb-btn" bindtap="onPanoTap"><image class="zb-icon" src="/subpkg/map/panorama.svg" mode="aspectFit" /></view>
+    <view class="zb-btn" bindtap="onCardTap"><image class="zb-icon" src="/subpkg/map/card.svg" mode="aspectFit" /></view>
+    <view class="zb-btn" bindtap="onZoomIn"><text>+</text></view>
+    <view class="zb-btn" bindtap="onZoomOut"><text>−</text></view>
+    <view class="zb-btn" bindtap="onLocate"><image class="zb-icon" src="/subpkg/map/locate.svg" mode="aspectFit" /></view>
+  </view>
+
+  <!-- 清除标记按钮 -->
+  <view class="clear-marker-btn" wx:if="{{landmarks.length > 0}}" bindtap="onClearLastMarker">
+    <text>清除最近标记点</text>
+  </view>
+
+  <!-- 全景图二维码弹窗 -->
+  <view class="pano-mask {{showPanoQr ? 'show' : ''}}" bindtap="closePanoQr">
+    <view class="pano-sheet {{showPanoQr ? 'show' : ''}}" catchtap="noop">
+      <view class="pano-sheet-head">
+        <text class="pano-sheet-title">校园全景</text>
+        <view class="pano-sheet-close tap-shrink" bindtap="closePanoQr">✕</view>
+      </view>
+      <view class="pano-sheet-body">
+        <image class="pano-qr-img" src="/images/qr-placeholder.png" mode="widthFix" show-menu-by-longpress="true" bindtap="onPreviewQr" />
+        <view class="pano-tip">
+          <text class="pano-tip-main">二维码示例占位图</text>
+          <text class="pano-tip-sub">上线前请替换为你的全景入口二维码</text>
+        </view>
+        <view class="pano-copy-btn tap-shrink" bindtap="onCopyLink">复制链接去浏览器打开</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 名片二维码弹窗 -->
+  <view class="pano-mask {{showCardQr ? 'show' : ''}}" bindtap="closeCardQr">
+    <view class="pano-sheet {{showCardQr ? 'show' : ''}}" catchtap="noop">
+      <view class="pano-sheet-head">
+        <text class="pano-sheet-title">联系二维码示例</text>
+        <view class="pano-sheet-close tap-shrink" bindtap="closeCardQr">✕</view>
+      </view>
+      <view class="pano-sheet-body">
+        <image class="card-qr-img" src="/images/qr-placeholder.png" mode="widthFix" show-menu-by-longpress="true" bindtap="onPreviewCardQr" />
+        <view class="pano-tip">
+          <text class="pano-tip-main">二维码示例占位图</text>
+          <text class="pano-tip-sub">上线前请替换为你的联系二维码</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,123 @@
+<!-- subpkg/freshman/freshman.wxml — 新生大厅（示例大学） -->
+<view class="page-freshman">
+
+  <!-- 全屏背景插画 -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">新生大厅</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <scroll-view class="freshman-scroll" scroll-y enhanced show-scrollbar="{{false}}" lower-threshold="60">
+
+    <!-- ===== 大横幅 ===== -->
+    <view class="hero-card">
+      <image class="hero-bg-image" src="/images/freshman-hero-vector.svg" mode="aspectFill" />
+      <text class="hero-tag">2026 新生专属</text>
+      <text class="hero-title">示例大学</text>
+      <text class="hero-sub">2026 入学指南</text>
+      <text class="hero-en">WELCOME, FRESHMEN</text>
+    </view>
+
+    <!-- ===== 新生必看 ===== -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">新生必看</text>
+        <text class="section-sub">开学前先了解这些</text>
+      </view>
+      <view class="grid-5">
+        <view class="grid-item tap-shrink" wx:for="{{mustSee}}" wx:key="name" bindtap="onNav" data-url="{{item.url}}">
+          <image class="grid-icon-img" src="{{item.icon}}" mode="aspectFit" />
+          <text class="grid-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 加入新生群 ===== -->
+    <view class="group-btn tap-shrink" bindtap="openGroupQr">
+      <image class="group-btn-icon" src="/images/freshman-icons/group.png" mode="aspectFit" />
+      <view class="group-btn-text">
+        <text class="group-btn-title">点击加入 2026 新生群</text>
+        <text class="group-btn-sub">学长学姐在线答疑 · 找到你的新同学</text>
+      </view>
+      <text class="group-btn-arrow">›</text>
+    </view>
+
+    <!-- ===== 校园指南 ===== -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">校园指南</text>
+        <text class="section-sub">玩转校园生活</text>
+      </view>
+      <view class="grid-5">
+        <view class="grid-item tap-shrink" wx:for="{{campusGuide}}" wx:key="name" bindtap="onNav" data-url="{{item.url}}">
+          <image class="grid-icon-img" src="{{item.icon}}" mode="aspectFit" />
+          <text class="grid-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 搜索 ===== -->
+    <view class="search-bar tap-shrink" bindtap="onSearchTap">
+      <image class="search-icon" src="/images/freshman-icons/search.png" mode="aspectFit" />
+      <text class="search-placeholder">搜索校园攻略、食堂、地点…</text>
+    </view>
+
+    <!-- ===== 热门内容 ===== -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">热门内容</text>
+        <text class="section-sub">新生都在看</text>
+      </view>
+      <view class="featured-list">
+        <view class="featured-card tap-shrink" wx:for="{{featured}}" wx:key="title" bindtap="onNav" data-url="{{item.url}}">
+          <image class="featured-icon-img" src="{{item.icon}}" mode="aspectFit" />
+          <view class="featured-info">
+            <text class="featured-title">{{item.title}}</text>
+            <text class="featured-desc">{{item.desc}}</text>
+          </view>
+          <text class="featured-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-space"></view>
+  </scroll-view>
+
+  <!-- ===== 新生群二维码弹窗（底部弹出） ===== -->
+  <view class="qr-mask {{showGroupQr ? 'show' : ''}}" bindtap="closeGroupQr">
+    <view class="qr-sheet {{showGroupQr ? 'show' : ''}}" catchtap="noop">
+      <view class="qr-sheet-head">
+        <text class="qr-sheet-title">加入 2026 新生群</text>
+        <view class="qr-sheet-close tap-shrink" bindtap="closeGroupQr">✕</view>
+      </view>
+      <view class="qr-sheet-body">
+        <image class="qr-img" src="/images/qr-placeholder.png" mode="widthFix" show-menu-by-longpress="true" />
+        <view class="qr-tip">
+          <text class="qr-tip-main">二维码示例占位图</text>
+          <text class="qr-tip-sub">上线前请替换为你自己的新生群二维码</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

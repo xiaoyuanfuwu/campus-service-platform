@@ -1,0 +1,332 @@
+<!-- pages/detail/detail.wxml -->
+<view class="page-detail">
+  <!-- 全屏背景图（与其他页面一致） -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏（鸭子风格 + 橙色标题） -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">{{isModule ? '帖子详情' : '行程详情'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="content" scroll-into-view="{{scrollInto}}" scroll-with-animation style="padding-top: {{navBarHeight}}px;">
+
+    <!-- ========== 帖子详情（社交结构） ========== -->
+    <block wx:if="{{isModule && detail}}">
+      <!-- 一个大板块：发布者 + 标题 + 内容 + 图片 + 右下角收藏/分享 -->
+      <view class="section glass-card post-card">
+        <view class="user-row">
+          <image class="avatar" src="{{detail.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" data-user-id="{{creatorId}}" bindtap="goUserProfile"></image>
+          <view class="user-info" data-user-id="{{creatorId}}" bindtap="goUserProfile">
+            <view class="user-name-line">
+              <text class="user-name">{{detail.creator.nickName}}</text>
+              <text class="tag" wx:if="{{detail.creator.creditScore}}">信用 {{detail.creator.creditScore}}</text>
+              <text class="tag" wx:if="{{_creatorIdText}}">ID {{_creatorIdText}}</text>
+              <view class="user-lv {{detail.creator.level >= 5 ? 'user-lv-red' : ''}}" wx:if="{{detail.creator.level}}">LV{{detail.creator.level}}</view>
+            </view>
+            <text class="user-time">{{formattedTime}}</text>
+          </view>
+        </view>
+        <view class="post-head">
+          <text class="post-title">{{detail.title}}</text>
+          <!-- 提供/需求标签：只保留物品租求(rental)模块，其他模块不显示 -->
+          <view class="type-badge {{detail.type}}" wx:if="{{module === 'rental'}}">{{typeText}}</view>
+        </view>
+
+        <!-- 内容 + 价格（同板块，价格在右侧） -->
+        <view class="post-body">
+          <text class="note-text post-note" wx:if="{{detail.content}}">{{detail.content}}</text>
+          <view class="post-price" wx:if="{{hasPrice}}">{{priceText}}</view>
+        </view>
+
+        <!-- 图片 -->
+        <view class="image-grid post-imgs" wx:if="{{hasImages}}">
+          <image wx:for="{{detail.images}}" wx:key="*this" class="grid-image tap-shrink" src="{{item}}" mode="aspectFill" data-url="{{item}}" bindtap="onPreviewImage"></image>
+        </view>
+
+        <!-- 模块标签 + 帖子标签（内容下方、浏览数上方，同一行） -->
+        <view class="post-tags">
+          <view class="mod-badge post-mod-badge">#{{moduleName}}</view>
+        </view>
+
+        <!-- 板块底部一行：左浏览次数 / 右 收藏·分享·点赞（紧凑小图标） -->
+        <view class="post-foot">
+          <view class="post-views">
+            <view class="pv-ico"></view>
+            <text class="pv-num">{{detail.viewCount || 0}} 次浏览</text>
+          </view>
+          <view class="post-actions">
+            <view class="pa-item tap-shrink {{liked ? 'active' : ''}}" bindtap="onHelpLike">
+              <view class="pa-ico pa-ico-like"></view>
+              <text class="pa-num">{{likeCount}}</text>
+            </view>
+            <view class="pa-item tap-shrink {{detail.isFavorited ? 'active' : ''}}" bindtap="onToggleFavorite">
+              <view class="pa-ico pa-ico-fav"></view>
+            </view>
+            <button class="pa-item pa-share tap-shrink" open-type="share">
+              <view class="pa-ico pa-ico-share"></view>
+            </button>
+          </view>
+        </view>
+      </view>
+
+      <!-- 作者操作（私信上方，仅发布者可见）：透明底，编辑 + 取消发布 + 已结束 -->
+      <view class="owner-actions" wx:if="{{detail.isCreator}}">
+        <view class="oa-btn oa-edit tap-shrink" bindtap="onEditPost">编辑</view>
+        <view class="oa-btn oa-cancel tap-shrink" bindtap="onCancelPublish">取消发布</view>
+        <view class="oa-btn oa-end tap-shrink" bindtap="onEndPost">已结束</view>
+      </view>
+
+      <!-- 快递代取：我要接单（仅 express 模块，非发布者） -->
+      <view class="take-bar" wx:if="{{module === 'express' && takeState && !detail.isCreator}}">
+        <view class="take-btn take-can tap-shrink" wx:if="{{takeState === 'can'}}" bindtap="onTakePost">
+          <view class="tk-ico"></view>
+          <text>我要接单</text>
+        </view>
+        <view class="take-btn take-mine" wx:elif="{{takeState === 'mine'}}">
+          <view class="tk-check"></view>
+          <text>我已接单</text>
+        </view>
+        <view class="take-btn take-disabled" wx:elif="{{takeState === 'taken'}}">已被接单</view>
+        <view class="take-btn take-disabled" wx:elif="{{takeState === 'done'}}">任务已结束</view>
+      </view>
+
+      <!-- 私信（板块下方）：扁横条 + 下拉三角，展开显示联系方式与在线私信 -->
+      <view class="chat-panel" wx:if="{{creatorId && creatorId !== currentUserId}}">
+        <view class="chat-bar tap-shrink" bindtap="onChatToggle">
+          <view class="chat-bar-left">
+            <view class="chat-line-icon"><view class="cli-bubble"></view><view class="cli-dot cli-dot-1"></view><view class="cli-dot cli-dot-2"></view></view>
+            <text class="chat-bar-text">私信</text>
+          </view>
+          <view class="chat-arrow {{chatOpen ? 'open' : ''}}"></view>
+        </view>
+        <view class="chat-body" wx:if="{{chatOpen}}">
+          <view class="chat-contact">
+            <text class="cc-label">TA 留的联系方式</text>
+            <view class="cc-row">
+              <text class="cc-value {{hasContact ? '' : 'cc-empty'}}">{{hasContact ? detail.contact : '对方未留下电话'}}</text>
+              <view class="cc-copy tap-shrink" wx:if="{{hasContact}}" catchtap="onCopyContact">复制</view>
+            </view>
+          </view>
+          <view class="chat-online tap-shrink" bindtap="goChat">在线联系</view>
+        </view>
+      </view>
+
+      <!-- 广告位（预留） -->
+      <view class="ad-slot">
+        <view class="ad-label">广告</view>
+        <view class="ad-body">广告位预留 · 后续可接入校园商家推广</view>
+      </view>
+
+      <!-- 全部评论（快递代取不展示） -->
+      <view class="section glass-card" id="comments" wx:if="{{module !== 'express'}}">
+        <view class="section-title">全部评论（{{commentTotal}}）</view>
+        <view class="comment-list" wx:if="{{replies.length > 0}}">
+          <view class="comment-item" wx:for="{{replies}}" wx:key="id">
+            <image class="avatar-sm" src="{{item.user.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <view class="comment-main">
+              <view class="comment-head">
+                <text class="comment-name">{{item.user.nickName || '匿名同学'}}</text>
+                <text class="comment-time">{{item._timeText}}</text>
+              </view>
+              <text class="comment-content" wx:if="{{!item.replyToNickName}}">{{item.content}}</text>
+              <text class="comment-content" wx:else>回复 {{item.replyToNickName}}：{{item.content}}</text>
+            </view>
+          </view>
+          <view class="comment-more tap-shrink" wx:if="{{hasMoreComments}}" bindtap="loadMoreComments">加载更多评论</view>
+        </view>
+        <view class="comment-empty" wx:else>还没有评论，快来抢沙发～</view>
+      </view>
+    </block>
+
+    <!-- ========== 拼车详情（原有） ========== -->
+    <block wx:elif="{{!isModule && detail}}">
+      <!-- 大板块：路线+信息+标签+备注合并（与帖子详情结构一致） -->
+      <view class="section glass-card post-card">
+        <!-- 时间/座位（放大加色，放路线上面） -->
+        <view class="route-meta">
+          <view class="meta-item">
+            <view class="meta-icon meta-clock"></view>
+            <text>{{formattedTime}}</text>
+            <view class="status-badge status-{{detail.status}}">{{statusText}}</view>
+          </view>
+          <view class="meta-item meta-seats">
+            <view class="meta-icon meta-people"></view>
+            <text>{{detail.totalSeats}}人（余{{detail.remainSeats}}）</text>
+          </view>
+        </view>
+        <view class="route-row">
+          <view class="route-line-solid"></view>
+          <view class="route-places">
+            <view class="route-place">
+              <text class="route-label route-label-from">出发地</text>
+              <text class="route-text">{{detail.from}}</text>
+            </view>
+            <view class="route-place">
+              <text class="route-label route-label-to">目的地</text>
+              <text class="route-text">{{detail.to}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="route-detail-row" wx:if="{{detail.fromDetail}}">
+          <text class="route-detail-label">出发地详情</text>
+          <text class="route-detail-text">{{detail.fromDetail}}</text>
+        </view>
+        <view class="route-detail-row" wx:if="{{detail.toDetail}}">
+          <text class="route-detail-label">目的地详情</text>
+          <text class="route-detail-text">{{detail.toDetail}}</text>
+        </view>
+        <!-- 备注（正文） -->
+        <text class="note-text post-note" wx:if="{{detail.note}}">{{detail.note}}</text>
+
+        <!-- 费用（右贴）+ 车辆信息 -->
+        <view class="post-body" wx:if="{{hasPrice || hasVehicleInfo}}">
+          <view class="info-row vehicle-info" wx:if="{{hasVehicleInfo}}">
+            <text class="info-label">车辆信息</text>
+            <text class="info-value">{{vehicleInfoText}}</text>
+          </view>
+          <view class="post-price" wx:if="{{hasPrice}}">{{priceText}}</view>
+        </view>
+
+        <!-- 图片 -->
+        <view class="image-grid post-imgs" wx:if="{{hasImages}}">
+          <image wx:for="{{detail.images}}" wx:key="*this" class="grid-image tap-shrink" src="{{item}}" mode="aspectFill" data-url="{{item}}" bindtap="onPreviewImage"></image>
+        </view>
+
+        <!-- 标签：模块标签 + 帖子标签 -->
+        <view class="post-tags">
+          <view class="mod-badge post-mod-badge">#拼车</view>
+        </view>
+
+        <!-- 底部：浏览 / 收藏 -->
+        <view class="post-foot">
+          <view class="post-views">
+            <view class="pv-ico"></view>
+            <text class="pv-num">{{detail.viewCount || 0}} 次浏览</text>
+          </view>
+          <view class="post-actions">
+            <view class="pa-item tap-shrink {{detail.isFavorited ? 'active' : ''}}" bindtap="onToggleFavorite">
+              <view class="pa-ico pa-ico-fav"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 发布者信息（独立板块，放下面） -->
+      <view class="section glass-card" wx:if="{{detail.creator}}">
+        <view class="section-title">发布者</view>
+        <view class="user-row">
+          <image class="avatar" src="{{detail.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" data-user-id="{{creatorId}}" bindtap="goUserProfile"></image>
+          <view class="user-info" data-user-id="{{creatorId}}" bindtap="goUserProfile">
+            <text class="user-name">{{detail.creator.nickName}}</text>
+            <view class="user-tags">
+              <view class="user-lv {{detail.creator.level >= 5 ? 'user-lv-red' : ''}}" wx:if="{{detail.creator.level}}">LV{{detail.creator.level}}</view>
+              <text class="tag" wx:if="{{detail.creator.creditScore}}">信用 {{detail.creator.creditScore}}</text>
+              <text class="tag" wx:if="{{detail.creator.tripCount}}">出行 {{detail.creator.tripCount}}次</text>
+              <text class="tag" wx:if="{{detail.creator.goodRate}}">好评 {{detail.creator.goodRate}}%</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 作者操作（私信上方，仅发布者可见）：透明底，编辑 + 已结束 + 取消发布 -->
+      <view class="owner-actions" wx:if="{{detail.isCreator}}">
+        <view class="oa-btn oa-edit tap-shrink" bindtap="goEdit">编辑</view>
+        <view class="oa-btn oa-end tap-shrink" bindtap="onEndCarpool" wx:if="{{detail.status === 'active' || detail.status === 'full'}}">已结束</view>
+        <view class="oa-btn oa-cancel tap-shrink" bindtap="onDeleteCarpool">取消发布</view>
+      </view>
+
+      <!-- 私信面板（与帖子详情一致）：横条 + 展开联系方式/在线联系 -->
+      <view class="chat-panel" wx:if="{{creatorId && creatorId !== currentUserId}}">
+        <view class="chat-bar tap-shrink" bindtap="onChatToggle">
+          <view class="chat-bar-left">
+            <view class="chat-line-icon"><view class="cli-bubble"></view><view class="cli-dot cli-dot-1"></view><view class="cli-dot cli-dot-2"></view></view>
+            <text class="chat-bar-text">私信</text>
+          </view>
+          <view class="chat-arrow {{chatOpen ? 'open' : ''}}"></view>
+        </view>
+        <view class="chat-body" wx:if="{{chatOpen}}">
+          <view class="chat-contact">
+            <text class="cc-label">TA 留的联系方式</text>
+            <view class="cc-row">
+              <text class="cc-value {{hasContact ? '' : 'cc-empty'}}">{{hasContact ? detail.contact : '对方未留下电话'}}</text>
+              <view class="cc-copy tap-shrink" wx:if="{{hasContact}}" catchtap="onCopyContact">复制</view>
+            </view>
+          </view>
+          <view class="chat-online tap-shrink" bindtap="goChat">在线联系</view>
+        </view>
+      </view>
+
+      <!-- 参与者 -->
+      <view class="section glass-card" wx:if="{{detail.participants && detail.participants.length > 0}}">
+        <view class="section-title">已加入 ({{detail.participants.length}})</view>
+        <view class="participant-list">
+          <view class="participant-item" wx:for="{{detail.participants}}" wx:key="index">
+            <image class="avatar-sm" src="{{item.user.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <text class="participant-name">{{item.user.nickName}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮（非作者：加入/收藏） -->
+      <view class="action-bar safe-bottom">
+        <block wx:if="{{detail.isJoined}}">
+          <view class="btn-outline-sm tap-shrink" bindtap="onCancelJoin" wx:if="{{detail.status === 'active' || detail.status === 'full'}}">取消加入</view>
+          <view class="btn-outline-sm tap-shrink" bindtap="onCopyContact" wx:if="{{detail.contact}}">复制联系方式</view>
+          <view class="btn-outline-sm tap-shrink" bindtap="goGroupChat" wx:if="{{detail.status === 'active' || detail.status === 'full' || detail.status === 'ended'}}">群聊</view>
+          <view class="btn-fav tap-shrink {{detail.isFavorited ? 'active' : ''}}" bindtap="onToggleFavorite">
+            <view class="fav-star {{detail.isFavorited ? 'filled' : ''}}"></view>
+          </view>
+        </block>
+        <block wx:else>
+          <view class="btn-primary grad-btn tap-shrink" bindtap="onJoin" wx:if="{{detail.remainSeats > 0 && detail.status === 'active'}}">立即加入</view>
+          <view class="btn-outline-sm disabled" wx:elif="{{detail.status === 'full'}}" style="color:var(--text-hint);border-color:var(--border-light);">已满员</view>
+          <view class="btn-outline-sm disabled" wx:elif="{{detail.status === 'ended' || detail.status === 'expired' || detail.status === 'cancelled'}}" style="color:var(--text-hint);border-color:var(--border-light);">已结束</view>
+          <view class="btn-fav tap-shrink {{detail.isFavorited ? 'active' : ''}}" bindtap="onToggleFavorite">
+            <view class="fav-star {{detail.isFavorited ? 'filled' : ''}}"></view>
+          </view>
+        </block>
+      </view>
+
+      <!-- 评价入口（暂隐藏，后续启用） -->
+      <view class="section glass-card" wx:if="{{false}}">
+        <view class="section-title">评价</view>
+        <view class="review-btns">
+          <view class="btn-outline tap-shrink" bindtap="goReview" wx:if="{{detail.isJoined || detail.isCreator}}">去评价</view>
+          <view class="btn-outline tap-shrink" bindtap="goViewReviews">查看评价</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="loading" wx:elif="{{loading}}">加载中...</view>
+    <view class="empty-state" wx:else>
+      <view class="empty-icon"><view class="ei-inbox"></view></view>
+      <text class="empty-text">{{isModule ? '帖子不存在或已删除' : '行程不存在或已删除'}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 底部评论输入框（仅帖子详情，快递代取不展示）：透明底，头像嵌入输入框内 -->
+  <view class="comment-bar safe-bottom" wx:if="{{isModule && detail && module !== 'express'}}">
+    <view class="cb-input-wrap">
+      <image class="cb-avatar" src="{{myAvatar}}" mode="aspectFill"></image>
+      <input class="cb-input" placeholder="说点什么吧…" placeholder-class="cb-placeholder"
+        value="{{commentText}}" bindinput="onCommentInput" bindconfirm="onSendComment" confirm-type="send" />
+    </view>
+    <view class="cb-send {{commentText ? 'ready' : ''}}" bindtap="onSendComment">发送</view>
+  </view>
+</view>

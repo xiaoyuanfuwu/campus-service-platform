@@ -1,0 +1,85 @@
+<!-- pages/login/login.wxml -->
+<view class="login-page" style="padding-top: {{statusBarHeight}}px;">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 返回按钮 -->
+  <view class="back-btn" bindtap="goBack">
+    <view class="nav-back-icon"></view>
+  </view>
+
+  <!-- 顶部装饰 -->
+  <view class="login-header">
+    <view class="header-circle circle-1"></view>
+    <view class="header-circle circle-2"></view>
+    <view class="header-circle circle-3"></view>
+  </view>
+
+  <!-- 主体内容 -->
+  <view class="login-body">
+    <view class="logo-section">
+      <!-- 鸭子简笔画 -->
+      <view class="duck-icon">
+        <view class="duck-head"></view>
+        <view class="duck-eye"></view>
+        <view class="duck-beak"></view>
+        <view class="duck-body"></view>
+        <view class="duck-wing"></view>
+        <view class="duck-tail"></view>
+      </view>
+      <text class="app-name">{{typedTitle}}</text>
+      <text class="app-desc">校园生活 · 一鸭搞定</text>
+    </view>
+
+    <view class="btn-section">
+      <view class="btn-wrap">
+        <button class="login-btn" bindtap="onWxLogin" loading="{{loading}}">
+          <view class="lock-icon"><view class="li-lock-body"></view><view class="li-lock-shackle"></view></view>
+          <text>{{typedBtn}}</text>
+        </button>
+        <view class="btn-shimmer"></view>
+      </view>
+
+      <!-- 协议勾选 — 移到登录按钮下方，字体小一号 -->
+      <view class="agree-row">
+        <view class="agree-check" bindtap="toggleAgree">
+          <view class="check-box {{agreed ? 'checked' : ''}}">
+            <view wx:if="{{agreed}}" class="check-tick"></view>
+          </view>
+        </view>
+        <view class="agree-text-wrap">
+          <text class="agree-text">我已阅读并同意</text>
+          <text class="agree-link" catchtap="openUserAgreement">《用户协议》</text>
+          <text class="agree-text">和</text>
+          <text class="agree-link" catchtap="openPrivacyPolicy">《隐私政策》</text>
+        </view>
+      </view>
+
+      <view class="skip-row tap-shrink" bindtap="onSkip">
+        <text class="skip-text">暂不登录，先看看</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 未勾选协议时的提示弹窗 -->
+  <view class="agree-modal-mask" wx:if="{{showAgreeModal}}" catchtap="closeAgreeModal">
+    <view class="agree-modal" catchtap="">
+      <view class="am-icon">
+        <view class="am-circle">
+          <view class="am-doc"></view>
+          <view class="am-line-1"></view>
+          <view class="am-line-2"></view>
+        </view>
+      </view>
+      <text class="am-title">隐私保护提示</text>
+      <text class="am-desc">为了保护您的隐私，请阅读并同意《用户协议》和《隐私政策》后再进行登录。</text>
+      <view class="am-links">
+        <text class="am-link" catchtap="openUserAgreementFromModal">《用户协议》</text>
+        <text class="am-link-sep">与</text>
+        <text class="am-link" catchtap="openPrivacyPolicyFromModal">《隐私政策》</text>
+      </view>
+      <view class="am-btns">
+        <view class="am-btn-disagree" bindtap="onDisagree">不同意</view>
+        <view class="am-btn-agree" bindtap="onAgreeInModal">同意并继续</view>
+      </view>
+    </view>
+  </view>
+</view>

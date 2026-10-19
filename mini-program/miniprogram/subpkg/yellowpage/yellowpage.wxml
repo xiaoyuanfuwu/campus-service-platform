@@ -1,0 +1,104 @@
+<!-- pages/yellowpage/yellowpage.wxml — 校园黄页 -->
+<view class="yp-page">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 彩虹渐变背景 -->
+  <image class="yp-bg-img" src="{{bgImage}}" mode="aspectFill" />
+
+  <!-- 状态栏占位 -->
+  <view class="status-pad" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 顶部导航 -->
+  <view class="yp-nav">
+    <view class="nav-btn tap-shrink" bindtap="goBack">
+      <view class="back-arrow"></view>
+    </view>
+    <view class="nav-title">
+      <text class="nav-title-text">校园黄页</text>
+    </view>
+    <view class="nav-btn tap-shrink" bindtap="goMsg">
+      <view class="bell-icon">
+        <view class="bell-top"></view>
+        <view class="bell-bottom"></view>
+      </view>
+      <view wx:if="{{systemUnread > 0}}" class="bell-dot"></view>
+    </view>
+  </view>
+
+  <!-- 搜索栏（正常流，紧贴导航栏） -->
+  <view class="yp-search-wrap">
+    <view class="yp-search-icon"><view class="svg-ico svg-ico-search"></view></view>
+    <input class="yp-search-input" placeholder="搜索部门 · 电话 · 地址" placeholder-class="yp-search-ph" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+  </view>
+
+  <!-- 分类标签（正常流，紧贴搜索栏） -->
+  <scroll-view class="yp-cat-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="yp-cat-list">
+      <view wx:for="{{categories}}" wx:key="*this" class="yp-cat-tag {{activeCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="onCategoryTap">{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 黄页列表（fixed 到底部，top 动态计算） -->
+  <scroll-view class="yp-list-scroll" style="top:{{navBarHeight + 82}}px;" scroll-y enhanced show-scrollbar="{{false}}">
+    <view wx:if="{{filteredData.length === 0}}" class="yp-empty">
+      <text class="yp-empty-text">未找到相关结果</text>
+    </view>
+
+    <block wx:else>
+      <view class="yp-card-list">
+        <block wx:for="{{filteredData}}" wx:key="name">
+          <!-- 分类分隔标题 -->
+          <view wx:if="{{index === 0 || filteredData[index-1].category !== item.category}}" class="yp-section">
+            <view class="yp-section-bar"></view>
+            <text class="yp-section-name">{{item.category}}</text>
+            <text class="yp-section-line"></text>
+          </view>
+
+          <!-- 黄页卡片 -->
+          <view class="yp-card">
+            <view class="yp-card-name">{{item.name}}</view>
+            <view wx:if="{{item.desc}}" class="yp-card-desc">{{item.desc}}</view>
+
+            <view class="yp-card-info">
+              <view wx:if="{{item.phone}}" class="yp-info-row">
+                <text class="yp-info-label">电话</text>
+                <text class="yp-info-value yp-phone {{item.phone === '0000-0000000' ? 'uncollected' : ''}}" data-phone="{{item.phone}}" bindtap="onCopyTap">{{item.phone}}</text>
+              </view>
+              <view wx:if="{{item.fax}}" class="yp-info-row">
+                <text class="yp-info-label">传真</text>
+                <text class="yp-info-value">{{item.fax}}</text>
+              </view>
+              <view wx:if="{{item.email}}" class="yp-info-row">
+                <text class="yp-info-label">邮箱</text>
+                <text class="yp-info-value">{{item.email}}</text>
+              </view>
+              <view wx:if="{{item.location}}" class="yp-info-row">
+                <text class="yp-info-label">地址</text>
+                <text class="yp-info-value">{{item.location}}</text>
+              </view>
+            </view>
+
+            <view wx:if="{{item.phone && item.phone !== '0000-0000000'}}" class="yp-card-actions">
+              <view class="yp-call-btn tap-shrink" data-phone="{{item.phone}}" bindtap="onCallTap">
+                <text>立即拨打</text>
+              </view>
+              <view class="yp-copy-btn tap-shrink" data-phone="{{item.phone}}" bindtap="onCopyTap">
+                <text>复制</text>
+              </view>
+            </view>
+            <view wx:elif="{{item.phone === '0000-0000000'}}" class="yp-card-note">
+              <text>该部门电话暂未完整收录，请拨打学校总机 0000-0000000</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </block>
+
+    <!-- 底部 -->
+    <view class="yp-footer">
+      <text class="yp-footer-text">校园服务平台 · 仅限学习交流使用</text>
+      <text class="yp-footer-sub">©2026 {{BRAND_NAME}} 版权所有</text>
+    </view>
+    <view style="height:40rpx;"></view>
+  </scroll-view>
+
+</view>

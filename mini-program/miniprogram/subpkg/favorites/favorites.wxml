@@ -1,0 +1,64 @@
+<!-- pages/favorites/favorites.wxml -->
+<view class="page-fav">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 顶部栏（统一风格：透明背景 + 鸭鸭Logo + 橙色标题） -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view><view class="td-eye"></view><view class="td-beak"></view>
+          <view class="td-body"></view><view class="td-wing"></view><view class="td-tail"></view>
+        </view>
+        <view class="brand-name">我的收藏</view>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+  <view style="height: {{statusBarHeight + 50}}px;"></view>
+  <scroll-view scroll-y class="content" bindscrolltolower="loadMore">
+    <view wx:if="{{list.length === 0 && !loading}}" class="empty-state">
+      <view class="empty-icon"><text>⭐</text></view>
+      <text class="empty-text">暂无收藏</text>
+    </view>
+
+    <!-- 拼车收藏卡片 -->
+    <block wx:for="{{list}}" wx:key="_id">
+      <view wx:if="{{item._moduleType === 'carpool'}}" class="carpool-card glass-card" data-id="{{item._id}}" bindtap="goDetail">
+        <view class="card-top">
+          <text class="route">{{item.from}} → {{item.to}}</text>
+          <text class="type-badge {{item.type}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</text>
+        </view>
+        <view class="card-meta">
+          <text><view class="svg-ico svg-ico-clock-1"></view> {{item._formattedTime}}</text>
+          <text>余{{item.remainSeats}}座</text>
+          <text>{{item.creator.nickName || '未知'}}</text>
+        </view>
+        <view class="card-note" wx:if="{{item.note}}">{{item.note}}</view>
+        <view class="unfav-btn" catchtap="onUnfavorite" data-id="{{item._id}}">取消收藏</view>
+      </view>
+
+      <!-- 模块收藏卡片 -->
+      <view wx:elif="{{item._moduleType === 'module'}}" class="module-card glass-card" data-id="{{item._id}}" data-module="{{item._module}}" bindtap="goDetail">
+        <view class="mod-fav-top">
+          <view class="mod-fav-badge">{{item._moduleName}}</view>
+          <text class="mod-fav-title">{{item._displayTitle || item.title || '未命名'}}</text>
+        </view>
+        <view class="mod-fav-meta" wx:if="{{item.price > 0 || item.location}}">
+          <text wx:if="{{item.price > 0}}" class="mod-fav-price">¥{{item.price}}</text>
+          <text wx:if="{{item.location}}" class="mod-fav-loc">{{item.location}}</text>
+        </view>
+        <text class="mod-fav-desc" wx:if="{{item.desc || item.content || item.note}}">{{item.desc || item.content || item.note}}</text>
+        <view class="mod-fav-footer">
+          <text class="mod-fav-time">{{item._timeAgo || ''}}</text>
+          <view class="unfav-btn" catchtap="onUnfavorite" data-id="{{item._id}}" data-module="{{item._module}}">取消收藏</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="loading-more" wx:if="{{loading}}"><text>加载中...</text></view>
+  </scroll-view>
+</view>

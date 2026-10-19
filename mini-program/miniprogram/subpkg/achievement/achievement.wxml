@@ -1,0 +1,310 @@
+<!-- subpkg/achievement/achievement.wxml — 校园成就 -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">校园成就</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 三Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 成就大厅 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <!-- 总体进度 -->
+        <view class="ach-header">
+          <view class="ach-header-inner">
+            <view class="ach-summary">
+              <text class="ach-title">总体进度</text>
+              <text class="ach-sub">已点亮 {{unlockedCount}} / {{totalCount}} 项成就</text>
+            </view>
+            <view class="ach-progress-ring">
+              <text class="ach-progress-num">{{progressPercent}}%</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 赛道列表（每条带进度条） -->
+        <view class="ach-tracks">
+          <view
+            wx:for="{{tracks}}" wx:key="key"
+            class="ach-track-card ach-track-{{item.theme}} tap-shrink"
+            data-key="{{item.key}}"
+            bindtap="onTrackTap"
+          >
+            <view class="atc-bg-deco atc-deco-{{item.theme}}"></view>
+            <view class="atc-header">
+              <view class="atc-info">
+                <text class="atc-name">{{item.name}}</text>
+                <text class="atc-desc">已点亮 {{item.unlocked}} / {{item.total}}</text>
+              </view>
+              <view class="atc-right">
+                <text class="atc-count">{{item.percent}}%</text>
+              </view>
+            </view>
+            <view class="atc-progress-bar">
+              <view class="atc-progress-fill atc-fill-{{item.theme}}" style="width:{{item.unlocked / item.total * 100}}%;"></view>
+            </view>
+          </view>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 发布 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <!-- 发布说明 -->
+          <view class="publish-tip card">
+            <view class="tip-icon"><view class="svg-ico svg-ico-bulb"></view></view>
+            <view class="tip-content">
+              <text class="tip-title">上传成就凭证</text>
+              <text class="tip-desc">上传你的证书、奖状、证明等图片，管理员审核通过后即可点亮对应成就</text>
+            </view>
+          </view>
+
+          <!-- 赛道分类选择 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>选择赛道</text><text class="form-required">*</text></view>
+              <view class="track-options">
+                <view class="track-chip track-chip-leadership {{publishTrack === 'leadership' ? 'active' : ''}}" data-value="leadership" bindtap="onPublishTrackChange">
+                  <view class="track-chip-icon"><view class="svg-ico svg-ico-necktie"></view></view>
+                  <text class="track-chip-name">学生干部</text>
+                </view>
+                <view class="track-chip track-chip-certificate {{publishTrack === 'certificate' ? 'active' : ''}}" data-value="certificate" bindtap="onPublishTrackChange">
+                  <view class="track-chip-icon"><view class="svg-ico svg-ico-scroll"></view></view>
+                  <text class="track-chip-name">证书考证</text>
+                </view>
+                <view class="track-chip track-chip-academic {{publishTrack === 'academic' ? 'active' : ''}}" data-value="academic" bindtap="onPublishTrackChange">
+                  <view class="track-chip-icon"><view class="svg-ico svg-ico-books"></view></view>
+                  <text class="track-chip-name">学业成绩</text>
+                </view>
+                <view class="track-chip track-chip-competition {{publishTrack === 'competition' ? 'active' : ''}}" data-value="competition" bindtap="onPublishTrackChange">
+                  <view class="track-chip-icon"><view class="svg-ico svg-ico-medal"></view></view>
+                  <text class="track-chip-name">竞赛荣誉</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 成就名称 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>成就名称</text><text class="form-required">*</text></view>
+              <input class="form-input" placeholder="如：优秀学生干部、国家奖学金" value="{{publishTitle}}" bindinput="onPublishTitleInput" maxlength="50"/>
+            </view>
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>详细描述</text></view>
+            </view>
+            <textarea class="form-textarea" placeholder="简要描述这个成就的来源，如获奖时间、颁发机构等..." value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="500"/>
+          </view>
+
+          <!-- 图片上传 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>上传凭证</text><text class="form-hint">最多 6 张</text></view>
+            </view>
+            <view class="image-picker">
+              <view class="img-item" wx:for="{{publishImages}}" wx:key="*this" data-index="{{index}}" data-url="{{item}}" bindtap="onPreviewPublishImage">
+                <image class="img-preview" src="{{item}}" mode="aspectFill"></image>
+                <view class="img-delete" catchtap="onDeletePublishImage" data-index="{{index}}">×</view>
+                <view class="img-cover-tag" wx:if="{{index === 0}}">封面</view>
+              </view>
+              <view class="img-add tap-shrink" wx:if="{{publishImages.length < 6}}" bindtap="onChoosePublishImage">
+                <text class="img-add-icon">+</text>
+                <text class="img-add-text">{{publishImages.length}}/6</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 联系方式 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>联系方式</text></view>
+              <input class="form-input" placeholder="微信号/手机号（选填）" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="30"/>
+            </view>
+          </view>
+
+          <!-- 通知 -->
+          <view class="card form-card">
+            <view class="notify-row">
+              <view class="notify-info">
+                <view class="notify-label"><view class="svg-ico svg-ico-bell"></view><text>审核通知</text></view>
+                <text class="notify-hint">审核结果将通过微信服务号通知你</text>
+              </view>
+              <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#00A693"/>
+            </view>
+          </view>
+
+          <view class="publish-btn tap-shrink" bindtap="onSubmitPublish">提交审核</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 2: 我的 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="ach-mine-page">
+          <!-- 顶部成就档案 -->
+          <view class="ach-profile-card">
+            <view class="apc-left">
+              <image class="apc-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+              <view class="apc-info">
+                <text class="apc-name">{{userInfo.nickName || '未登录'}}</text>
+                <text class="apc-sub">{{userInfo.school || '校园成就档案'}}</text>
+              </view>
+            </view>
+            <view class="apc-right">
+              <text class="apc-num">{{earnedCount}}</text>
+              <text class="apc-num-label">已点亮</text>
+            </view>
+          </view>
+
+          <!-- 总体进度 -->
+          <view class="ach-header" style="margin-top: 0;">
+            <view class="ach-header-inner">
+              <view class="ach-summary">
+                <text class="ach-title">我的进度</text>
+                <text class="ach-sub">已点亮 {{unlockedCount}} / {{totalCount}} 项成就</text>
+              </view>
+              <view class="ach-progress-ring">
+                <text class="ach-progress-num">{{progressPercent}}%</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 待审核记录 -->
+          <view class="ach-section" wx:if="{{pendingList.length > 0}}">
+            <view class="ach-section-header">
+              <text class="ash-title">⏳ 待审核</text>
+              <text class="ash-sub">共 {{pendingList.length}} 条</text>
+            </view>
+            <view class="pending-list">
+              <view wx:for="{{pendingList}}" wx:key="_id" class="pending-card">
+                <view class="pending-info">
+                  <text class="pending-title">{{item.title}}</text>
+                  <text class="pending-track">{{item.trackName}}</text>
+                </view>
+                <view class="pending-time">{{item.timeAgo}}</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 勋章墙：每条成就一格，2 列网格 -->
+          <view class="ach-section">
+            <view class="ach-section-header">
+              <view class="ash-title"><view class="svg-ico svg-ico-medal"></view><text>勋章墙</text></view>
+              <text class="ash-sub">{{earnedCount}} / {{totalCount}} 项已点亮</text>
+            </view>
+            <view wx:if="{{medalWall.length === 0}}" class="ach-empty">
+              <text>暂无数据</text>
+            </view>
+            <view wx:else class="medal-grid">
+              <view
+                wx:for="{{medalWall}}" wx:key="id"
+                class="medal-card medal-{{item.trackKey}} {{item.unlocked ? 'medal-on' : 'medal-off'}} tap-shrink"
+                data-track="{{item.trackKey}}" data-item="{{item.itemKey}}"
+                bindtap="onMedalTap"
+              >
+                <view class="medal-ring">
+                  <view class="medal-emoji-wrap {{item.unlocked ? 'medal-emoji-on' : 'medal-emoji-off'}}">
+                    <view class="svg-ico svg-ico-{{item.icon}}"></view>
+                  </view>
+                </view>
+                <text class="medal-name">{{item.name}}</text>
+                <text class="medal-track">{{item.trackName}}</text>
+                <view class="medal-status">
+                  <view wx:if="{{item.unlocked}}" class="medal-on-row">
+                    <view class="svg-ico svg-ico-sparkles medal-on-icon"></view>
+                    <text class="medal-on-text">{{item.dateText}}</text>
+                  </view>
+                  <text wx:else class="medal-off-text">未点亮</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 达成日志 -->
+          <view class="ach-section">
+            <view class="ach-section-header">
+              <view class="ash-title"><view class="svg-ico svg-ico-scroll"></view><text>达成日志</text></view>
+              <text class="ash-sub">共 {{logs.length}} 条</text>
+            </view>
+            <view wx:if="{{logs.length === 0}}" class="ach-empty">
+              <text>还没有达成记录，去大厅解锁吧</text>
+            </view>
+            <view wx:else class="ach-timeline">
+              <view wx:for="{{logs}}" wx:key="key" class="ach-log">
+                <view class="ach-log-dot ach-log-dot-{{item.trackKey}}"></view>
+                <view class="ach-log-body">
+                  <view class="ach-log-top">
+                    <text class="ach-log-emoji">{{item.trackEmoji}}</text>
+                    <text class="ach-log-name">{{item.itemName}}</text>
+                    <text class="ach-log-track">{{item.trackName}}</text>
+                  </view>
+                  <view class="ach-log-bottom">
+                    <text class="ach-log-time">{{item.agoText}}</text>
+                    <text class="ach-log-date">{{item.dateText}} {{item.timeText}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部 TabBar -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:if="{{currentTab === 0}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">成就大厅</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:if="{{currentTab === 1}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">发布</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:if="{{currentTab === 2}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

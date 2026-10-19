@@ -1,0 +1,644 @@
+<!-- pages/food/food.wxml — 食堂推荐 (tab版) -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">食堂推荐</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 三Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 大厅 -->
+    <swiper-item>
+      <scroll-view id="foodScroll" class="tab-scroll" scroll-y scroll-into-view="{{foodScrollInto}}" scroll-with-animation bindscroll="_onFoodScroll" bindrefresherrefresh="onPullRefresh">
+        <!-- 回顶锚点 -->
+        <view id="food-top-anchor"></view>
+        <!-- 搜索栏 -->
+        <view class="search-bar">
+          <input class="search-input" placeholder="搜索菜品、食堂..." value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch"><view class="svg-ico svg-ico-search"></view></view>
+        </view>
+
+        <!-- 筛选区 -->
+        <view class="filter-section">
+          <view class="filter-row-wrap">
+            <text class="filter-label">食堂</text>
+            <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="filter-row">
+                <view wx:for="{{canteens}}" wx:key="key" class="filter-chip {{activeCanteen === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onCanteenChange">{{item.name}}</view>
+              </view>
+            </scroll-view>
+          </view>
+          <view class="filter-row-wrap">
+            <text class="filter-label">分类</text>
+            <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="filter-row">
+                <view wx:for="{{categories}}" wx:key="key" class="filter-chip {{activeCategory === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onCategoryChange">{{item.name}}</view>
+              </view>
+            </scroll-view>
+          </view>
+        </view>
+
+        <!-- 骨架屏 -->
+        <view wx:if="{{loading && foodList.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <!-- 错误 -->
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy-face"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!loading && foodList.length === 0}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-meal"></view></view>
+          <text class="empty-text">还没有推荐</text>
+          <text class="empty-hint">快来推荐你喜欢的菜品吧</text>
+        </view>
+        <!-- 菜品列表 -->
+        <block wx:else>
+          <view class="food-grid">
+            <view wx:for="{{foodList}}" wx:key="index" id="stall-{{index}}" class="food-card tap-shrink" data-id="{{item._id}}" bindtap="onFoodTap">
+              <view class="food-cover-box">
+                <image wx:if="{{item._hasCover}}" class="food-cover" src="{{item.cover_image}}" mode="aspectFill" style="width:100%;height:220rpx;display:block;" />
+                <view wx:else class="food-cover-placeholder">
+                  <image class="food-cover-placeholder-img" src="/images/guide-icons/36.png" mode="aspectFit" />
+                </view>
+              </view>
+              <view class="food-info">
+                <text class="food-name">{{item.name}} [{{item._hasCover ? 'Y' : 'N'}}]</text>
+                <view class="food-meta">
+                  <text class="food-canteen">{{item.location_desc || ''}}</text>
+                  <text class="food-price">{{'¥' + item.price_range}}</text>
+                </view>
+                <view class="food-rating-row">
+                  <view class="food-rating-left">
+                    <text class="food-rating-level">{{item.rating_count}}人觉得{{item._ratingLevel}}</text>
+                  </view>
+                  <view data-id="{{item._id}}" catchtap="onFoodTap">
+                    <view class="food-rate-btn">详细</view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{hasMore && foodList.length > 0}}" class="load-more-btn tap-shrink" bindtap="onLoadMoreTap">
+            <text class="load-more-text">加载更多（已显示 {{foodList.length}}/{{totalCount}}）</text>
+          </view>
+          <view wx:elif="{{!hasMore && foodList.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <view class="page-footer">
+          <text class="footer-text">XX校园 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 开发者 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 吃什么 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y show-scrollbar="{{false}}">
+        <view class="what-eat-page">
+
+          <!-- 标题 -->
+          <view class="we-header">
+            <text class="we-title">今天吃什么？</text>
+          </view>
+
+          <!-- 紧凑筛选行 -->
+          <view class="we-filter-row">
+            <scroll-view class="we-filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="we-filter-chips">
+                <view wx:for="{{canteens}}" wx:key="key" class="filter-chip {{activeCanteen === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onCanteenChange">{{item.name}}</view>
+              </view>
+            </scroll-view>
+            <view class="we-filter-divider"></view>
+            <scroll-view class="we-filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="we-filter-chips">
+                <view wx:for="{{categories}}" wx:key="key" class="filter-chip {{activeCategory === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="onCategoryChange">{{item.name}}</view>
+              </view>
+            </scroll-view>
+          </view>
+
+          <!-- 中间内容区（flex-grow 填充空白） -->
+          <view class="we-center-area">
+            <!-- 有结果 → 显示卡片 -->
+            <view class="we-result-card" wx:if="{{drawResult}}">
+              <view class="we-result-cover-wrap">
+                <image class="we-result-cover" src="{{drawResult.cover_image || '/images/index-icons/grid-food.png'}}" mode="aspectFill" />
+                <view class="we-result-badge">今天就吃</view>
+              </view>
+              <view class="we-result-body">
+                <text class="we-result-title">{{drawResult.name}}</text>
+                <view class="we-result-tags">
+                  <text class="we-tag">{{drawResult.canteenName || '食堂'}}</text>
+                  <text class="we-tag we-tag-purple" wx:if="{{drawResult.categoryName}}">{{drawResult.categoryName}}</text>
+                </view>
+                <view class="we-result-bottom">
+                  <text class="we-result-price" wx:if="{{drawResult.price > 0}}">¥{{drawResult.price}}</text>
+                  <text class="we-result-price-hint" wx:else>价格私聊</text>
+                  <text class="we-result-stars">{{drawResult._ratingStars || '★★★★★'}}</text>
+                </view>
+                <text class="we-result-comment" wx:if="{{drawResult.comment}}">{{drawResult.comment}}</text>
+              </view>
+            </view>
+
+            <!-- 无结果（统一上移） -->
+            <view class="we-no-data-wrap" wx:else>
+              <!-- 无结果（数据还在加载） -->
+              <view class="we-no-data" wx:if="{{loading}}">
+                <text class="we-no-data-icon"><view class="svg-ico svg-ico-meal"></view></text>
+                <text class="we-no-data-text">正在加载菜品...</text>
+              </view>
+              <!-- 无结果（真的没有菜品） -->
+              <view class="we-no-data" wx:elif="{{foodList.length === 0}}">
+                <text class="we-no-data-icon"><view class="svg-ico svg-ico-mailbox-empty"></view></text>
+                <text class="we-no-data-text">还没有菜品数据</text>
+                <text class="we-no-data-hint">去大厅看看有哪些推荐吧</text>
+              </view>
+              <!-- 池子被排除光了 -->
+              <view class="we-no-data" wx:elif="{{filteredPoolLength === 0}}">
+                <text class="we-no-data-icon"><view class="svg-ico svg-ico-sweat-smile"></view></text>
+                <text class="we-no-data-text">全部被你排除啦</text>
+                <text class="we-no-data-hint">去"我的"里解除一些吧</text>
+              </view>
+              <!-- 还没抽 -->
+              <view class="we-no-data" wx:else>
+                <text class="we-no-data-icon"><view class="svg-ico svg-ico-slot-machine"></view></text>
+                <text class="we-no-data-text">点击下方按钮抽一个</text>
+                <text class="we-no-data-hint">共 {{filteredPoolLength}} 个菜可选</text>
+              </view>
+            </view>
+          </view>
+
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+
+      <!-- 底部固定操作栏 -->
+      <view class="we-bottom-bar">
+        <!-- 已出结果时显示三个操作按钮 -->
+        <view class="we-bottom-actions" wx:if="{{drawResult}}">
+          <view class="we-bottom-btn-primary we-bottom-btn-lg tap-shrink {{drawing ? 'drawing' : ''}}" bindtap="onDraw">
+            <text wx:if="{{drawing}}">抽取中...</text>
+            <view class="svg-ico svg-ico-refresh" wx:if="{{!drawing}}"></view>
+            <text wx:if="{{!drawing}}">换一个</text>
+          </view>
+          <view class="we-bottom-btn-secondary tap-shrink" bindtap="onExcludeDish">
+            <text><view class="svg-ico svg-ico-no-entry"></view> 不想吃</text>
+          </view>
+          <!-- 不吃清单入口 -->
+          <view class="we-bottom-btn-exclude tap-shrink" bindtap="onOpenExcludeSheet">
+            <text>清单</text>
+            <view class="we-exclude-dot" wx:if="{{excludeList.length > 0}}">{{excludeList.length}}</view>
+          </view>
+        </view>
+        <!-- 还没结果时显示主抽签按钮 -->
+        <view class="we-bottom-actions" wx:else>
+          <!-- 不吃清单入口（无结果时也在） -->
+          <view class="we-bottom-btn-exclude tap-shrink" bindtap="onOpenExcludeSheet">
+            <text>清单</text>
+            <view class="we-exclude-dot" wx:if="{{excludeList.length > 0}}">{{excludeList.length}}</view>
+          </view>
+          <view class="we-bottom-btn-primary tap-shrink {{drawing ? 'drawing' : ''}}" style="flex:1;" bindtap="onDraw">
+            <text>{{drawing ? '抽取中...' : ''}}</text>
+            <view class="svg-ico svg-ico-slot-machine" wx:if="{{!drawing}}"></view>
+            <text wx:if="{{!drawing}}">开始抽取</text>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- Tab 2: 我的 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <!-- 用户信息头部 -->
+          <view class="mine-header">
+            <image class="mine-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="mine-info">
+              <text class="mine-name">{{userInfo.nickName || '未登录'}}</text>
+              <text class="mine-school" wx:if="{{userInfo.school}}">{{userInfo.school}}</text>
+            </view>
+          </view>
+
+          <!-- 三个功能入口 -->
+          <view class="mine-cards">
+            <view class="mine-card tap-shrink" bindtap="onOpenMyRatings">
+              <view class="mine-card-icon mine-card-icon-star"><view class="svg-ico svg-ico-star"></view></view>
+              <view class="mine-card-info">
+                <text class="mine-card-title">我的评分</text>
+                <text class="mine-card-count">{{myRatingsCount || 0}}个</text>
+              </view>
+              <text class="mine-card-arrow">›</text>
+            </view>
+            <view class="mine-card tap-shrink" bindtap="onOpenMyFavorites">
+              <view class="mine-card-icon mine-card-icon-heart"><view class="svg-ico svg-ico-heart"></view></view>
+              <view class="mine-card-info">
+                <text class="mine-card-title">我的收藏</text>
+                <text class="mine-card-count">{{myFavoritesCount || 0}}个</text>
+              </view>
+              <text class="mine-card-arrow">›</text>
+            </view>
+            <view class="mine-card tap-shrink" bindtap="onOpenExcludeSheet">
+              <view class="mine-card-icon mine-card-icon-banned"><view class="svg-ico svg-ico-no-entry"></view></view>
+              <view class="mine-card-info">
+                <text class="mine-card-title">不想吃</text>
+                <text class="mine-card-count">{{excludeList.length || 0}}个</text>
+              </view>
+              <text class="mine-card-arrow">›</text>
+            </view>
+          </view>
+
+          <!-- 其他菜单 -->
+          <view class="menu-group">
+          </view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- ===== 评分弹窗 ===== -->
+  <view class="rate-overlay" wx:if="{{showRateModal}}">
+    <!-- 纯背景层（点击关闭） -->
+    <view class="rate-bg" bindtap="closeRateModal"></view>
+    <view class="rate-modal">
+      <!-- 头部 -->
+      <view class="rate-header">
+        <text class="rate-title">给 {{rateStallName}} 评分</text>
+        <view class="rate-close tap-shrink" bindtap="closeRateModal"><view class="svg-ico svg-ico-close"></view></view>
+      </view>
+
+      <!-- 5 等级选择 -->
+      <view class="rate-levels">
+        <view
+          wx:for="{{ratingLevels}}"
+          wx:key="score"
+          class="rate-level-item {{rateScore === item.score ? 'active' : ''}}"
+          style="{{rateScore === item.score ? 'background:' + item.bg + ';color:' + item.color + ';border-color:' + item.color : ''}}"
+          data-score="{{item.score}}"
+          bindtap="selectRatingLevel"
+        >
+          <view class="rate-emoji"><view class="svg-ico {{item.icon}}"></view></view>
+          <text class="rate-label">{{item.label}}</text>
+        </view>
+      </view>
+
+      <!-- 图片上传 -->
+      <view class="rate-images-section">
+        <text class="rate-section-label">晒图（选填）</text>
+        <view class="rate-images-grid">
+          <!-- 已选图片 -->
+          <view wx:for="{{rateImages}}" wx:key="*this" class="rate-img-item">
+            <image
+              class="rate-img"
+              src="{{item.isRemote ? (item.url.startsWith('http') ? item.url : 'https://app.suyu.ink' + item.url) : item.url}}"
+              mode="aspectFill"
+            />
+            <view class="rate-img-del tap-shrink" data-idx="{{index}}" bindtap="removeImage"><view class="svg-ico svg-ico-close-white"></view></view>
+          </view>
+          <!-- 添加按钮 -->
+          <view wx:if="{{rateImages.length < 9}}" class="rate-img-add tap-shrink" bindtap="chooseImage">
+            <text class="rate-img-add-icon">+</text>
+            <text class="rate-img-add-text">添加图片</text>
+          </view>
+        </view>
+        <text class="rate-img-hint">最多 9 张，支持拍照和相册</text>
+      </view>
+
+      <!-- 评价文字 -->
+      <view class="rate-comment-section">
+        <text class="rate-section-label">说说你的感受（选填）</text>
+        <textarea
+          class="rate-textarea"
+          placeholder="这道菜怎么样？味道、分量、环境..."
+          value="{{rateComment}}"
+          bindinput="onCommentInput"
+          maxlength="300"
+          auto-height
+        />
+        <text class="rate-char-count">{{rateComment.length || 0}}/300</text>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view
+        class="rate-submit tap-shrink {{rateSubmitting ? 'submitting' : ''}} {{rateScore === 0 ? 'disabled' : ''}}"
+        bindtap="submitRating"
+      >
+        <text wx:if="{{rateSubmitting}}">提交中...</text>
+        <text wx:else>提交评价</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 档口详情弹窗 ===== -->
+  <view class="detail-overlay" wx:if="{{showDetailSheet}}">
+    <view class="detail-bg" bindtap="closeDetail"></view>
+    <view class="detail-modal {{detailSnapping ? 'detail-snapping' : ''}}" style="transform:translateY({{detailDragY}}px);"
+      bindtouchstart="onDetailDragStart"
+      bindtouchmove="onDetailDragMove"
+      bindtouchend="onDetailDragEnd">
+      <!-- 下拉关闭拖拽手柄 -->
+      <view class="detail-drag-handle">
+        <view class="detail-drag-bar"></view>
+      </view>
+      <!-- 关闭按钮 -->
+      <view class="detail-close tap-shrink" bindtap="closeDetail">
+        <view class="svg-ico svg-ico-close-white"></view>
+      </view>
+
+      <!-- 加载中 -->
+      <view wx:if="{{detailLoading}}" class="detail-loading">
+        <view class="svg-ico svg-ico-clock" style="width:48rpx;height:48rpx;"></view>
+        <text>加载中...</text>
+      </view>
+
+      <scroll-view wx:else class="detail-scroll" scroll-y enhanced show-scrollbar="{{false}}"
+        bindscroll="onDetailScroll"
+        bindtouchstart="onDetailScrollTouchStart"
+        bindtouchmove="onDetailScrollTouchMove"
+        bindtouchend="onDetailScrollTouchEnd">
+        <!-- 封面图 -->
+        <image wx:if="{{detailStall.cover_image}}" class="detail-cover-img" src="{{detailStall.cover_image}}" mode="aspectFill" bindtap="onPreviewImage" data-url="{{detailStall.cover_image}}" />
+        <view wx:else class="detail-img-placeholder">
+          <view class="svg-ico svg-ico-meal" style="width:96rpx;height:96rpx;"></view>
+          <text class="detail-placeholder-text">暂无图片</text>
+        </view>
+
+        <!-- 档口信息 -->
+        <view class="detail-info-section">
+          <text class="detail-stall-name">{{detailStall.name || detailStall.title || ''}}</text>
+          <view class="detail-stall-meta">
+            <text class="detail-stall-canteen" wx:if="{{detailStall.canteenName || detailStall.location_desc}}">{{detailStall.canteenName || detailStall.location_desc}}</text>
+            <text class="detail-stall-category" wx:if="{{detailStall.categoryName || detailStall.category}}">{{detailStall.categoryName || detailStall.category}}</text>
+          </view>
+
+          <!-- 菜品菜单 -->
+          <view class="detail-menu-section" wx:if="{{detailMenu.length > 0}}">
+            <text class="detail-section-title">菜品</text>
+            <view class="detail-menu-list {{detailMenu.length > 5 ? 'two-col' : ''}}">
+              <view wx:for="{{detailMenu}}" wx:key="id" class="detail-menu-item">
+                <text class="detail-menu-name">{{item.name}}</text>
+                <view class="detail-menu-dots"></view>
+                <text class="detail-menu-price" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+                <text class="detail-menu-price detail-menu-price-ask" wx:else>时价</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 价格 -->
+          <view class="detail-stall-price-row" wx:if="{{detailStall.price_range || detailStall.price}}">
+            <text class="detail-stall-price">{{detailStall.price_range ? ('¥' + detailStall.price_range) : ('¥' + detailStall.price)}}</text>
+          </view>
+        </view>
+
+        <!-- 评分分布 -->
+        <view class="detail-rating-section">
+          <view class="detail-rating-header">
+            <text class="detail-section-title">评分分布 ({{detailRatingDist[0] + detailRatingDist[1] + detailRatingDist[2] + detailRatingDist[3] + detailRatingDist[4]}})</text>
+            <view class="detail-avg-badge">
+              <text class="detail-avg-score">{{detailAvgRating > 0 ? detailAvgRating.toFixed(1) : '—'}}</text>
+              <text class="detail-avg-label">平均分</text>
+            </view>
+          </view>
+          <view class="detail-rating-bars">
+            <view wx:for="{{ratingLevels}}" wx:key="score" class="detail-bar-row">
+              <view class="detail-bar-label-wrap">
+                <view class="detail-bar-emoji"><view class="svg-ico {{item.icon}}" style="width:28rpx;height:28rpx;"></view></view>
+                <text class="detail-bar-text">{{item.label}}</text>
+              </view>
+              <view class="detail-bar-track">
+                <view class="detail-bar-fill" style="width: {{detailRatingDist[4 - (5 - item.score)] > 0 ? (detailRatingDist[4 - (5 - item.score)] / (detailRatingDist[0] + detailRatingDist[1] + detailRatingDist[2] + detailRatingDist[3] + detailRatingDist[4] || 1) * 100) : 0}}%; background: {{item.color}};"></view>
+              </view>
+              <text class="detail-bar-count">{{detailRatingDist[item.score - 1] || 0}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 评价列表 -->
+        <view class="detail-reviews-section">
+          <text class="detail-section-title">评价 ({{detailReviews.length}})</text>
+          <view wx:if="{{detailReviews.length === 0}}" class="detail-reviews-empty">
+            <text class="detail-reviews-empty-text">暂无评价，来做第一个评价的人吧</text>
+          </view>
+          <view wx:for="{{detailReviews}}" wx:key="index" class="detail-review-item">
+            <view class="detail-review-top">
+              <image class="detail-review-avatar" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+              <view class="detail-review-user">
+                <text class="detail-review-nick">{{item.nickName || '匿名用户'}}</text>
+                <text class="detail-review-time">{{item._timeLabel || ''}}</text>
+              </view>
+              <view class="detail-review-badge" style="background: {{ratingLevels[5 - item.rating].bg || '#F5F5F5'}}; color: {{ratingLevels[5 - item.rating].color || '#999'}};">
+                <text>{{ratingLevels[5 - item.rating].label || ''}}</text>
+              </view>
+            </view>
+            <text wx:if="{{item.content}}" class="detail-review-content">{{item.content}}</text>
+            <view wx:if="{{item.images && item.images.length > 0}}" class="detail-review-images">
+              <image wx:for="{{item.images}}" wx:for-item="img" wx:key="*this" class="detail-review-img" src="{{img.startsWith('http') ? img : 'https://app.suyu.ink' + img}}" mode="aspectFill" />
+            </view>
+          </view>
+        </view>
+
+        <!-- 写评价 -->
+        <view class="detail-write-section">
+          <text class="detail-section-title">写评价</text>
+          <!-- 评分等级选择 -->
+          <view class="detail-score-picker">
+            <view
+              wx:for="{{ratingLevels}}"
+              wx:key="score"
+              class="detail-score-item {{detailReviewScore === item.score ? 'active' : ''}}"
+              style="{{detailReviewScore === item.score ? 'background:' + item.bg + ';border-color:' + item.color : ''}}"
+              data-score="{{item.score}}"
+              bindtap="selectDetailScore"
+            >
+              <view class="detail-score-emoji"><view class="svg-ico {{item.icon}}" style="width:32rpx;height:32rpx;"></view></view>
+              <text class="detail-score-label" style="{{detailReviewScore === item.score ? 'color:' + item.color : ''}}">{{item.label}}</text>
+            </view>
+          </view>
+          <!-- 图片上传 -->
+          <view class="detail-review-images-upload">
+            <view class="detail-upload-grid">
+              <view wx:for="{{detailReviewImages}}" wx:key="url" class="detail-upload-item">
+                <image class="detail-upload-img" src="{{item.url}}" mode="aspectFill" />
+                <view class="detail-upload-del tap-shrink" data-idx="{{index}}" bindtap="removeDetailImage">
+                  <view class="svg-ico svg-ico-close-white" style="width:20rpx;height:20rpx;"></view>
+                </view>
+              </view>
+              <view wx:if="{{detailReviewImages.length < 9}}" class="detail-upload-add tap-shrink" bindtap="chooseDetailImage">
+                <text class="detail-upload-add-icon">+</text>
+              </view>
+            </view>
+          </view>
+          <!-- 文字输入 -->
+          <textarea
+            class="detail-review-textarea"
+            placeholder="说说你的感受..."
+            value="{{detailReviewText}}"
+            bindinput="onDetailReviewInput"
+            maxlength="300"
+            auto-height
+          />
+          <text class="detail-review-char-count">{{detailReviewText.length || 0}}/300</text>
+          <!-- 提交按钮 -->
+          <view
+            class="detail-review-submit detail-review-submit-offline"
+          >
+            <text>暂未上线</text>
+          </view>
+        </view>
+
+        <view style="height: 60rpx;"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ===== 不想吃清单弹窗 ===== -->
+  <view class="exclude-sheet" wx:if="{{showExcludeSheet}}">
+    <view class="exclude-sheet-bg" bindtap="onCloseExcludeSheet"></view>
+    <view class="exclude-sheet-modal">
+      <view class="exclude-sheet-header">
+        <text class="exclude-sheet-title">不想吃</text>
+        <text class="exclude-sheet-clear" wx:if="{{excludeList.length > 0}}" bindtap="onClearExcludeSheet">清空全部</text>
+      </view>
+      <scroll-view class="exclude-sheet-list" scroll-y>
+        <view class="exclude-sheet-empty" wx:if="{{excludeList.length === 0}}">
+          <text class="exclude-sheet-empty-icon"><view class="svg-ico svg-ico-salad"></view></text>
+          <text class="exclude-sheet-empty-text">还没有添加不想吃的菜</text>
+        </view>
+        <view wx:for="{{excludeList}}" wx:key="_id" class="exclude-sheet-item">
+          <image class="exclude-sheet-item-img" src="{{item.cover || '/images/index-icons/grid-food.png'}}" mode="aspectFill" />
+          <view class="exclude-sheet-item-info">
+            <text class="exclude-sheet-item-name">{{item.title}}</text>
+            <text class="exclude-sheet-item-canteen" wx:if="{{item.canteenName}}">{{item.canteenName}}</text>
+          </view>
+          <view class="exclude-sheet-item-del tap-shrink" data-index="{{index}}" bindtap="onRemoveExcludeItem"><view class="svg-ico svg-ico-close-red"></view></view>
+        </view>
+      </scroll-view>
+      <view class="exclude-sheet-footer">
+        <view class="exclude-sheet-close-btn tap-shrink" bindtap="onCloseExcludeSheet">
+          <text>关闭</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 我的评分弹窗 ===== -->
+  <view class="exclude-sheet" wx:if="{{showMyRatingsSheet}}">
+    <view class="exclude-sheet-bg" bindtap="onCloseMyRatingsSheet"></view>
+    <view class="exclude-sheet-modal">
+      <view class="exclude-sheet-header">
+        <text class="exclude-sheet-title">我的评分</text>
+      </view>
+      <scroll-view class="exclude-sheet-list" scroll-y>
+        <view class="exclude-sheet-empty" wx:if="{{myRatingsLoading}}">
+          <view class="exclude-sheet-empty-icon"><view class="svg-ico svg-ico-clock"></view></view>
+          <text class="exclude-sheet-empty-text">加载中...</text>
+        </view>
+        <view class="exclude-sheet-empty" wx:elif="{{myRatingsList.length === 0}}">
+          <view class="exclude-sheet-empty-icon"><view class="svg-ico svg-ico-star"></view></view>
+          <text class="exclude-sheet-empty-text">还没有评分记录</text>
+        </view>
+        <view wx:for="{{myRatingsList}}" wx:key="_id" class="exclude-sheet-item">
+          <view class="exclude-sheet-rating-badge">
+            <view class="exclude-sheet-rating-emoji"><view class="svg-ico {{item._ratingIcon}}"></view></view>
+            <text class="exclude-sheet-rating-label">{{item._ratingLabel}}</text>
+          </view>
+          <view class="exclude-sheet-item-info">
+            <text class="exclude-sheet-item-name">{{item._stallName || '档口'}}</text>
+            <text class="exclude-sheet-item-canteen" wx:if="{{item.content}}">{{item.content}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="exclude-sheet-footer">
+        <view class="exclude-sheet-close-btn tap-shrink" bindtap="onCloseMyRatingsSheet">
+          <text>关闭</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 我的收藏弹窗 ===== -->
+  <view class="exclude-sheet" wx:if="{{showMyFavoritesSheet}}">
+    <view class="exclude-sheet-bg" bindtap="onCloseMyFavoritesSheet"></view>
+    <view class="exclude-sheet-modal">
+      <view class="exclude-sheet-header">
+        <text class="exclude-sheet-title">我的收藏</text>
+      </view>
+      <scroll-view class="exclude-sheet-list" scroll-y>
+        <view class="exclude-sheet-empty" wx:if="{{myFavoritesLoading}}">
+          <view class="exclude-sheet-empty-icon"><view class="svg-ico svg-ico-clock"></view></view>
+          <text class="exclude-sheet-empty-text">加载中...</text>
+        </view>
+        <view class="exclude-sheet-empty" wx:elif="{{myFavoritesList.length === 0}}">
+          <text class="exclude-sheet-empty-icon"><view class="svg-ico svg-ico-heart"></view></text>
+          <text class="exclude-sheet-empty-text">还没有收藏的美食</text>
+        </view>
+        <view wx:for="{{myFavoritesList}}" wx:key="_id" class="exclude-sheet-item">
+          <image class="exclude-sheet-item-img" src="{{item.cover_image || '/images/index-icons/grid-food.png'}}" mode="aspectFill" />
+          <view class="exclude-sheet-item-info">
+            <text class="exclude-sheet-item-name">{{item.name || item.title}}</text>
+            <text class="exclude-sheet-item-canteen" wx:if="{{item.canteenName || item.location_desc}}">{{item.canteenName || item.location_desc}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="exclude-sheet-footer">
+        <view class="exclude-sheet-close-btn tap-shrink" bindtap="onCloseMyFavoritesSheet">
+          <text>关闭</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 一键回顶（滚动超过阈值后浮现） -->
+  <view class="back-top {{showBackTop ? 'back-top-show' : ''}}" bindtap="onBackTop">
+    <text class="back-top-arrow">↑</text>
+    <text class="back-top-text">回顶</text>
+  </view>
+
+  <!-- 底部 TabBar -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">大厅</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">吃什么</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

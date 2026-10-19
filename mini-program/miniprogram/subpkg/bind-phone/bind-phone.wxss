@@ -1,0 +1,22 @@
+/* pages/bind-phone/bind-phone.wxss */
+.page-bind-phone { min-height: 100vh; background: transparent; }
+
+/* 内容区 */
+.content { padding: 24rpx 32rpx; box-sizing: border-box; }
+
+/* 表单卡片 */
+.form-card { padding: 8rpx 32rpx; }
+.form-item { display: flex; align-items: center; padding: 28rpx 0; border-bottom: 1rpx solid var(--border-light); }
+.form-item:last-child { border-bottom: none; }
+.label { font-size: var(--font-md); color: var(--text-secondary); width: 140rpx; flex-shrink: 0; }
+.input { flex: 1; font-size: var(--font-md); color: var(--text-primary); }
+.code-row { gap: 16rpx; }
+.code-btn { flex-shrink: 0; font-size: var(--font-sm); color: var(--primary); padding: 12rpx 24rpx; border: 2rpx solid var(--primary); border-radius: 999rpx; transition: all 0.2s; }
+.code-btn:active { opacity: 0.7; }
+.code-btn.disabled { color: var(--text-hint); border-color: var(--border); }
+
+/* 提示与按钮 */
+.tips { font-size: var(--font-sm); color: var(--text-hint); padding: 24rpx 0; line-height: 1.6; }
+.btn-primary { margin: 24rpx 0; background: var(--primary); color: #fff; text-align: center; padding: 24rpx; border-radius: 999rpx; font-size: var(--font-lg); font-weight: 600; box-shadow: 0 6rpx 24rpx rgba(0,166,147,.20); transition: all 0.2s; }
+.btn-primary:active { transform: scale(0.97); opacity: 0.92; }
+.btn-primary.disabled { opacity: 0.5; }

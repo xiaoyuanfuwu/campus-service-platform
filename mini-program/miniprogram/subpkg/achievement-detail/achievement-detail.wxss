@@ -1,0 +1,463 @@
+/* subpkg/achievement-detail/achievement-detail.wxss — 沿用 achievement 页背景+topbar 样式 */
+
+/* ===== 页面背景 ===== */
+.page-ach-detail {
+  height: 100vh;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+/* 渐变背景 */
+.page-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 状态栏填充 */
+.page-status-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  background: transparent;
+}
+
+/* ===== 自定义导航（沿用 achievement 页面样式） ===== */
+.shared-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: transparent;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+.nav-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.back-arrow {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 3rpx solid #1C1C1E;
+  border-bottom: 3rpx solid #1C1C1E;
+  transform: rotate(45deg);
+  margin-left: 4rpx;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  justify-content: center;
+}
+.brand-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FF9500;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+}
+.nav-right {
+  width: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.nav-progress {
+  font-size: 22rpx;
+  color: #8E8E93;
+  font-weight: 600;
+}
+
+/* 鸭子图标（与 achievement 页面完全一致） */
+.top-duck-icon {
+  position: relative;
+  width: 36rpx;
+  height: 36rpx;
+}
+.td-head {
+  position: absolute;
+  width: 28rpx;
+  height: 28rpx;
+  background: #FFD60A;
+  border-radius: 50%;
+  top: 0; left: 6rpx;
+}
+.td-eye {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  background: #1C1C1E;
+  border-radius: 50%;
+  top: 8rpx; right: 8rpx;
+}
+.td-beak {
+  position: absolute;
+  width: 14rpx;
+  height: 8rpx;
+  background: #FF9500;
+  border-radius: 50%;
+  top: 14rpx; right: -2rpx;
+}
+.td-body {
+  position: absolute;
+  width: 32rpx;
+  height: 20rpx;
+  background: #FFD60A;
+  border-radius: 50%;
+  bottom: 0; left: 4rpx;
+}
+.td-wing {
+  position: absolute;
+  width: 16rpx;
+  height: 14rpx;
+  background: #FF9500;
+  border-radius: 50%;
+  top: 14rpx; left: 0;
+}
+.td-tail {
+  position: absolute;
+  width: 10rpx;
+  height: 8rpx;
+  background: #FF9500;
+  border-radius: 0 50% 50% 0;
+  top: 10rpx; left: -4rpx;
+}
+
+/* ===== 滚动容器 ===== */
+.ad-scroll {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 1;
+}
+
+/* 提示 */
+.ad-tip {
+  margin: 20rpx 24rpx 0;
+  padding: 18rpx 24rpx;
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255,255,255,.4);
+  border-radius: 20rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,.03);
+}
+.ad-tip-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
+}
+.ad-tip-text {
+  font-size: 20rpx;
+  color: #8E8E93;
+  line-height: 1.6;
+}
+
+/* 成就网格 */
+.ad-grid {
+  padding: 20rpx 24rpx 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+.ad-card {
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255,255,255,.5);
+  border-radius: 24rpx;
+  padding: 24rpx 18rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,.04);
+  transition: transform .15s ease;
+}
+.ad-card:active {
+  transform: scale(.96);
+}
+.ad-card-leadership { border-top: 4rpx solid #FFB74D; }
+.ad-card-certificate { border-top: 4rpx solid #81C784; }
+.ad-card-academic { border-top: 4rpx solid #64B5F6; }
+.ad-card-competition { border-top: 4rpx solid #F06292; }
+
+.ad-card-locked {
+  background: rgba(255,255,255,.5);
+  border-color: rgba(255,255,255,.3);
+}
+
+/* 状态角标 */
+.ad-status-badge {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  font-size: 16rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  font-weight: 600;
+  z-index: 2;
+}
+.ad-badge-approved {
+  background: rgba(76, 175, 80, 0.12);
+  color: #4CAF50;
+}
+.ad-badge-pending {
+  background: rgba(255, 152, 0, 0.12);
+  color: #FF9800;
+}
+.ad-badge-rejected {
+  background: rgba(244, 67, 54, 0.12);
+  color: #F44336;
+}
+.ad-badge-none {
+  background: rgba(158, 158, 158, 0.12);
+  color: #9E9E9E;
+}
+
+/* 图标容器 */
+.ad-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 8rpx 0 4rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter .3s ease, opacity .3s ease;
+}
+.ad-icon-wrap .svg-ico {
+  width: 48rpx;
+  height: 48rpx;
+}
+.ad-icon-dim {
+  filter: grayscale(1) opacity(0.35);
+}
+
+/* ===== SVG 线条图标定义（与 achievement.wxss 共用同一套） ===== */
+.svg-ico {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 名称 */
+.ad-name {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #1C1C1E;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ad-desc {
+  font-size: 17rpx;
+  color: #8E8E93;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-safe {
+  height: 60rpx;
+}
+
+/* ===== 上传弹窗 ===== */
+.upload-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.upload-modal {
+  width: 100%;
+  max-width: 600rpx;
+  background: #FFF;
+  border-radius: 28rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 40rpx rgba(0,0,0,.15);
+}
+.upload-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid #F5F5F7;
+}
+.upload-title {
+  flex: 1;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: #1C1C1E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.upload-close-icon {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.upload-body {
+  padding: 24rpx 28rpx 28rpx;
+}
+
+/* 图片预览 */
+.upload-preview {
+  width: 100%;
+  height: 360rpx;
+  background: #F5F5F7;
+  border-radius: 16rpx;
+  overflow: hidden;
+  border: 2rpx dashed #D1D1D6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-img {
+  width: 100%;
+  height: 100%;
+}
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+.up-icon {
+  width: 64rpx;
+  height: 64rpx;
+}
+.up-text {
+  font-size: 20rpx;
+  color: #AEAEB2;
+}
+
+/* 补充说明 */
+.upload-field {
+  margin-top: 20rpx;
+}
+.uf-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #3A3A3C;
+  display: block;
+  margin-bottom: 10rpx;
+}
+.uf-textarea {
+  width: 100%;
+  min-height: 140rpx;
+  padding: 16rpx;
+  font-size: 22rpx;
+  color: #1C1C1E;
+  background: #F5F5F7;
+  border-radius: 12rpx;
+  box-sizing: border-box;
+}
+
+/* 提交按钮 */
+.upload-submit {
+  margin-top: 24rpx;
+  width: 100%;
+  height: 80rpx;
+  background: linear-gradient(135deg, #FF9500, #FF6B00);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  transition: opacity .15s ease;
+}
+.upload-submit:active {
+  opacity: 0.8;
+}
+
+.tap-shrink {
+  transition: transform .12s ease;
+}
+.tap-shrink:active {
+  transform: scale(.97);
+}
+
+/* ===== 勋章图标 SVG 定义（从 achievement.wxss 同步） ===== */
+.svg-ico-crown { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7l4 4 5-6 5 6 4-4v10H3z'/><path d='M3 17h18'/><circle cx='7' cy='7' r='1'/><circle cx='17' cy='7' r='1'/></svg>"); }
+.svg-ico-users { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='8' r='3'/><path d='M3 19c0-3 3-5 6-5s6 2 6 5'/><circle cx='17' cy='9' r='2.5'/><path d='M15 19c0-2 1-3 2-4'/></svg>"); }
+.svg-ico-building { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='3' width='14' height='18' rx='1'/><path d='M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h.01M15 15h.01'/><path d='M10 21v-3h4v3'/></svg>"); }
+.svg-ico-star { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9'/></svg>"); }
+.svg-ico-star-crown { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7l4 4 5-6 5 6 4-4v10H3z'/><polygon points='12 2 14 7 19 7.5 16 11 17 16 12 13.5 7 16 8 11 5 7.5 10 7'/></svg>"); }
+.svg-ico-flag { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 21V4'/><path d='M5 4h12l-2 4 2 4H5'/></svg>"); }
+.svg-ico-badge { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='10' r='6'/><path d='M9 15l-2 6 5-3 5 3-2-6'/><path d='M12 7v6M9 10h6'/></svg>"); }
+.svg-ico-megaphone { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1z'/><path d='M14 8a5 5 0 010 8'/><path d='M17 5a9 9 0 010 14'/></svg>"); }
+.svg-ico-network { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='5' r='2'/><circle cx='5' cy='19' r='2'/><circle cx='19' cy='19' r='2'/><path d='M12 7v4M12 11l-5 6M12 11l5 6'/></svg>"); }
+.svg-ico-heart { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 21l-8-8a5 5 0 010-7 5 5 0 017-1 5 5 0 017 1 5 5 0 010 7z'/></svg>"); }
+.svg-ico-handshake { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l4-4 5 3 5-3 4 4'/><path d='M3 12v3l4 3 5-2 5 2 4-3v-3'/><path d='M12 11v3'/></svg>"); }
+.svg-ico-home { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z'/><polyline points='9 22 9 12 15 12 15 22'/></svg>"); }
+.svg-ico-clipboard { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='4' width='14' height='17' rx='2'/><rect x='9' y='2' width='6' height='4' rx='1'/><path d='M9 12h6M9 16h4'/></svg>"); }
+.svg-ico-whistle { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='10' cy='14' r='6'/><path d='M10 8V4h10v4l-6 2'/><path d='M10 14l3-3'/></svg>"); }
+.svg-ico-shield { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l8 3v6c0 5-4 9-8 10-4-1-8-5-8-10V6z'/><path d='M9 12l2 2 4-4'/></svg>"); }
+
+.svg-ico-letter-a { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 20l6-16 6 16'/><path d='M9 14h6'/></svg>"); }
+.svg-ico-monitor { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='12' rx='1'/><path d='M8 20h8M12 16v4'/></svg>"); }
+.svg-ico-mic { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='3' width='6' height='11' rx='3'/><path d='M5 11a7 7 0 0014 0'/><path d='M12 18v3'/></svg>"); }
+.svg-ico-graduation { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9l9-4 9 4-9 4z'/><path d='M7 11v5c0 1 2 2 5 2s5-1 5-2v-5'/><path d='M21 9v5'/></svg>"); }
+.svg-ico-compass { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><polygon points='14 10 10 14 14 14 10 10' fill='%23333'/></svg>"); }
+.svg-ico-hard-hat { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 18h18'/><path d='M5 18v-3a7 7 0 0114 0v3'/><path d='M10 8V5h4v3'/></svg>"); }
+.svg-ico-ruler { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='8' width='18' height='8' rx='1'/><path d='M7 8v3M11 8v4M15 8v3M19 8v4'/></svg>"); }
+.svg-ico-droplet { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3s7 7 7 12a7 7 0 01-14 0c0-5 7-12 7-12z'/></svg>"); }
+.svg-ico-drafting { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3l18 18'/><path d='M3 9l12 12'/><path d='M9 3l12 12'/><rect x='14' y='14' width='6' height='6' rx='1' fill='none'/></svg>"); }
+.svg-ico-mountain { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 20l6-12 4 8 3-5 5 9z'/><path d='M9 8l1-2'/></svg>"); }
+.svg-ico-stethoscope { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 3v6a4 4 0 008 0V3'/><path d='M5 3h2M11 3h2'/><path d='M9 13v3a5 5 0 0010 0v-2'/><circle cx='19' cy='12' r='2'/></svg>"); }
+.svg-ico-calculator { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='3' width='14' height='18' rx='1'/><path d='M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h4'/></svg>"); }
+.svg-ico-bank { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9l9-6 9 6'/><path d='M3 9h18'/><path d='M5 9v9M9 9v9M15 9v9M19 9v9'/><path d='M3 21h18'/></svg>"); }
+.svg-ico-chart { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 3v18h18'/><rect x='7' y='12' width='3' height='6'/><rect x='12' y='8' width='3' height='10'/><rect x='17' y='5' width='3' height='13'/></svg>"); }
+.svg-ico-code { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='8 6 2 12 8 18'/><polyline points='16 6 22 12 16 18'/></svg>"); }
+.svg-ico-car { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 13l2-6h14l2 6'/><path d='M3 13h18v5H3z'/><circle cx='7' cy='18' r='1.5'/><circle cx='17' cy='18' r='1.5'/></svg>"); }
+.svg-ico-document { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z'/><path d='M14 3v6h6'/><path d='M8 13h8M8 17h6'/></svg>"); }
+.svg-ico-flask { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 3h6'/><path d='M10 3v6L4 19a2 2 0 002 3h12a2 2 0 002-3l-6-10V3'/><path d='M7 15h10'/></svg>"); }
+.svg-ico-globe { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M3 12h18'/><path d='M12 3a14 14 0 010 18 14 14 0 010-18z'/></svg>"); }
+
+.svg-ico-trending-up { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 17 9 11 13 15 21 7'/><polyline points='15 7 21 7 21 13'/></svg>"); }
+.svg-ico-coin { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M12 7v10'/><path d='M10 9h4a1 1 0 010 2h-4a1 1 0 000 2h4'/></svg>"); }
+.svg-ico-medal-small { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='14' r='6'/><path d='M9 8L7 3l5 2 5-2-2 5'/></svg>"); }
+.svg-ico-atom { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='1.5' fill='%23333'/><ellipse cx='12' cy='12' rx='9' ry='4'/><ellipse cx='12' cy='12' rx='9' ry='4' transform='rotate(60 12 12)'/><ellipse cx='12' cy='12' rx='9' ry='4' transform='rotate(120 12 12)'/></svg>"); }
+.svg-ico-lightbulb { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18h6'/><path d='M10 22h4'/><path d='M12 3a6 6 0 00-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 00-4-10z'/></svg>"); }
+.svg-ico-palette { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3a9 9 0 100 18c1 0 2-1 2-2s-1-2-1-3 1-2 2-2h2a4 4 0 004-4 9 9 0 00-9-7z'/><circle cx='7' cy='12' r='1' fill='%23333'/><circle cx='9' cy='7' r='1' fill='%23333'/><circle cx='14' cy='7' r='1' fill='%23333'/><circle cx='17' cy='11' r='1' fill='%23333'/></svg>"); }
+
+.svg-ico-trophy { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9H4.5a2.5 2.5 0 010-5H6'/><path d='M18 9h1.5a2.5 2.5 0 000-5H18'/><path d='M4 22h16'/><path d='M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22'/><path d='M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22'/><path d='M18 2H6v7a6 6 0 0012 0V2z'/></svg>"); }
+.svg-ico-sigma { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 4H6l6 8-6 8h12'/></svg>"); }
+.svg-ico-search { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.5-4.5'/></svg>"); }
+.svg-ico-cube { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l9 5v8l-9 5-9-5V8z'/><path d='M12 3v18M3 8l9 5 9-5'/></svg>"); }
+.svg-ico-tools { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 7l3-3 3 3-3 3z'/><path d='M14 7L5 16v3h3l9-9'/><path d='M5 16l-2 2'/></svg>"); }

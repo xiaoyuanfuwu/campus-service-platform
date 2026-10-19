@@ -1,0 +1,675 @@
+@import './pages/_shared/base.wxss';
+
+/* 全局 Design Tokens - 暖色浅底模式（默认） */
+page {
+  background-color: #F5F5F7;
+  --primary: #FF9500;
+  --primary-light: #FFB347;
+  --primary-dark: #E08600;
+  --primary-gradient: linear-gradient(135deg, #FF9500 0%, #E08600 100%);
+  --danger: #FF453A;
+  --warning: #FF9F0A;
+  --info: #0A84FF;
+  --success: #30D158;
+  --bg-page: #F5F5F7;
+  --bg-white: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F5F5F7;
+  --text-primary: #1C1C1E;
+  --text-secondary: rgba(28,28,30,.65);
+  --text-hint: rgba(28,28,30,.40);
+  --text-placeholder: rgba(28,28,30,.30);
+  --border: rgba(0,0,0,.08);
+  --border-light: rgba(0,0,0,.04);
+  --shadow-sm: 0 2rpx 12rpx rgba(0,0,0,.06);
+  --shadow-md: 0 8rpx 32rpx rgba(0,0,0,.08);
+  --shadow-lg: 0 16rpx 48rpx rgba(0,0,0,.12);
+  --radius-sm: 12rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 44rpx;
+  --radius-xl: 32rpx;
+  --font-xs: 20rpx;
+  --font-sm: 24rpx;
+  --font-md: 28rpx;
+  --font-lg: 32rpx;
+  --font-xl: 36rpx;
+  --font-xxl: 40rpx;
+
+  /* 语义化变量（暖色浅底） */
+  --nav-bg: rgba(255,255,255,0.92);
+  --overlay-bg: rgba(0,0,0,.3);
+  --card-inner-bg: rgba(0,0,0,.03);
+  --badge-bg: rgba(0,0,0,.05);
+  --card-inner-bg-2: rgba(0,0,0,.04);
+  --card-inner-bg-3: rgba(0,0,0,.06);
+  --card-inner-bg-hover: rgba(0,0,0,.04);
+  --mine-gradient: linear-gradient(135deg, #FFB347 0%, #FF9500 55%, #E08600 100%);
+  --mine-header-shadow: 0 8rpx 32rpx rgba(255,149,0,.15);
+  --avatar-border: rgba(255,255,255,.8);
+  --avatar-border-sm: rgba(255,255,255,.6);
+  --avatar-border-lg: rgba(255,255,255,.9);
+  --avatar-bg: rgba(255,255,255,.3);
+  --stat-divider: rgba(255,255,255,.7);
+  --menu-arrow: rgba(0,0,0,.3);
+  --back-btn-bg: rgba(0,0,0,.05);
+  --back-btn-border: rgba(0,0,0,.1);
+  --duck-color: #1C1C1E;
+  --input-bg: rgba(0,0,0,.04);
+  --input-bg-2: rgba(0,0,0,.02);
+  --dash-line: rgba(0,0,0,.15);
+  --timeline-dot: rgba(0,0,0,.3);
+  --btn-shadow-primary: 0 6rpx 24rpx rgba(255,149,0,.20);
+  --danger-bg: rgba(255,69,58,.08);
+  --danger-border: rgba(255,69,58,.25);
+  --danger-bg-light: rgba(255,69,58,.06);
+  --primary-bg: rgba(255,149,0,.08);
+  --primary-bg-light: rgba(255,149,0,.05);
+  --primary-bg-mid: rgba(255,149,0,.10);
+  --primary-bg-strong: rgba(255,149,0,.12);
+  --primary-border: rgba(255,149,0,.20);
+  --primary-border-mid: rgba(255,149,0,.25);
+  --warning-bg: rgba(255,159,10,.06);
+  --warning-bg-mid: rgba(255,159,10,.08);
+  --warning-border: rgba(255,159,10,.12);
+  --info-bg: rgba(10,132,255,.10);
+  --success-bg: rgba(48,209,88,.10);
+  --pink: #FF6B8A;
+  --pink-bg: rgba(255,107,138,.08);
+  --blue: #5E8BFF;
+  --blue-bg: rgba(94,139,255,.08);
+  --text-on-primary: #FFFFFF;
+  --modal-overlay: rgba(0,0,0,.4);
+  --nav-bg-2: rgba(255,255,255,0.96);
+  --topbar-gradient: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+  --highlight-green: #FF5A5F;
+
+  /* 首页专属语义变量 */
+  --hero-gradient: linear-gradient(135deg, #FFD78E 0%, #FF9500 100%);
+  --hot-rec-gradient: linear-gradient(135deg, #FF9500 0%, #FF6B35 100%);
+  --search-btn-bg: #FF9500;
+  --topbar-bg: #FFFFFF;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 全局品牌图标：用清爽的帖子便签替代旧鸭子图标 */
+.brand-post-icon { width: 44rpx; height: 44rpx; position: relative; display: block; }
+.brand-post-paper { position: absolute; left: 4rpx; top: 2rpx; width: 34rpx; height: 38rpx; border-radius: 9rpx; background: linear-gradient(145deg, #FFB347, #FF7A00); box-shadow: 0 4rpx 8rpx rgba(255,122,0,.22); transform: rotate(-6deg); }
+.brand-post-line { position: absolute; left: 13rpx; width: 17rpx; height: 4rpx; border-radius: 4rpx; background: #FFFFFF; z-index: 2; }
+.brand-post-line-1 { top: 15rpx; }
+.brand-post-line-2 { top: 24rpx; width: 12rpx; }
+.brand-post-dot { position: absolute; right: 1rpx; bottom: 1rpx; width: 15rpx; height: 15rpx; border-radius: 50%; background: #34C759; border: 3rpx solid #FFFFFF; z-index: 3; }
+
+/* 通用全屏背景层（各页面 wxml 中 <view class="page-bg {{pageBgClass}}">），渐变样式由下方主题类决定 */
+.page-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+/* 背景图片：铺满全屏，并在底部自然淡出到页面底色（全局规则保证分包同样生效） */
+.page-bg--full {
+  height: 100% !important;
+  bottom: 0;
+  background:
+    linear-gradient(to bottom, rgba(245,245,247,0) 48%, rgba(245,245,247,.10) 60%, rgba(245,245,247,.32) 72%, rgba(245,245,247,.62) 84%, rgba(245,245,247,.88) 94%, #F5F5F7 100%),
+    url(data:image/jpeg;base64,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) center / cover no-repeat;
+}
+/* 渐变背景层铺满整个视口，约 33vh 内完成淡出，之后保持纯页面底色。
+ * fixed 图层不在屏幕内部裁切，避免微信渲染器在图层底边产生 1px 接缝。
+ */
+.page-bg--top {
+  height: 100vh !important;
+  bottom: 0;
+}
+/* ===== 各背景主题渐变（横向 90deg 低饱和 + 纵向淡出到页面底色，无硬边） ===== */
+.page-bg--top.page-bg-lavender {
+  background:
+    linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.3) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.9) 30%, #F5F5F7 33%, #F5F5F7 100%),
+    linear-gradient(90deg, #B9A7D9 0%, #E8C8D8 100%);
+}
+.page-bg--top.page-bg-peach {
+  background:
+    linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.3) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.9) 30%, #F5F5F7 33%, #F5F5F7 100%),
+    linear-gradient(90deg, #F2C9AD 0%, #F8C6D0 100%);
+}
+.page-bg--top.page-bg-sage {
+  background:
+    linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.3) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.9) 30%, #F5F5F7 33%, #F5F5F7 100%),
+    linear-gradient(90deg, #99BBC8 0%, #B2D4C8 100%);
+}
+.page-bg--top.page-bg-mist {
+  background:
+    linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.3) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.9) 30%, #F5F5F7 33%, #F5F5F7 100%),
+    linear-gradient(90deg, #9FAFD8 0%, #C2B2D8 100%);
+}
+/* 兼容旧纯色主题：同样纵向淡出到全局页面底色，避免分包页面出现硬边。 */
+.page-bg--top.page-bg-orange {
+  background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.30) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.90) 30%, #F5F5F7 33%, #F5F5F7 100%), linear-gradient(90deg, #FFC46B 0%, #FF9500 55%, #FF6B00 100%);
+}
+.page-bg--top.page-bg-red {
+  background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.30) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.90) 30%, #F5F5F7 33%, #F5F5F7 100%), linear-gradient(90deg, #FF9E9E 0%, #FF6B6B 55%, #FF3B5C 100%);
+}
+.page-bg--top.page-bg-blue {
+  background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.30) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.90) 30%, #F5F5F7 33%, #F5F5F7 100%), linear-gradient(90deg, #7FB5EC 0%, #4A90D9 55%, #2F6FB8 100%);
+}
+.page-bg--top.page-bg-green {
+  background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.30) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.90) 30%, #F5F5F7 33%, #F5F5F7 100%), linear-gradient(90deg, #7CE7A8 0%, #22C55E 55%, #0FA05A 100%);
+}
+.page-bg--top.page-bg-purple {
+  background: linear-gradient(180deg, rgba(245,245,247,0) 0%, rgba(245,245,247,0) 13%, rgba(245,245,247,.30) 20%, rgba(245,245,247,.62) 25%, rgba(245,245,247,.90) 30%, #F5F5F7 33%, #F5F5F7 100%), linear-gradient(90deg, #B39BFF 0%, #8B5CF6 55%, #6D3EE0 100%);
+}
+/* 白色：不显示渐变层 */
+.page-bg--top.page-bg-white { background: transparent; }
+
+/* 暗色模式 */
+/* 通用按钮 - 主色调 */
+.grad-btn {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-radius: 999rpx;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 0;
+  box-shadow: var(--btn-shadow-primary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grad-btn:active {
+  transform: scale(0.97);
+  opacity: 0.92;
+}
+
+.grad-btn[disabled] {
+  opacity: 0.4;
+  transform: none;
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2rpx solid var(--border);
+  border-radius: 999rpx;
+  font-size: var(--font-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+  transition: all 0.2s;
+}
+
+.btn-secondary:active {
+  background: var(--card-inner-bg-hover);
+}
+
+/* 点击缩放 */
+.tap-shrink {
+  transition: transform 0.1s ease;
+}
+.tap-shrink:active {
+  transform: scale(0.95);
+}
+
+/* 通用卡片 */
+.card {
+  background: var(--bg-card);
+  border-radius: 44rpx;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1rpx solid var(--border-light);
+}
+
+/* 玻璃卡片（统一各页面内容容器） */
+.glass-card {
+  background: var(--bg-card);
+  border-radius: 44rpx;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid var(--border-light);
+}
+
+/* 统一导航栏 */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border-bottom: 1rpx solid var(--border-light);
+}
+
+.nav-back {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-back-icon {
+  width: 24rpx;
+  height: 24rpx;
+  border-left: 4rpx solid var(--text-primary);
+  border-bottom: 4rpx solid var(--text-primary);
+  transform: rotate(45deg);
+  margin-left: 8rpx;
+}
+
+.nav-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-placeholder {
+  width: 72rpx;
+  flex-shrink: 0;
+}
+
+/* 统一空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 48rpx;
+}
+
+.empty-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--card-inner-bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  border: 2rpx solid var(--border);
+}
+
+.empty-icon text {
+  font-size: 40rpx;
+}
+
+.empty-text {
+  font-size: var(--font-lg);
+  color: var(--text-secondary);
+  margin-bottom: 8rpx;
+}
+
+.empty-hint {
+  font-size: var(--font-sm);
+  color: var(--text-hint);
+}
+
+/* 统一加载 */
+.loading-more {
+  display: flex;
+  justify-content: center;
+  padding: 32rpx 0;
+  font-size: var(--font-sm);
+  color: var(--text-hint);
+}
+
+.no-more {
+  color: var(--text-placeholder);
+  font-size: var(--font-xs);
+}
+
+/* 线条图标基础类 */
+.icon-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.icon-line svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 安全区适配 */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 单行省略 */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 分割线 */
+.divider {
+  height: 1rpx;
+  background: var(--border-light);
+}
+
+/* 全局 spinner */
+.spinner {
+  width: 32rpx; height: 32rpx;
+  border: 3rpx solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* loading-more 带图标 */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 48rpx 0;
+  font-size: var(--font-sm);
+  color: var(--text-hint);
+}
+
+/* ===== 全局鸭子矢量图标 ===== */
+.top-duck-icon {
+  width: 44rpx;
+  height: 44rpx;
+  position: relative;
+  transform: scaleX(-1);
+}
+.td-head {
+  position: absolute;
+  top: 4rpx;
+  left: 8rpx;
+  width: 16rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--duck-color);
+}
+.td-eye {
+  position: absolute;
+  top: 8rpx;
+  right: 18rpx;
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 50%;
+  background: var(--duck-color);
+}
+.td-beak {
+  position: absolute;
+  top: 12rpx;
+  left: 4rpx;
+  width: 14rpx;
+  height: 6rpx;
+  border-radius: 0 6rpx 6rpx 0;
+  background: var(--warning);
+}
+.td-body {
+  position: absolute;
+  bottom: 2rpx;
+  left: 10rpx;
+  width: 26rpx;
+  height: 20rpx;
+  border-radius: 50% 50% 40% 40%;
+  border: 3rpx solid var(--duck-color);
+  background: var(--primary-bg-strong);
+}
+.td-wing {
+  position: absolute;
+  bottom: 10rpx;
+  left: 22rpx;
+  width: 14rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--duck-color);
+  transform: rotate(-20deg);
+}
+.td-tail {
+  position: absolute;
+  bottom: 14rpx;
+  right: 2rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-left: 3rpx solid var(--duck-color);
+  border-bottom: 3rpx solid var(--duck-color);
+  transform: rotate(45deg);
+}
+
+/* ========== SVG Emoji Icons (全局) ========== */
+.svg-ico {
+  display: inline-block;
+  width: 36rpx;
+  height: 36rpx;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+.svg-ico-bank {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="3" y="3" width="18" height="3" rx="1"/><path d="M3 6h18v2H3z"/><path d="M3 10h2v8H3z"/><path d="M19 10h2v8h-2z"/><path d="M3 18h18v2H3z"/><path d="M10 10v8M14 10v8"/></svg>");
+}
+.svg-ico-books {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M4 4h6v16H4z"/><path d="M14 4h6v16h-6z"/><path d="M2 20h20"/></svg>");
+}
+.svg-ico-briefcase {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/><path d="M3 12h18"/></svg>");
+}
+.svg-ico-bulb {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 00-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 00-4-10z"/></svg>");
+}
+.svg-ico-bullhorn {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1z"/><path d="M14 8a5 5 0 010 8"/><path d="M17 5a9 9 0 010 14"/></svg>");
+}
+.svg-ico-bus {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="4" y="4" width="16" height="14" rx="2"/><path d="M4 12h16"/><circle cx="8" cy="18" r="1"/><circle cx="16" cy="18" r="1"/><path d="M8 8h8"/></svg>");
+}
+.svg-ico-calendar-tear {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16"/><path d="M8 3v4M16 3v4"/></svg>");
+}
+.svg-ico-cat {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 5l-2-2-1 3-4 1v8l4 3h6l4-3V7l-4-1-1-3z"/><circle cx="9" cy="11" r="1" fill="#555"/><circle cx="15" cy="11" r="1" fill="#555"/><path d="M11 14l1 1 1-1"/></svg>");
+}
+.svg-ico-chart {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>");
+}
+.svg-ico-chat {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M21 12a8 8 0 01-8 8H7l-4 3V12a8 8 0 018-8h2a8 8 0 018 8z"/><path d="M8 10h8M8 13h4"/></svg>");
+}
+.svg-ico-check-green {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9" fill="%2322c55e" stroke="none"/><path d="M8 12l3 3 5-6" stroke="white"/></svg>");
+}
+.svg-ico-clipboard {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>");
+}
+.svg-ico-clock-1 {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>");
+}
+.svg-ico-clock-3 {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>");
+}
+.svg-ico-credit-card {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>");
+}
+.svg-ico-dice {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.5" fill="#555" stroke="none"/><circle cx="15" cy="15" r="1.5" fill="#555" stroke="none"/><circle cx="15" cy="9" r="1.5" fill="#555" stroke="none"/><circle cx="9" cy="15" r="1.5" fill="#555" stroke="none"/></svg>");
+}
+.svg-ico-dizzy-face {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9"/><path d="M8 10l2 2M10 8l-2 2M14 8l2 2M16 10l-2 2"/><path d="M9 16c1-1 2-1 3 0s2 1 3 0"/></svg>");
+}
+.svg-ico-document {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/></svg>");
+}
+.svg-ico-eyes {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>");
+}
+.svg-ico-fire {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 3s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-2 1-2 4a6 6 0 1012 0c0-5-7-9-7-9z"/></svg>");
+}
+.svg-ico-graduation {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 9l9-4 9 4-9 4z"/><path d="M7 11v5c0 1 2 2 5 2s5-1 5-2v-5"/><path d="M21 9v5"/></svg>");
+}
+.svg-ico-group {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="9" cy="8" r="3"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M15 19c0-2 1-3 2-4"/></svg>");
+}
+.svg-ico-hatching-chick {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 3v2"/><path d="M10 5h4"/><ellipse cx="12" cy="14" rx="6" ry="6"/><circle cx="10" cy="13" r="1" fill="#555" stroke="none"/><circle cx="14" cy="13" r="1" fill="#555" stroke="none"/><path d="M12 15l1 1-1 1-1-1z" fill="#555" stroke="none"/><path d="M8 18l-3 2M16 18l3 2"/></svg>");
+}
+.svg-ico-herb {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 20v-8"/><path d="M12 12c0-4-3-6-3-6s3 2 3 6c0-4 3-6 3-6s-3 2-3 6"/><path d="M9 20h6"/></svg>");
+}
+.svg-ico-id-card {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="7" cy="11" r="2"/><path d="M11 10h6M11 13h4"/><path d="M5 15c0-1 1-2 2-2s2 1 2 2"/></svg>");
+}
+.svg-ico-inbox {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 5h18v14H3z"/><path d="M3 12l4 0 2 3h6l2-3 4 0"/></svg>");
+}
+.svg-ico-key {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="8" cy="12" r="4"/><path d="M12 12h8M16 12v3M19 12v2"/></svg>");
+}
+.svg-ico-lightning {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M13 3L5 13h6l-2 8 8-10h-6z"/></svg>");
+}
+.svg-ico-lock {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>");
+}
+.svg-ico-mailbox-empty {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="3" y="8" width="18" height="12" rx="1"/><path d="M3 8V5h6"/><path d="M18 12v3"/></svg>");
+}
+.svg-ico-medal {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="9" r="5"/><path d="M9 13l-3 7 6-3 6 3-3-7"/><path d="M12 7v4M10 9h4"/></svg>");
+}
+.svg-ico-megaphone {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 11v2a1 1 0 001 1h2l4 4V6L6 10H4a1 1 0 00-1 1z"/><path d="M14 8a5 5 0 010 8"/></svg>");
+}
+.svg-ico-memo {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>");
+}
+.svg-ico-mobile {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>");
+}
+.svg-ico-money-bag {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M6 5l2-2h8l2 2"/><path d="M6 5h12l-1 3H7z"/><path d="M6 8h12l2 4a6 6 0 01-6 8H10a6 6 0 01-6-8z"/><circle cx="12" cy="14" r="1.5" fill="#555" stroke="none"/></svg>");
+}
+.svg-ico-necktie {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M10 3h4l-2 4z"/><path d="M8 7l4 3 4-3-2 14h-4z"/></svg>");
+}
+.svg-ico-no-entry {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9"/><path d="M6 12h12" stroke="%23e23" stroke-width="3"/></svg>");
+}
+.svg-ico-outbox {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 5h18v14H3z"/><path d="M3 12l4 0 2 3h6l2-3 4 0"/><path d="M12 3v6M9 6l3-3 3 3"/></svg>");
+}
+.svg-ico-package {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>");
+}
+.svg-ico-postbox {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="6" y="4" width="12" height="10" rx="1"/><path d="M12 14v6"/><path d="M9 8h6"/></svg>");
+}
+.svg-ico-pushpin {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M9 4l3 3-4 4-3-3z"/><path d="M5 8l-2 5 7-7"/><path d="M9 4l5-2-7 7"/><path d="M14 11l5 5-3 3-5-5"/></svg>");
+}
+.svg-ico-receipt {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>");
+}
+.svg-ico-refresh {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 12a9 9 0 0115-6l2 2"/><path d="M21 12a9 9 0 01-15 6l-2-2"/><path d="M18 4v4h-4M6 20v-4h4"/></svg>");
+}
+.svg-ico-salad {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 11h18a8 8 0 01-8 8h-2a8 8 0 01-8-8z"/><path d="M7 11c0-3 2-5 5-5M12 6c0-2 2-3 3-3M15 8c1-2 3-2 4-1"/><path d="M5 21h14"/></svg>");
+}
+.svg-ico-scroll {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M5 4h12v16H7a2 2 0 01-2-2z"/><path d="M17 4h2v16h-2"/><path d="M8 8h6M8 12h6M8 16h4"/></svg>");
+}
+.svg-ico-slot-machine {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16"/><circle cx="9" cy="14" r="2"/><circle cx="15" cy="14" r="2"/><path d="M9 14l1 1M15 14l1 1"/></svg>");
+}
+.svg-ico-sparkles {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M18 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/></svg>");
+}
+.svg-ico-sweat-smile {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9"/><path d="M8 14c1 2 3 3 4 3s3-1 4-3"/><circle cx="9" cy="10" r="1" fill="#555" stroke="none"/><circle cx="15" cy="10" r="1" fill="#555" stroke="none"/><path d="M17 6c-1 1-1 3 0 4" fill="%234af" stroke="none"/></svg>");
+}
+.svg-ico-thought {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M3 15a5 5 0 015-5 6 6 0 0111 3 4 4 0 01-1 8H8a5 5 0 01-5-5z"/><circle cx="5" cy="20" r="1.5" fill="#555" stroke="none"/><circle cx="9" cy="22" r="1" fill="#555" stroke="none"/></svg>");
+}
+.svg-ico-thumbs-up {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M7 11v8H4a1 1 0 01-1-1v-6a1 1 0 011-1z"/><path d="M7 11l4-7c1 0 2 1 2 3v4h6a2 2 0 012 2l-2 6a2 2 0 01-2 1H7"/></svg>");
+}
+.svg-ico-tree {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 3l-5 8h3l-4 6h12l-4-6h3z"/><path d="M12 17v4"/></svg>");
+}
+.svg-ico-white-heart {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d="M12 21l-8-8a5 5 0 010-7 5 5 0 017-1 5 5 0 017 1 5 5 0 010 7z" fill="none" stroke="%23ddd"/></svg>");
+}
+.svg-ico-x-mark {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><circle cx="12" cy="12" r="9" fill="%23e23" stroke="none"/><path d="M8 8l8 8M16 8l-8 8" stroke="white"/></svg>");
+}
+
+.svg-ico-charity-heart {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http://www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%23555%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><path d%3D%22M12 10l-1.5-1.5a3 3 0 00-4.5 4l1 1L12 18l5-4.5 1-1a3 3 0 00-4.5-4z%22 fill%3D%22%23e23%22 stroke%3D%22%23e23%22/><path d%3D%22M3 19c2-1 4-1 6 0M21 19c-2-1-4-1-6 0%22/></svg>");
+}
+
+.svg-ico-envelope-white {
+  background-image: url("data:image/svg+xml,<svg xmlns%3D%22http://www.w3.org/2000/svg%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22white%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22><rect x%3D%223%22 y%3D%225%22 width%3D%2218%22 height%3D%2214%22 rx%3D%222%22/><path d%3D%22M3 7l9 6 9-6%22/></svg>");
+}
+
+/* ===== 编辑模式横条（通用，所有模块共用） ===== */
+.edit-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+  background: linear-gradient(135deg, #FF9A3C, #FF7A00);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 122, 0, 0.25);
+}
+.edit-mode-cancel {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 32rpx;
+  color: #fff;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+.edit-mode-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+.edit-mode-placeholder {
+  width: 48rpx;
+}
+
+/* 保存修改按钮（编辑模式，绿色区分） */
+.publish-btn-edit {
+  background: linear-gradient(135deg, #34C759, #22B14C) !important;
+  box-shadow: 0 8rpx 24rpx rgba(52, 199, 89, 0.35) !important;
+}

@@ -1,0 +1,247 @@
+<!-- pages/calendar/calendar.wxml -->
+<view class="page-calendar">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar cal-nav" style="padding-top:{{statusBarHeight}}px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="nav-back-icon"></view>
+    </view>
+    <view class="cal-brand-center">
+      <view class="top-duck-icon">
+        <view class="td-head"></view>
+        <view class="td-eye"></view>
+        <view class="td-beak"></view>
+        <view class="td-body"></view>
+        <view class="td-wing"></view>
+        <view class="td-tail"></view>
+      </view>
+      <text class="cal-brand-name">校历查询</text>
+    </view>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <scroll-view scroll-y class="content" style="top:{{navBarHeight}}px;">
+
+    <!-- ===== 品牌头 ===== -->
+    <view class="brand">
+      <view class="slogan">崇德尚善</view>
+      <view class="brand-logo-wrap">
+        <view class="brand-logo">
+          <view class="logo-circle"></view>
+          <view class="logo-text">HEBEU</view>
+          <view class="logo-year">1951</view>
+        </view>
+      </view>
+      <view class="slogan">精工铸新</view>
+    </view>
+
+    <view class="school-title">示例大学 · 2026-2027 学年校历</view>
+
+    <!-- ===== 状态条 ===== -->
+    <view class="status-bar">
+      <view class="status-item">
+        <text class="status-label">{{curWeekLabel}}</text>
+        <view class="status-num-row">
+          <text class="status-num">{{curWeekBig}}</text>
+          <text class="status-unit" wx:if="{{currentSemester > 0}}">周</text>
+        </view>
+      </view>
+      <view class="status-divider"></view>
+      <view class="status-item">
+        <text class="status-label">{{daysToStartLabel}}</text>
+        <view class="status-num-row">
+          <text class="status-num">{{daysToStart}}</text>
+          <text class="status-unit" wx:if="{{daysToStart !== '今日' && daysToStart !== '已开'}}">天</text>
+        </view>
+      </view>
+      <view class="status-divider"></view>
+      <view class="status-item">
+        <text class="status-label">{{daysToEndLabel}}</text>
+        <view class="status-num-row">
+          <text class="status-num">{{daysToEnd}}</text>
+          <text class="status-unit" wx:if="{{daysToEnd !== '已结'}}">天</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ===== 第一学期 ===== -->
+    <view class="semester-card">
+      <view class="sem-header sem-header-1">
+        <text class="sem-title">2026/2027 学年第一学期</text>
+        <view class="sem-tag">8.31 - 1.17 · 19周</view>
+      </view>
+
+      <scroll-view scroll-x class="cal-scroll" enable-flex>
+        <view class="cal-table">
+          <view class="cal-row cal-head">
+            <view class="cal-cell cal-cell-week">周</view>
+            <view class="cal-cell cal-cell-month">月</view>
+            <view class="cal-cell cal-cell-day">一</view>
+            <view class="cal-cell cal-cell-day">二</view>
+            <view class="cal-cell cal-cell-day">三</view>
+            <view class="cal-cell cal-cell-day">四</view>
+            <view class="cal-cell cal-cell-day">五</view>
+            <view class="cal-cell cal-cell-day">六</view>
+            <view class="cal-cell cal-cell-day">日</view>
+          </view>
+          <!-- 月份块 -->
+          <block wx:for="{{sem1Blocks}}" wx:for-item="block" wx:key="label">
+            <view class="month-block {{block.cls}}">
+              <!-- 月份名格子：高度 = 周数 * (cell-height + gap) -->
+              <view class="cal-cell cal-cell-month month-label" style="height: {{block.weeks.length * 60}}rpx;">
+                <text class="month-text">{{block.label}}</text>
+              </view>
+              <!-- 这一块的所有周 -->
+              <view class="month-weeks">
+                <view
+                  wx:for="{{block.weeks}}"
+                  wx:for-item="week"
+                  wx:key="w"
+                  class="cal-row {{week.w > sem1MaxWeek ? 'cal-row-vac' : ''}}"
+                >
+                  <view class="cal-cell cal-cell-week {{currentSemester === 1 && week.w === curWeek ? 'cur' : ''}}">{{week.w}}</view>
+                  <view class="cal-cell cal-cell-day {{week.ms[0] === 'sep' ? 'm-sep' : (week.ms[0] === 'oct' ? 'm-oct' : (week.ms[0] === 'nov' ? 'm-nov' : (week.ms[0] === 'dec' ? 'm-dec' : (week.ms[0] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 0 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 0}}" class="today-badge">今</text>
+                    {{week.days[0]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[1] === 'sep' ? 'm-sep' : (week.ms[1] === 'oct' ? 'm-oct' : (week.ms[1] === 'nov' ? 'm-nov' : (week.ms[1] === 'dec' ? 'm-dec' : (week.ms[1] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 1 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 1}}" class="today-badge">今</text>
+                    {{week.days[1]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[2] === 'sep' ? 'm-sep' : (week.ms[2] === 'oct' ? 'm-oct' : (week.ms[2] === 'nov' ? 'm-nov' : (week.ms[2] === 'dec' ? 'm-dec' : (week.ms[2] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 2 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 2}}" class="today-badge">今</text>
+                    {{week.days[2]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[3] === 'sep' ? 'm-sep' : (week.ms[3] === 'oct' ? 'm-oct' : (week.ms[3] === 'nov' ? 'm-nov' : (week.ms[3] === 'dec' ? 'm-dec' : (week.ms[3] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 3 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 3}}" class="today-badge">今</text>
+                    {{week.days[3]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[4] === 'sep' ? 'm-sep' : (week.ms[4] === 'oct' ? 'm-oct' : (week.ms[4] === 'nov' ? 'm-nov' : (week.ms[4] === 'dec' ? 'm-dec' : (week.ms[4] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 4 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 4}}" class="today-badge">今</text>
+                    {{week.days[4]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[5] === 'sep' ? 'm-sep' : (week.ms[5] === 'oct' ? 'm-oct' : (week.ms[5] === 'nov' ? 'm-nov' : (week.ms[5] === 'dec' ? 'm-dec' : (week.ms[5] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 5 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 5}}" class="today-badge">今</text>
+                    {{week.days[5]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[6] === 'sep' ? 'm-sep' : (week.ms[6] === 'oct' ? 'm-oct' : (week.ms[6] === 'nov' ? 'm-nov' : (week.ms[6] === 'dec' ? 'm-dec' : (week.ms[6] === 'jan' ? 'm-jan' : 'm-aug'))))}} {{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 6 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 1 && todayCell.week === week.w && todayCell.dayIdx === 6}}" class="today-badge">今</text>
+                    {{week.days[6]}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- ===== 第二学期 ===== -->
+    <view class="semester-card">
+      <view class="sem-header sem-header-2">
+        <text class="sem-title">2026/2027 学年第二学期</text>
+        <view class="sem-tag">3.1 - 7.11 · 19周</view>
+      </view>
+
+      <scroll-view scroll-x class="cal-scroll" enable-flex>
+        <view class="cal-table">
+          <view class="cal-row cal-head">
+            <view class="cal-cell cal-cell-week">周</view>
+            <view class="cal-cell cal-cell-month">月</view>
+            <view class="cal-cell cal-cell-day">一</view>
+            <view class="cal-cell cal-cell-day">二</view>
+            <view class="cal-cell cal-cell-day">三</view>
+            <view class="cal-cell cal-cell-day">四</view>
+            <view class="cal-cell cal-cell-day">五</view>
+            <view class="cal-cell cal-cell-day">六</view>
+            <view class="cal-cell cal-cell-day">日</view>
+          </view>
+          <block wx:for="{{sem2Blocks}}" wx:for-item="block" wx:key="label">
+            <view class="month-block {{block.cls}}">
+              <view class="cal-cell cal-cell-month month-label" style="height: {{block.weeks.length * 60}}rpx;">
+                <text class="month-text">{{block.label}}</text>
+              </view>
+              <view class="month-weeks">
+                <view
+                  wx:for="{{block.weeks}}"
+                  wx:for-item="week"
+                  wx:key="w"
+                  class="cal-row {{week.w > sem2MaxWeek ? 'cal-row-vac' : ''}}"
+                >
+                  <view class="cal-cell cal-cell-week {{currentSemester === 2 && week.w === curWeek ? 'cur' : ''}}">{{week.w}}</view>
+                  <view class="cal-cell cal-cell-day {{week.ms[0] === 'mar' ? 'm-mar' : (week.ms[0] === 'apr' ? 'm-apr' : (week.ms[0] === 'may' ? 'm-may' : (week.ms[0] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 0 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 0}}" class="today-badge">今</text>
+                    {{week.days[0]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[1] === 'mar' ? 'm-mar' : (week.ms[1] === 'apr' ? 'm-apr' : (week.ms[1] === 'may' ? 'm-may' : (week.ms[1] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 1 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 1}}" class="today-badge">今</text>
+                    {{week.days[1]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[2] === 'mar' ? 'm-mar' : (week.ms[2] === 'apr' ? 'm-apr' : (week.ms[2] === 'may' ? 'm-may' : (week.ms[2] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 2 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 2}}" class="today-badge">今</text>
+                    {{week.days[2]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[3] === 'mar' ? 'm-mar' : (week.ms[3] === 'apr' ? 'm-apr' : (week.ms[3] === 'may' ? 'm-may' : (week.ms[3] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 3 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 3}}" class="today-badge">今</text>
+                    {{week.days[3]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[4] === 'mar' ? 'm-mar' : (week.ms[4] === 'apr' ? 'm-apr' : (week.ms[4] === 'may' ? 'm-may' : (week.ms[4] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 4 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 4}}" class="today-badge">今</text>
+                    {{week.days[4]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[5] === 'mar' ? 'm-mar' : (week.ms[5] === 'apr' ? 'm-apr' : (week.ms[5] === 'may' ? 'm-may' : (week.ms[5] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 5 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 5}}" class="today-badge">今</text>
+                    {{week.days[5]}}
+                  </view>
+                  <view class="cal-cell cal-cell-day {{week.ms[6] === 'mar' ? 'm-mar' : (week.ms[6] === 'apr' ? 'm-apr' : (week.ms[6] === 'may' ? 'm-may' : (week.ms[6] === 'jun' ? 'm-jun' : 'm-jul')))}} {{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 6 ? 'cur-day' : ''}}">
+                    <text wx:if="{{todayCell && todayCell.sem === 2 && todayCell.week === week.w && todayCell.dayIdx === 6}}" class="today-badge">今</text>
+                    {{week.days[6]}}
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- ===== 寒假说明 ===== -->
+    <view class="info-card">
+      <view class="info-title">
+        <view class="info-dot"></view>
+        <text>寒假七周（1.11 - 2.28）</text>
+      </view>
+      <view class="info-list">
+        <view class="info-item"><view class="info-bullet"></view><text>8 月 29 日、8 月 30 日在校生到校注册，8 月 31 日开始上课。</text></view>
+        <view class="info-item"><view class="info-bullet"></view><text>9 月 4 日下午至 9 月 6 日新生报到，9 月 7 日至 9 月 14 日新生入学教育，9 月 15 日至 9 月 28 日新生军训，9 月 29 日新生开始上课。</text></view>
+        <view class="info-item"><view class="info-bullet"></view><text>本学期共计 19 教学周。</text></view>
+      </view>
+    </view>
+
+    <!-- ===== 暑假说明 ===== -->
+    <view class="info-card">
+      <view class="info-title">
+        <view class="info-dot"></view>
+        <text>暑假七周（7.12 - 8.29）</text>
+      </view>
+      <view class="info-list">
+        <view class="info-item"><view class="info-bullet"></view><text>2 月 27 日、28 日在校生到校注册，3 月 1 日开始上课。</text></view>
+        <view class="info-item"><view class="info-bullet"></view><text>本学期共计 19 教学周。</text></view>
+      </view>
+    </view>
+
+    <!-- ===== 节假日说明 ===== -->
+    <view class="info-card info-card-bottom">
+      <text>清明节、五一国际劳动节、端午节、中秋节、国庆节、元旦等国家法定节假日的放假安排，以学校通知为准。</text>
+    </view>
+
+    <view class="page-footer">
+      <text class="footer-text">— HEBEI UNIVERSITY OF ENGINEERING —</text>
+    </view>
+
+    <view class="safe-bottom"></view>
+  </scroll-view>
+</view>

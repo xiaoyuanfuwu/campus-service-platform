@@ -1,0 +1,32 @@
+/* pages/user-profile/user-profile.wxss */
+.page-detail-info { min-height: 100vh; background: transparent; }
+.nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; background: rgba(22,22,24,0.92); backdrop-filter: blur(20rpx); -webkit-backdrop-filter: blur(20rpx); border-bottom: 1rpx solid var(--border-light); }
+.nav-back { width: 72rpx; height: 72rpx; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.nav-back-icon { width: 24rpx; height: 24rpx; border-left: 4rpx solid var(--text-primary); border-bottom: 4rpx solid var(--text-primary); transform: rotate(45deg); margin-left: 8rpx; }
+.nav-title { font-size: var(--font-lg); font-weight: 600; flex: 1; text-align: center; color: var(--text-primary); }
+.nav-placeholder { width: 72rpx; flex-shrink: 0; }
+.content { min-height: 100vh; padding: 24rpx; box-sizing: border-box; }
+.glass-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 32rpx; margin-bottom: 16rpx; border: 1rpx solid var(--border-light); }
+.profile-header { display: flex; flex-direction: column; align-items: center; }
+.profile-avatar { width: 140rpx; height: 140rpx; border-radius: 50%; margin-bottom: 20rpx; }
+.profile-name { font-size: var(--font-xl); font-weight: 700; margin-bottom: 20rpx; }
+.profile-stats { display: flex; gap: 48rpx; }
+.stat-item { display: flex; flex-direction: column; align-items: center; }
+.stat-value { font-size: var(--font-xl); font-weight: 700; color: var(--primary); }
+.stat-label { font-size: var(--font-xs); color: var(--text-hint); margin-top: 4rpx; }
+.section-title { font-size: var(--font-md); font-weight: 600; margin-bottom: 12rpx; display: block; }
+.info-content { font-size: var(--font-md); color: var(--text-secondary); line-height: 1.6; }
+.info-time { font-size: var(--font-xs); color: var(--text-hint); display: block; margin-top: 8rpx; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 12rpx; }
+.tag-item { font-size: var(--font-xs); padding: 6rpx 20rpx; border-radius: 999rpx; background: rgba(0,166,147,0.12); color: var(--primary); }
+.reviews-section { margin-top: 16rpx; }
+.review-card { margin-bottom: 12rpx; }
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
+.reviewer-name { font-size: var(--font-sm); font-weight: 600; }
+.stars-row { display: flex; gap: 4rpx; }
+.star { font-size: var(--font-sm); color: #FF9F0A; }
+.review-content { font-size: var(--font-md); color: var(--text-secondary); line-height: 1.6; display: block; margin-bottom: 8rpx; }
+.empty-hint { text-align: center; color: var(--text-hint); padding: 48rpx; font-size: var(--font-sm); }
+.action-bar { padding: 24rpx 0 48rpx; }
+.btn-primary { background: var(--primary); color: #fff; text-align: center; padding: 24rpx; border-radius: 999rpx; font-size: var(--font-lg); font-weight: 600; }
+.loading { text-align: center; padding: 120rpx 0; color: var(--text-hint); }

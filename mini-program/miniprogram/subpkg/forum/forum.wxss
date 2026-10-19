@@ -1,0 +1,899 @@
+/* ===== 首页四板块 ===== */
+
+/* 骨架加载 */
+.home-skeleton { padding: 0 24rpx; }
+.sk-section { margin-bottom: 32rpx; }
+.sk-section-header { margin-bottom: 16rpx; }
+.sk-line {
+  height: 16rpx;
+  background: rgba(0,0,0,.06);
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+}
+.sk-line.sk-title { width: 160rpx; height: 22rpx; }
+.sk-line.sk-long { width: 90%; }
+.sk-line.sk-short { width: 55%; }
+.sk-card-row { display: flex; gap: 16rpx; overflow: hidden; }
+.sk-card {
+  flex-shrink: 0;
+  width: 280rpx;
+  padding: 20rpx;
+  background: rgba(255,255,255,.6);
+  border-radius: 20rpx;
+}
+
+/* 板块容器 */
+.home-sections { padding: 0 24rpx 24rpx; }
+.home-section {
+  margin-bottom: 28rpx;
+  background: rgba(255,255,255,.55);
+  border-radius: 32rpx;
+  padding: 24rpx 20rpx 16rpx;
+  backdrop-filter: blur(12rpx);
+  -webkit-backdrop-filter: blur(12rpx);
+}
+
+/* 板块头部 */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+  padding: 0 8rpx;
+}
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.section-icon {
+  font-size: 44rpx;
+  line-height: 1;
+}
+.section-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.section-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.section-desc {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  line-height: 1.3;
+}
+.section-more {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 10rpx 20rpx;
+  background: rgba(0,0,0,.04);
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.more-arrow { font-size: 28rpx; }
+
+/* 子标签 */
+.subtag-scroll { margin-bottom: 16rpx; white-space: nowrap; }
+.subtag-row { display: inline-flex; gap: 12rpx; padding: 0 8rpx; }
+.subtag-chip {
+  display: inline-block;
+  padding: 10rpx 22rpx;
+  background: rgba(0,0,0,.04);
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  transition: all .2s;
+  white-space: nowrap;
+}
+.subtag-chip:active {
+  background: var(--primary-bg-mid);
+  color: var(--primary);
+}
+
+/* 帖子卡片横滚 */
+.post-card-scroll-wrap { margin: 0 -4rpx; }
+.post-card-scroll { white-space: nowrap; }
+.post-card-row { display: inline-flex; gap: 16rpx; padding: 4rpx 8rpx 8rpx; }
+.post-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 300rpx;
+  padding: 20rpx 22rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,.05);
+  white-space: normal;
+  flex-shrink: 0;
+  vertical-align: top;
+  transition: all .2s;
+}
+.post-card:active { transform: scale(.97); }
+
+.pc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6rpx;
+  margin-bottom: 10rpx;
+}
+.pc-tag {
+  padding: 3rpx 12rpx;
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-size: 20rpx;
+  border-radius: 6rpx;
+  font-weight: 600;
+}
+.pc-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+.pc-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 12rpx;
+  flex: 1;
+}
+.pc-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10rpx;
+  border-top: 1rpx solid rgba(0,0,0,.04);
+}
+.pc-user {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.pc-avatar {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: var(--card-inner-bg);
+}
+.pc-nick {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  max-width: 120rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pc-time {
+  font-size: 20rpx;
+  color: var(--text-placeholder);
+}
+
+/* 板块空状态 */
+.section-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36rpx 0 28rpx;
+  gap: 10rpx;
+}
+.section-empty-icon { font-size: 48rpx; opacity: .5; }
+.section-empty-text { font-size: 24rpx; color: var(--text-placeholder); }
+/* ===== 顶部导航栏覆盖 — fixed 定位（对齐 secondhand 等页面模式） ===== */
+
+/* 状态栏背景填充 */
+.page-status-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  background: transparent;
+}
+
+/* 覆盖 base 的 .shared-nav：从 flex 流内 → fixed 悬浮 */
+.shared-nav {
+  position: fixed !important;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: transparent !important;
+}
+
+/* 品牌居中 */
+.nav-brand-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* 品牌名样式 */
+.nav-brand-center .brand-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* 鸭子图标调整 */
+.nav-brand-center .top-duck-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+/* forum.wxss — 校园论坛专属样式（基础样式继承自 pages/_shared/base.wxss） */
+
+/* ===== 论坛发布表单 - 上下结构覆盖 ===== */
+.publish-form .form-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.publish-form .form-input {
+  flex: none;
+  width: calc(100% - 30rpx);
+  text-align: left;
+  font-size: 32rpx;
+  color: var(--text-primary);
+  padding: 28rpx 30rpx;
+  background: var(--card-inner-bg);
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 999rpx;
+  box-sizing: border-box;
+  min-height: 96rpx;
+}
+.publish-form .form-input:focus {
+  background: var(--primary-bg);
+  box-shadow: inset 0 0 0 3rpx var(--primary);
+}
+.publish-form .form-textarea {
+  width: 100%;
+  font-size: 32rpx;
+  color: var(--text-primary);
+  padding: 28rpx 30rpx 60rpx 30rpx;
+  background: var(--card-inner-bg);
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 40rpx;
+  min-height: 240rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+.publish-form .form-textarea:focus {
+  background: var(--primary-bg);
+  box-shadow: inset 0 0 0 3rpx var(--primary);
+}
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20rpx;
+  width: 100%;
+}
+.form-required {
+  color: var(--danger);
+  font-size: 24rpx;
+}
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  width: 100%;
+}
+.form-label-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+.form-label-hint {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  font-weight: 400;
+}
+
+/* ===== counter 浮在输入框右下角 ===== */
+.form-field-wrap {
+  position: relative;
+  width: 100%;
+}
+.form-counter {
+  position: absolute;
+  right: 30rpx;
+  bottom: 24rpx;
+  font-size: 22rpx;
+  color: var(--text-placeholder);
+  pointer-events: none;
+  line-height: 1;
+}
+.form-field-wrap-textarea { min-height: 240rpx; }
+
+/* 合并板块：投稿内容 + 图片 */
+.merge-textarea-wrap {
+  min-height: 260rpx;
+}
+.merge-textarea {
+  min-height: 240rpx;
+}
+.merge-divider {
+  height: 1rpx;
+  background: rgba(0,0,0,0.06);
+  margin: 20rpx 0 24rpx;
+}
+
+/* ===== 1. 帖子类型（4 选 1） ===== */
+.forum-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+.forum-type-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 24rpx 8rpx;
+  border-radius: 24rpx;
+  background: var(--card-inner-bg);
+  border: 2rpx solid transparent;
+  transition: all .2s;
+  box-sizing: border-box;
+}
+.forum-type-chip.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-color: transparent;
+  box-shadow: 0 8rpx 20rpx rgba(0, 184, 148, .25);
+}
+.ftc-icon { font-size: 40rpx; line-height: 1; }
+.ftc-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.forum-type-chip.active .ftc-label {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ===== 2. 话题标签（多选） ===== */
+.forum-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+.forum-tag-chip {
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  background: var(--card-inner-bg);
+  border: 2rpx solid transparent;
+  transition: all .2s;
+  line-height: 1.2;
+  font-weight: 500;
+}
+.forum-tag-chip.active {
+  color: var(--primary);
+  background: var(--primary-bg);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+
+/* ===== 现成模板提示条 ===== */
+.forum-template-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(90deg, rgba(255,149,0,.10), rgba(74,144,217,.10));
+  border: 2rpx solid rgba(255,149,0,.28);
+}
+.fth-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  flex: 1;
+  min-width: 0;
+}
+.fth-title {
+  font-size: 26rpx;
+  color: var(--text-primary, #1f2329);
+  font-weight: 600;
+}
+.fth-sub {
+  font-size: 22rpx;
+  color: var(--text-secondary, #8a8f99);
+}
+.fth-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  flex-shrink: 0;
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--primary, #FF9500);
+  color: #fff;
+}
+.fth-btn-label {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+.fth-btn-arrow {
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+/* ===== 3. 图片选择器 ===== */
+.image-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding-top: 8rpx;
+}
+.img-item {
+  position: relative;
+  width: calc((100% - 32rpx) / 3);
+  height: 0;
+  padding-bottom: calc((100% - 32rpx) / 3);
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: var(--card-inner-bg-2);
+}
+.img-preview {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+}
+.img-delete {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 36rpx;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 28rpx;
+  z-index: 2;
+}
+.img-add {
+  width: calc((100% - 32rpx) / 3);
+  height: 0;
+  padding-bottom: calc((100% - 32rpx) / 3);
+  border: 3rpx dashed var(--border);
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-inner-bg);
+  position: relative;
+}
+.img-add-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -65%);
+  font-size: 56rpx;
+  color: var(--text-placeholder);
+  line-height: 1;
+  font-weight: 300;
+}
+.img-add-text {
+  position: absolute;
+  bottom: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22rpx;
+  color: var(--text-hint);
+  white-space: nowrap;
+}
+
+/* ===== 4. 发布选项（开关行） ===== */
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+.option-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.option-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+.option-hint {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  display: block;
+  line-height: 1.4;
+}
+
+/* ===== 5. 可见范围（全校/仅本院） ===== */
+.visibility-row {
+  display: flex;
+  gap: 16rpx;
+}
+.vis-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  padding: 24rpx 8rpx;
+  border-radius: 24rpx;
+  background: var(--card-inner-bg);
+  border: 2rpx solid transparent;
+  transition: all .2s;
+  box-sizing: border-box;
+}
+.vis-chip.active {
+  background: var(--primary-bg);
+  border-color: var(--primary);
+}
+.vis-icon { font-size: 36rpx; line-height: 1; }
+.vis-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.vis-chip.active .vis-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ===== 6. 发布按钮覆盖（forum 主题色 #00b894） ===== */
+.publish-btn {
+  margin-bottom: 160rpx;
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !important;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  border-radius: 40rpx;
+  box-shadow: 0 10rpx 24rpx rgba(0, 184, 148, .35);
+  letter-spacing: 6rpx;
+}
+.publish-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 6rpx 16rpx rgba(0, 184, 148, .3);
+}
+
+/* ===== form-card / card 透明度统一 ===== */
+.card { background: rgba(255, 255, 255, 0.80); }
+/* ===== 底部 TabBar（覆盖 base 默认样式，使用 fixed 悬浮） ===== */
+.shared-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 60rpx;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-top: none !important;
+  padding: 0;
+  pointer-events: none;
+}
+.tabbar-card {
+  width: 76%;
+  background: rgba(255, 255, 255, 0.77);
+  border-radius: 56rpx;
+  box-shadow: 0 12rpx 32rpx rgba(80, 117, 204, 0.12), 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  pointer-events: auto;
+  backdrop-filter: saturate(180%) blur(20rpx);
+  -webkit-backdrop-filter: saturate(180%) blur(20rpx);
+}
+.tabbar-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10rpx 8rpx;
+}
+.tabbar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 6rpx 24rpx;
+  border-radius: 36rpx;
+  transition: all .25s;
+  position: relative;
+  min-width: 110rpx;
+}
+.tabbar-item.active {
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.12) 0%, rgba(0, 206, 201, 0.12) 100%);
+}
+.tb-label {
+  font-size: 20rpx;
+  color: #B3B3B3;
+  transition: color .25s;
+  letter-spacing: 0.5rpx;
+}
+.tabbar-item.active .tb-label {
+  color: #00b894;
+  font-weight: 600;
+}
+.tb-icon-wrap {
+  width: 52rpx;
+  height: 52rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rpx;
+}
+.tb-icon-img {
+  width: 42rpx;
+  height: 42rpx;
+  filter: grayscale(100%) opacity(0.55);
+  transition: filter .25s, transform .25s;
+}
+.tabbar-item.active .tb-icon-img {
+  filter: none;
+  transform: translateY(-1rpx);
+}
+.task-tab-badge {
+  position: absolute;
+  top: -12rpx;
+  right: -20rpx;
+  min-width: 34rpx;
+  height: 34rpx;
+  line-height: 34rpx;
+  border-radius: 17rpx;
+  background: #F44336;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 600;
+  text-align: center;
+  padding: 0 8rpx;
+  z-index: 1;
+}
+
+/* ===== 我的 Tab（forum 主题色） ===== */
+.mine-subtap-bar {
+  display: flex;
+  align-items: center;
+  margin: 24rpx 32rpx 20rpx;
+  padding: 8rpx;
+  background: rgba(255, 255, 255, 1.00);
+  border-radius: 40rpx;
+  border: 1rpx solid rgba(0,0,0,.06);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, .05);
+  gap: 6rpx;
+}
+.mine-subtap-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rpx;
+  padding: 16rpx 8rpx;
+  border-radius: 34rpx;
+  transition: all .25s ease;
+  position: relative;
+  cursor: pointer;
+}
+.mine-subtap-item.active {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+}
+.mine-subtap-item:active { transform: scale(.96); }
+.mine-subtap-num {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.1;
+}
+.mine-subtap-label {
+  font-size: 22rpx;
+  color: #999;
+  line-height: 1.1;
+}
+.mine-subtap-item.active .mine-subtap-num { color: #fff; }
+.mine-subtap-item.active .mine-subtap-label { color: rgba(255,255,255,.85); font-weight: 600; }
+.mine-subtap-indicator {
+  width: 48rpx;
+  height: 8rpx;
+  border-radius: 8rpx;
+  background: transparent;
+  transition: all .25s ease;
+  margin-top: 2rpx;
+}
+.mine-subtap-item.active .mine-subtap-indicator { background: #fff; }
+
+/* 我的列表内容区 */
+.mine-list { padding: 0 24rpx 24rpx; }
+.mine-list-card {
+  background: rgba(255, 255, 255, .88);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, .04);
+}
+.mine-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+.mine-card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mine-card-badge {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+.mine-card-badge-active { background: #dcfce7; color: #16a34a; }
+.mine-card-badge-done { background: #f3f4f6; color: #6b7280; }
+.mine-card-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.mine-card-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid rgba(0,0,0,.06);
+}
+.mine-card-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #f5f5f5;
+  flex-shrink: 0;
+}
+.mine-card-nick {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mine-card-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: auto;
+}
+.mine-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  gap: 16rpx;
+}
+.mine-empty-icon { font-size: 80rpx; opacity: .45; }
+.mine-empty-text { font-size: 28rpx; color: #aaa; }
+
+/* 加大底部空白，避免内容被 TabBar 遮挡 */
+.tab-bottom-space { height: 180rpx !important; }
+
+/* ===== 首页筛选标签 ===== */
+.forum-filter-bar {
+  padding: 16rpx 0 16rpx 24rpx;
+  background: transparent;
+}
+.forum-filter-list {
+  display: inline-flex;
+  gap: 12rpx;
+  padding-right: 24rpx;
+}
+.forum-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, .7);
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #666;
+  transition: all .2s;
+  white-space: nowrap;
+  border: 2rpx solid transparent;
+  flex-shrink: 0;
+}
+.forum-filter-chip.active {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(0, 184, 148, .3);
+}
+.forum-filter-chip:active { transform: scale(.95); }
+.ffc-icon { font-size: 28rpx; line-height: 1; }
+.ffc-name { font-size: 26rpx; }
+
+/* ===== 帖子卡片标签 ===== */
+.module-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+.mct-tag {
+  padding: 4rpx 14rpx;
+  background: var(--primary-bg, #e8f8f5);
+  color: var(--primary, #00b894);
+  font-size: 22rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+/* Forum SVG icons */
+.svg-ico-book-stack { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A90D9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/></svg>"); }
+.svg-ico-home { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/><polyline points='9 22 9 12 15 12 15 22'/></svg>"); }
+.svg-ico-trophy { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E74C3C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9H4.5a2.5 2.5 0 0 1 0-5H6'/><path d='M18 9h1.5a2.5 2.5 0 0 0 0-5H18'/><path d='M4 22h16'/><path d='M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22'/><path d='M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22'/><path d='M18 2H6v7a6 6 0 0 0 12 0V2z'/></svg>"); }
+.svg-ico-chat-bubble { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>"); }
+.svg-ico-question-mark { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>"); }
+.svg-ico-lightbulb { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFD60A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18h6'/><path d='M10 22h4'/><path d='M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14'/></svg>"); }
+.svg-ico-edit { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z'/></svg>"); }
+.svg-ico-hash { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A90D9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='4' y1='9' x2='20' y2='9'/><line x1='4' y1='15' x2='20' y2='15'/><line x1='10' y1='3' x2='8' y2='21'/><line x1='16' y1='3' x2='14' y2='21'/></svg>"); }
+.svg-ico-heart { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E91E63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/></svg>"); }
+.svg-ico-tag { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232196F3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.83z'/><line x1='7' y1='7' x2='7.01' y2='7'/></svg>"); }
+.svg-ico-message-circle { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239B59B6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'/></svg>"); }
+.svg-ico-search { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300BCD4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>"); }
+.svg-ico-car { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H8c-.6 0-1.1.3-1.4.8L4.9 10H3c-.6 0-1 .4-1 1v3c0 .6.4 1 1 1h1'/><circle cx='7.5' cy='17' r='1.5'/><circle cx='16.5' cy='17' r='1.5'/></svg>"); }
+.svg-ico-hand { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF3B30' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 11V6a2 2 0 0 0-4 0v5'/><path d='M14 10V4a2 2 0 0 0-4 0v2'/><path d='M10 10.5V6a2 2 0 0 0-4 0v8'/><path d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/></svg>"); }

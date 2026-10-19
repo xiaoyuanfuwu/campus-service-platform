@@ -1,0 +1,283 @@
+<view class="guide-app">
+  <!-- 全屏背景图（与其他模块页一致） -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 状态栏 -->
+  <view class="guide-status" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 顶部导航栏 -->
+  <view class="guide-nav">
+    <view class="nav-back tap-shrink" bindtap="goBack">
+      <view class="back-arrow"></view>
+    </view>
+    <text class="nav-title">{{tabNames[currentTab]}}</text>
+    <view wx:if="{{false}}" class="nav-bell tap-shrink" bindtap="goMsg">
+      <view class="bell-icon"><view class="bell-top"></view><view class="bell-bottom"></view></view>
+      <view wx:if="{{systemUnread > 0}}" class="bell-dot"></view>
+    </view>
+  </view>
+
+  <!-- ==================== Tab 0: 广场 ==================== -->
+  <scroll-view wx:if="{{currentTab === 0}}" class="tab-panel" scroll-y enhanced show-scrollbar="{{false}}" style="height:{{panelHeight}}px;">
+    <!-- 分类筛选条 -->
+    <view class="feed-filter">
+      <view class="filter-chip {{feedCategory === 'all' ? 'active' : ''}}" data-cat="all" bindtap="switchFeedCat">全部</view>
+      <view class="filter-chip {{feedCategory === item.key ? 'active' : ''}}" wx:for="{{categories}}" wx:key="key" data-cat="{{item.key}}" style="{{item.chipStyle}}" bindtap="switchFeedCat">{{item.name}}</view>
+    </view>
+
+    <!-- 瀑布流 2列交错 -->
+    <view class="waterfall" wx:if="{{feedList.length > 0}}">
+      <view class="waterfall-col">
+        <view class="wf-card tap-shrink" wx:for="{{leftCol}}" wx:key="id" bindtap="onFeedTap" data-item="{{item}}">
+          <image class="wf-img" src="{{item._displayImg}}" mode="aspectFill" style="height:{{item._imageHeight}}rpx;" wx:if="{{item._displayImg}}" />
+          <view class="wf-img placeholder" wx:else style="height:{{item._imageHeight}}rpx;"></view>
+          <view class="wf-info">
+            <text class="wf-name">{{item.name}}</text>
+            <text class="wf-desc">{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="waterfall-col">
+        <view class="wf-card tap-shrink" wx:for="{{rightCol}}" wx:key="id" bindtap="onFeedTap" data-item="{{item}}">
+          <image class="wf-img" src="{{item._displayImg}}" mode="aspectFill" style="height:{{item._imageHeight}}rpx;" wx:if="{{item._displayImg}}" />
+          <view class="wf-img placeholder" wx:else style="height:{{item._imageHeight}}rpx;"></view>
+          <view class="wf-info">
+            <text class="wf-name">{{item.name}}</text>
+            <text class="wf-desc">{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{feedLoading}}" class="loading-state">
+      <view class="loading-spinner"></view>
+      <text>加载中...</text>
+    </view>
+    <view wx:if="{{!feedLoading && feedList.length === 0}}" class="empty-state">
+      <text class="empty-text">暂无图鉴内容</text>
+    </view>
+    <view class="panel-bottom-space"></view>
+  </scroll-view>
+
+  <!-- ==================== Tab 1: 大全 (3D同心球壳) ==================== -->
+  <view wx:if="{{currentTab === 1}}" class="tab-panel sphere-panel" style="height:{{panelHeight}}px;">
+    <!-- 3D 球壳 canvas -->
+    <canvas
+      type="2d"
+      id="sphereCanvas"
+      class="sphere-canvas"
+      style="width:100%;height:100%;"
+      bindtouchstart="onSphereTouchStart"
+      bindtouchmove="onSphereTouchMove"
+      bindtouchend="onSphereTouchEnd"
+      bindtap="onSphereTap"
+    ></canvas>
+    <!-- 搜索框 -->
+    <view class="sphere-search-wrap">
+      <input class="sphere-search-input" type="text" placeholder="搜索图鉴节点…" value="{{sphereKeyword}}" bindinput="onSphereSearch" confirm-type="search" />
+      <view class="sphere-search-results" wx:if="{{sphereSearchResults.length > 0}}">
+        <view class="sphere-search-item" wx:for="{{sphereSearchResults}}" wx:key="id" data-id="{{item.id}}" bindtap="onSphereSearchTap">
+          <view class="ss-dot" style="background:{{item.color}}"></view>
+          <text class="ss-title">{{item.title}}</text>
+          <text class="ss-cat">{{item.catName}}</text>
+        </view>
+      </view>
+    </view>
+    <!-- 分类筛选条（浮动） -->
+    <view class="sphere-filter">
+      <view class="sphere-chip {{sphereCategory === 'all' ? 'active' : ''}}" data-cat="all" bindtap="switchSphereCat">全部</view>
+      <view class="sphere-chip {{sphereCategory === item.key ? 'active' : ''}}" wx:for="{{categories}}" wx:key="key" data-cat="{{item.key}}" style="{{item.chipStyle}}" bindtap="switchSphereCat">{{item.name}}</view>
+    </view>
+    <!-- 顶部提示 -->
+    <view class="sphere-hint">滑动旋转 · 点击节点查看详情</view>
+
+    <!-- 节点详情小弹窗（底部，非模态，不影响 canvas 滑动旋转） -->
+    <view wx:if="{{sphereSelectedNode}}" class="sphere-detail-card" catchtap="">
+      <view class="sdc-dot" style="background:{{sphereSelectedNode.color}}"></view>
+      <view class="sdc-body">
+        <view class="sdc-head">
+          <text wx:if="{{sphereSelectedNode.emoji}}" class="sdc-emoji">{{sphereSelectedNode.emoji}}</text>
+          <text class="sdc-title">{{sphereSelectedNode.title}}</text>
+          <text class="sdc-cat" style="color:{{sphereSelectedNode.color}}">{{sphereSelectedNode.catName}}</text>
+          <view class="sdc-close tap-shrink" catchtap="closeSphereDetail">×</view>
+        </view>
+        <text class="sdc-desc">{{sphereSelectedNode.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== Tab 2: 发布 (暂时隐藏) ==================== -->
+  <scroll-view wx:if="{{false}}" class="tab-panel" scroll-y enhanced show-scrollbar="{{false}}" style="height:{{panelHeight}}px;">
+    <!-- 图片上传 -->
+    <view class="pub-section">
+      <view class="pub-title">拍照上传</view>
+      <view class="pub-img-grid">
+        <view class="pub-img-item" wx:for="{{pubImages}}" wx:key="*this">
+          <image class="pub-img-preview" src="{{item}}" mode="aspectFill" bindtap="previewPubImg" data-index="{{index}}" />
+          <view class="pub-img-del tap-shrink" catchtap="removePubImg" data-index="{{index}}">×</view>
+        </view>
+        <view class="pub-img-add tap-shrink" bindtap="choosePubImg" wx:if="{{pubImages.length < 6}}">
+          <view class="pub-add-icon"><view class="pub-add-h"></view><view class="pub-add-v"></view></view>
+          <text class="pub-add-text">{{pubImages.length ? '' : '拍照/相册'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 表单 -->
+    <view class="pub-section">
+      <view class="pub-title">基本信息</view>
+      <view class="pub-card">
+        <view class="pub-row">
+          <text class="pub-label">名称</text>
+          <input class="pub-input" placeholder="图鉴名称" value="{{pubName}}" bindinput="onPubInput" data-field="pubName" maxlength="50" />
+        </view>
+        <view class="pub-divider"></view>
+        <view class="pub-row">
+          <text class="pub-label">分类</text>
+          <view class="pub-cat-select" bindtap="showPubCatPicker">
+            <text class="{{pubCategoryKey ? 'pub-cat-val' : 'pub-cat-placeholder'}}">{{pubCategoryName || '选择分类'}}</text>
+            <text class="pub-cat-arrow">▸</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 在哪拍到 & 详情 -->
+    <view class="pub-section">
+      <view class="pub-title">在哪拍到</view>
+      <view class="pub-card">
+        <view class="pub-row">
+          <text class="pub-label">拍摄地</text>
+          <input class="pub-input" placeholder="如：图书馆南门草坪" value="{{pubLocationName}}" bindinput="onPubInput" data-field="pubLocationName" maxlength="50" />
+        </view>
+        <view class="pub-divider"></view>
+        <view class="pub-row" bindtap="choosePubLocation">
+          <text class="pub-label">地图定位</text>
+          <view class="pub-cat-select">
+            <text class="{{pubLocationLat ? 'pub-cat-val' : 'pub-cat-placeholder'}}">{{pubLocationText || '点击选择位置'}}</text>
+            <text class="pub-cat-arrow"><view class="svg-ico svg-ico-pin"></view></text>
+          </view>
+        </view>
+        <view class="pub-divider"></view>
+        <view class="pub-row" bindtap="choosePubDate">
+          <text class="pub-label">拍摄日期</text>
+          <view class="pub-cat-select">
+            <text class="{{pubPhotoDate ? 'pub-cat-val' : 'pub-cat-placeholder'}}">{{pubPhotoDate || '选择拍摄日期'}}</text>
+            <text class="pub-cat-arrow">▸</text>
+          </view>
+        </view>
+        <view class="pub-divider"></view>
+        <view class="pub-row pub-row-block">
+          <text class="pub-label pub-label-block">难度</text>
+          <view class="pub-chip-row">
+            <view class="pub-chip {{pubDifficulty===item.val?'active':''}}" wx:for="{{difficultyOptions}}" wx:key="val" data-val="{{item.val}}" bindtap="onPubChipTap" data-field="pubDifficulty">{{item.label}}</view>
+          </view>
+        </view>
+        <view class="pub-divider"></view>
+        <view class="pub-row pub-row-block">
+          <text class="pub-label pub-label-block">最佳季节</text>
+          <view class="pub-chip-row">
+            <view class="pub-chip {{pubSeason===item.val?'active':''}}" wx:for="{{seasonOptions}}" wx:key="val" data-val="{{item.val}}" bindtap="onPubChipTap" data-field="pubSeason">{{item.label}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 描述 -->
+    <view class="pub-section">
+      <view class="pub-title">描述说明</view>
+      <view class="pub-card">
+        <textarea class="pub-textarea" placeholder="描述这个图鉴条目..." value="{{pubDesc}}" bindinput="onPubInput" data-field="pubDesc" maxlength="500" auto-height />
+        <view class="pub-counter">{{pubDesc.length || 0}}/500</view>
+      </view>
+    </view>
+
+    <!-- 提交 -->
+    <view class="pub-submit-area">
+      <view class="pub-submit-btn tap-shrink {{pubSubmitting ? 'disabled' : ''}}" bindtap="onPubSubmit">
+        <text>{{pubSubmitting ? '提交中...' : '提交图鉴'}}</text>
+      </view>
+      <text class="pub-hint">提交后需管理员审核</text>
+    </view>
+
+    <view class="panel-bottom-space"></view>
+  </scroll-view>
+
+  <!-- ==================== Tab 3: 我的 ==================== -->
+  <scroll-view wx:if="{{currentTab === 3}}" class="tab-panel" scroll-y enhanced show-scrollbar="{{false}}" style="height:{{panelHeight}}px;">
+    <!-- 统计卡 -->
+    <view class="my-stats">
+      <view class="my-stat-card">
+        <text class="my-stat-num">{{myTotal}}</text>
+        <text class="my-stat-label">发布图鉴</text>
+      </view>
+      <view class="my-stat-card">
+        <text class="my-stat-num">{{myApproved}}</text>
+        <text class="my-stat-label">已通过</text>
+      </view>
+      <view class="my-stat-card">
+        <text class="my-stat-num">{{myPending}}</text>
+        <text class="my-stat-label">审核中</text>
+      </view>
+    </view>
+
+    <!-- 我的列表 -->
+    <view class="my-list" wx:if="{{myList.length > 0}}">
+      <view class="my-item" wx:for="{{myList}}" wx:key="id">
+        <image class="my-item-img" src="{{item._displayImg}}" mode="aspectFill" wx:if="{{item._displayImg}}" />
+        <view class="my-item-info">
+          <text class="my-item-name">{{item.name}}</text>
+          <text class="my-item-desc">{{item.description || '无描述'}}</text>
+          <view class="my-item-status status-{{item.status || 'approved'}}">
+            {{item.status === 'pending' ? '审核中' : item.status === 'rejected' ? '已拒绝' : '已通过'}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{!myLoading && myList.length === 0}}" class="empty-state">
+      <text class="empty-text">还没有发布过图鉴</text>
+      <text class="empty-sub">去「发布」tab添加第一个吧</text>
+    </view>
+
+    <view class="panel-bottom-space"></view>
+  </scroll-view>
+
+
+  <!-- 分类选择器弹窗 -->
+  <view class="picker-mask" wx:if="{{showCatPicker}}" bindtap="hidePubCatPicker">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-title">选择分类</view>
+      <view class="picker-grid">
+        <view class="picker-item {{pubCategoryKey === item.key ? 'active' : ''}}" wx:for="{{categories}}" wx:key="key" data-key="{{item.key}}" data-name="{{item.name}}" bindtap="selectPubCat">
+          <text>{{item.name}}</text>
+        </view>
+      </view>
+      <view class="picker-cancel" bindtap="hidePubCatPicker">取消</view>
+    </view>
+  </view>
+
+  <!-- 底部 TabBar（悬浮胶囊，cover-view 确保覆盖在 canvas 等原生组件之上） -->
+  <cover-view class="shared-tabbar">
+    <cover-view class="tabbar-card">
+      <cover-view class="tabbar-items">
+        <cover-view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-tab="0" bindtap="switchTab">
+          <cover-image class="tb-icon-img" src="/images/tabbar/tab1.png"></cover-image>
+          <cover-view class="tb-label">广场</cover-view>
+        </cover-view>
+        <cover-view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-tab="1" bindtap="switchTab">
+          <cover-image class="tb-icon-img tb-icon-quan" src="/images/tabbar/guide-quan.png"></cover-image>
+          <cover-view class="tb-label">大全</cover-view>
+        </cover-view>
+        <cover-view wx:if="{{false}}" class="tabbar-item" data-tab="2" bindtap="switchTab">
+          <cover-image class="tb-icon-img" src="/images/tabbar/tab2.png"></cover-image>
+          <cover-view class="tb-label">发布</cover-view>
+        </cover-view>
+        <cover-view class="tabbar-item {{currentTab === 3 ? 'active' : ''}}" data-tab="3" bindtap="switchTab">
+          <cover-image class="tb-icon-img" src="/images/tabbar/tab0.png"></cover-image>
+          <cover-view class="tb-label">我的</cover-view>
+        </cover-view>
+      </cover-view>
+    </cover-view>
+  </cover-view>
+</view>

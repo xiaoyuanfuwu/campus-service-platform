@@ -1,0 +1,169 @@
+<!-- pages/profile/index.wxml — 个人中心 -->
+<view class="page-profile">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景 -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 导航栏 -->
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">我的</view>
+      </view>
+    </view>
+  </view>
+  <!-- 间距 -->
+  <view style="height: {{statusBarHeight + 50}}px;"></view>
+  <!-- 内容区 -->
+  <scroll-view
+    class="profile-scroll"
+    scroll-y
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    refresher-default-style="black"
+  >
+    <view class="profile-header-wrap">
+    <view class="profile-header">
+      <view class="header-row">
+        <image wx:if="{{userInfo.avatarUrl}}" class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" bindtap="onEditProfile" />
+        <view wx:else class="avatar-text" bindtap="onEditProfile">
+          <text>{{avatarInitial || '?'}}</text>
+        </view>
+        <view class="user-info">
+          <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
+          <text class="user-id" wx:if="{{userInfo.userCode}}">ID: {{userInfo.userCode}}</text>
+          <text class="user-id" wx:else>ID: 开发者</text>
+        </view>
+        <view class="edit-btn tap-shrink" bindtap="onEditProfile">
+          <text class="edit-text">编辑</text>
+        </view>
+      </view>
+      <view class="stats-row">
+        <view class="stat-item tap-shrink" bindtap="onMyPosts">
+          <text class="stat-num">{{stats.posts || 0}}</text>
+          <text class="stat-label">发布</text>
+        </view>
+        <view class="stat-item tap-shrink" bindtap="onMyFavorites">
+          <text class="stat-num">{{stats.favorites || 0}}</text>
+          <text class="stat-label">收藏</text>
+        </view>
+        <view class="stat-item tap-shrink" bindtap="onCreditDetail">
+          <text class="stat-num">{{stats.creditScore || 100}}</text>
+          <text class="stat-label">信用分</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 功能列表 -->
+    <view class="menu-section">
+      <view class="menu-group">
+        <view class="menu-item tap-shrink" bindtap="onVerify">
+          <view class="menu-icon menu-icon-verify"><view class="mi-verify"></view></view>
+          <view class="menu-text-area">
+            <text class="menu-text">{{verifyStatus === 'approved' ? '学生身份认证 ✓' : '学生身份认证'}}</text>
+            <text class="menu-sub" wx:if="{{verifyStatus === 'pending'}}">审核中…</text>
+            <text class="menu-sub menu-sub-warn" wx:elif="{{verifyStatus === 'rejected'}}">未通过，点击重新提交</text>
+            <text class="menu-sub" wx:elif="{{verifyStatus !== 'approved'}}">认证后可提高信任程度</text>
+          </view>
+          <view class="menu-badge" wx:if="{{verifyStatus === 'pending'}}">审核中</view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item tap-shrink" wx:if="{{userInfo._id}}" bindtap="onEditProfile">
+          <view class="menu-icon menu-icon-info"><view class="mi-idcard"></view></view>
+          <view class="menu-text-area">
+            <text class="menu-text">我的信息</text>
+          </view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item tap-shrink" bindtap="onMyPosts">
+          <view class="menu-icon menu-icon-posts"><view class="mi-posts"></view></view>
+          <text class="menu-text">我的发布</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item tap-shrink" bindtap="onMyFavorites">
+          <view class="menu-icon menu-icon-fav"><view class="mi-star"></view></view>
+          <text class="menu-text">我的收藏</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="menu-group">
+        <view class="menu-item tap-shrink" bindtap="onMyComplaints">
+          <view class="menu-icon menu-icon-complaint"><view class="mi-flag"></view></view>
+          <text class="menu-text">我的投诉</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item tap-shrink" bindtap="onFeedback">
+          <view class="menu-icon menu-icon-feedback"><view class="mi-edit"></view></view>
+          <text class="menu-text">意见反馈</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="menu-group">
+        <view class="menu-item tap-shrink" bindtap="onSettings">
+          <view class="menu-icon menu-icon-settings"><view class="mi-gear"></view></view>
+          <text class="menu-text">设置</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item tap-shrink" bindtap="onAbout">
+          <view class="menu-icon menu-icon-about"><view class="mi-info"></view></view>
+          <text class="menu-text">关于我们</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="menu-group" wx:if="{{userInfo._id}}">
+        <view class="menu-item tap-shrink" bindtap="doLogout">
+          <view class="menu-icon menu-icon-logout"><view class="mi-logout"></view></view>
+          <text class="menu-text logout-text">退出登录</text>
+          <text class="menu-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="profile-bottom-safe"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 关于我们弹窗（独立于scroll-view） -->
+  <view class="about-modal-mask" wx:if="{{showAboutModal}}" catchtap="closeAbout">
+    <view class="about-modal" catchtap="">
+      <view class="about-logo-wrap">
+        <view class="about-logo-text">XX校园</view>
+        <view class="about-logo-sub">TRAVEL DUCK</view>
+      </view>
+      <view class="about-version">v1.0.0</view>
+      <view class="about-body">
+        <view class="about-title">关于XX校园</view>
+        <view class="about-desc">XX校园是一款专为XX大学同学打造的校园生活服务平台。我们致力于让校园出行更安全、生活更便捷。</view>
+        <view class="about-features">
+          <view class="about-feat-item"><view class="about-feat-dot"></view><text>校园拼车 — 安全实惠的同行选择</text></view>
+          <view class="about-feat-item"><view class="about-feat-dot"></view><text>跑腿代取 — 快递取送轻松搞定</text></view>
+          <view class="about-feat-item"><view class="about-feat-dot"></view><text>失物招领 — 帮你找回丢失物品</text></view>
+          <view class="about-feat-item"><view class="about-feat-dot"></view><text>二手交易 — 闲置物品循环利用</text></view>
+          <view class="about-feat-item"><view class="about-feat-dot"></view><text>校园墙 — 分享交流自由发声</text></view>
+        </view>
+        <view class="about-slogan">安全 · 便捷 · 信赖 — 让校园生活更美好</view>
+      </view>
+      <view class="about-contact">
+        <view class="about-contact-header">
+          <view class="about-contact-title">联系我们</view>
+          <view class="about-contact-join">如果你对我们的开发有兴趣，欢迎加入我们</view>
+        </view>
+        <view class="about-contact-row"><text class="about-contact-label">示例联系方式</text><text class="about-contact-value">请替换为你的联系方式</text></view>
+        <view class="about-contact-row"><text class="about-contact-label">反馈邮箱</text><text class="about-contact-value">contact@example.com</text></view>
+        <view class="about-contact-row"><text class="about-contact-label">示例网站</text><text class="about-contact-value">app.suyu.ink（部署前替换）</text></view>
+      </view>
+      <view class="about-close-btn tap-shrink" bindtap="closeAbout"><text>关闭</text></view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,111 @@
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand nav-brand-center">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <text class="brand-name">校园题库</text>
+      </view>
+      <view class="nav-bell tap-shrink" bindtap="goMsg">
+        <view class="bell-icon"><view class="bell-top"></view><view class="bell-bottom"></view></view>
+        <view wx:if="{{systemUnread > 0}}" class="bell-red-dot"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="page-nav-spacer" style="height:{{navBarHeight}}px;"></view>
+
+  <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" style="top:{{navBarHeight}}px;">
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <input class="search-input" placeholder="搜索科目、关键词..." value="{{searchText}}" bindinput="onSearchInput" bindconfirm="doSearch" confirm-type="search"/>
+      <view class="search-btn tap-shrink" bindtap="doSearch">搜索</view>
+    </view>
+
+    <!-- 分类标签 -->
+    <view class="filter-tags">
+      <view class="filter-tag {{currentTab === index ? 'active' : ''}}" 
+            wx:for="{{tabs}}" wx:key="*this" 
+            data-index="{{index}}" bindtap="switchTab">
+        {{item}}
+      </view>
+    </view>
+
+    <!-- 题库列表 -->
+    <view class="qb-list" wx:if="{{filteredList.length > 0}}">
+      <view class="qb-card" wx:for="{{filteredList}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+        <!-- 左侧信息 -->
+        <view class="card-info">
+          <view class="card-header">
+            <text class="card-title">{{item.name}}</text>
+            <view class="card-cat-badge">{{item.category}}</view>
+          </view>
+          <view class="card-meta">
+            <text wx:if="{{item.course}}" class="meta-item">{{item.course}}</text>
+            <text wx:if="{{item.year}}" class="meta-item">{{item.year}}年</text>
+            <text wx:if="{{item.question_count}}" class="meta-item count">{{item.question_count}}题</text>
+          </view>
+          <view class="card-tags" wx:if="{{item._tags.length > 0}}">
+            <text class="card-tag-chip" wx:for="{{item._tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+          <text wx:if="{{item.description}}" class="card-desc">{{item.description}}</text>
+        </view>
+        <!-- 右侧缩略图 -->
+        <view class="card-thumb" wx:if="{{item._thumbImage}}">
+          <image class="thumb-img" src="{{item._thumbImage}}" mode="aspectFill" />
+        </view>
+        <view class="card-thumb placeholder" wx:elif="{{item.category === '高数'}}">
+          <view class="thumb-placeholder ph-math"></view>
+        </view>
+        <view class="card-thumb placeholder" wx:elif="{{item.category === '英语'}}">
+          <view class="thumb-placeholder ph-english"></view>
+        </view>
+        <view class="card-thumb placeholder" wx:elif="{{item.category === '思政'}}">
+          <view class="thumb-placeholder ph-politics"></view>
+        </view>
+        <view class="card-thumb placeholder" wx:elif="{{item.category === '专业课'}}">
+          <view class="thumb-placeholder ph-cs"></view>
+        </view>
+        <view class="card-thumb placeholder" wx:else>
+          <view class="thumb-placeholder ph-other"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!loading && filteredList.length === 0}}" class="empty-state">
+      <view class="empty-icon">
+        <view class="empty-book"></view>
+      </view>
+      <text class="empty-text">暂无题库内容</text>
+      <text class="empty-sub">点击下方按钮发布第一个题库</text>
+    </view>
+
+    <!-- 加载中 -->
+    <view wx:if="{{loading}}" class="loading-state">
+      <view class="loading-spinner"></view>
+      <text>加载中...</text>
+    </view>
+
+    <view class="tab-bottom-space"></view>
+  </scroll-view>
+
+  <!-- 发布浮动按钮 -->
+  <view class="fab-publish tap-shrink" bindtap="goPublish">
+    <view class="fab-icon">
+      <view class="fab-h"></view>
+      <view class="fab-v"></view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-label="校园新生指南矢量插画">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="0.55" stop-color="#f6f8ff"/>
+      <stop offset="1" stop-color="#e8efff"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6f7cff"/>
+      <stop offset="1" stop-color="#4856d8"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd35a"/>
+      <stop offset="1" stop-color="#ff9b45"/>
+    </linearGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="2.2" fill="#7784d8" opacity="0.16"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1200" height="360" rx="42"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="360" fill="url(#paper)"/>
+    <rect width="1200" height="360" fill="url(#dots)" opacity="0.65"/>
+
+    <path d="M640 360C700 220 760 112 876 36c108-71 238-54 324-6v330Z" fill="url(#sky)"/>
+    <circle cx="1026" cy="74" r="116" fill="#8290ff" opacity="0.35"/>
+    <circle cx="1053" cy="54" r="66" fill="url(#sun)"/>
+    <path d="M564 337c90-68 169-89 252-69 46 11 83 32 124 55 71 40 155 46 260 7v30H564Z" fill="#c8d6ff"/>
+
+    <g opacity="0.9" fill="none" stroke="#5b67ca" stroke-width="5" stroke-linecap="round">
+      <path d="M566 83h76"/>
+      <path d="M592 58v50"/>
+      <path d="M542 105l100-72" opacity="0.32"/>
+    </g>
+
+    <g transform="translate(700 92)">
+      <path d="M25 184h432v22H25z" fill="#253266" opacity="0.2"/>
+      <path d="M70 69h340v119H70z" fill="#fffaf2" stroke="#26336c" stroke-width="8"/>
+      <path d="M45 69 240 1l195 68Z" fill="#ffb34f" stroke="#26336c" stroke-width="8" stroke-linejoin="round"/>
+      <circle cx="240" cy="55" r="22" fill="#ff6b55" stroke="#26336c" stroke-width="7"/>
+      <path d="M110 106h70v82h-70zm145 0h70v82h-70z" fill="#a8d9ef" stroke="#26336c" stroke-width="7"/>
+      <path d="M345 103h33v85h-33z" fill="#ffd35a" stroke="#26336c" stroke-width="7"/>
+      <path d="M92 143h300" fill="none" stroke="#26336c" stroke-width="6" stroke-dasharray="12 11"/>
+      <path d="M2 206h476" fill="none" stroke="#26336c" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(620 235) rotate(-8)">
+      <path d="M0 0h113v80H0z" fill="#fff" stroke="#26336c" stroke-width="7"/>
+      <path d="M18 24h77M18 43h61M18 62h46" stroke="#7080d9" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="98" cy="14" r="16" fill="#ff6b55"/>
+    </g>
+
+    <g transform="translate(1064 225)">
+      <path d="M0 44c0-25 20-44 45-44s45 19 45 44v47H0Z" fill="#7fd6a5" stroke="#26336c" stroke-width="7"/>
+      <path d="M45 21v104" stroke="#26336c" stroke-width="7"/>
+      <path d="M16 48c18 0 29 8 29 24M74 48c-18 0-29 8-29 24" fill="none" stroke="#26336c" stroke-width="6" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(560 28)">
+      <path d="m31 0 8 22 23 8-23 8-8 23-8-23L0 30l23-8Z" fill="#ffb34f"/>
+    </g>
+    <g transform="translate(1128 154)">
+      <path d="m22 0 6 16 16 6-16 6-6 16-6-16-16-6 16-6Z" fill="#fff" opacity="0.9"/>
+    </g>
+  </g>
+</svg>

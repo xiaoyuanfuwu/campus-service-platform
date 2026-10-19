@@ -1,0 +1,73 @@
+<!-- pages/search/search.wxml — 全局搜索（精简布局） -->
+<view class="page-search">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 精简顶部栏 -->
+  <view class="sr-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="sr-bar-inner">
+      <view class="sr-back tap-shrink" bindtap="onBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="sr-input-wrap">
+        <text class="sr-input-icon"><view class="svg-ico svg-ico-search"></view></text>
+        <input
+          class="sr-input"
+          value="{{keyword}}"
+          placeholder="搜索..."
+          placeholder-class="sr-placeholder"
+          focus="{{true}}"
+          bindinput="onInput"
+          bindconfirm="onSearch"
+          confirm-type="search"
+        />
+        <view class="sr-clear tap-shrink" wx:if="{{keyword}}" bindtap="onClear">
+          <text class="sr-clear-x">✕</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索历史：简洁标签行 -->
+  <view class="sr-history" wx:if="{{!searched && history.length > 0}}">
+    <scroll-view class="sr-history-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="sr-history-tags">
+        <view
+          wx:for="{{history}}" wx:key="*this"
+          class="sr-history-tag tap-shrink"
+          data-keyword="{{item}}"
+          bindtap="onHistoryTap"
+        >{{item}}</view>
+      </view>
+    </scroll-view>
+    <view class="sr-history-clear tap-shrink" bindtap="onClearHistory">清空</view>
+  </view>
+
+  <!-- 结果列表：紧凑卡片 -->
+  <scroll-view class="sr-results" scroll-y enhanced show-scrollbar="{{false}}" wx:if="{{searched}}">
+
+    <view class="sr-empty" wx:if="{{!loading && results.length === 0}}">
+      <text class="sr-empty-icon"><view class="svg-ico svg-ico-search"></view></text>
+      <text class="sr-empty-text">没有找到相关内容</text>
+    </view>
+
+    <view
+      wx:for="{{results}}" wx:key="_id"
+      class="sr-item tap-shrink"
+      data-type="{{item.type}}"
+      data-id="{{item._id}}"
+      bindtap="onResultTap"
+    >
+      <view class="sr-item-tag" style="background:{{item.color}}">
+        <text class="sr-tag-text">{{item.typeName}}</text>
+      </view>
+      <view class="sr-item-info">
+        <text class="sr-item-title">{{item.title}}</text>
+        <text class="sr-item-desc">{{item.desc}}</text>
+      </view>
+      <text class="sr-item-arrow">›</text>
+    </view>
+
+    <view class="sr-loading" wx:if="{{loading}}">搜索中...</view>
+  </scroll-view>
+
+</view>

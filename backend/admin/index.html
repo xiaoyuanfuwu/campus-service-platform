@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+    <title>校园服务平台 · 管理后台</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="assets/logo-64.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="styles.css?v=15">
+</head>
+<body>
+<!-- 通用 SVG 图标库 (defs) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 品牌 logo (小鱼从纸箱探头) -->
+    <symbol id="i-logo" viewBox="0 0 64 64">
+      <image href="assets/logo-64.png" x="0" y="0" width="64" height="64" preserveAspectRatio="xMidYMid meet"/>
+    </symbol>
+
+    <!-- 锁 -->
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="11" width="16" height="10" rx="2"/>
+      <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      <circle cx="12" cy="16" r="1.3" fill="currentColor"/>
+    </symbol>
+
+    <!-- 菜单 (hamburger) -->
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M4 7h16M4 12h16M4 17h16"/>
+    </symbol>
+
+    <!-- 仪表盘 -->
+    <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="8" height="10" rx="1.5"/>
+      <rect x="13" y="3" width="8" height="6" rx="1.5"/>
+      <rect x="13" y="11" width="8" height="10" rx="1.5"/>
+      <rect x="3" y="15" width="8" height="6" rx="1.5"/>
+    </symbol>
+
+    <!-- 用户组 -->
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="8" r="3.2"/>
+      <path d="M3 21v-1a6 6 0 0 1 12 0v1"/>
+      <circle cx="17" cy="9" r="2.5"/>
+      <path d="M21 19v-.5a4 4 0 0 0-3-3.8"/>
+    </symbol>
+
+    <!-- 证件/实名认证 -->
+    <symbol id="i-idcard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <circle cx="8" cy="11" r="2"/>
+      <path d="M5.5 16c.6-1.4 1.5-2 2.5-2s1.9.6 2.5 2"/>
+      <path d="M14 9h5M14 13h5M14 17h3"/>
+    </symbol>
+
+    <!-- 包裹/盒子 -->
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/>
+      <path d="M3 8l9 5 9-5M12 13v8"/>
+    </symbol>
+
+    <!-- 聊天 -->
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a8 8 0 0 1-12.4 6.7L3 20l1.3-5.6A8 8 0 1 1 21 12Z"/>
+    </symbol>
+
+    <!-- 喇叭 -->
+    <symbol id="i-megaphone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11v2a2 2 0 0 0 2 2h2l8 4V5L7 9H5a2 2 0 0 0-2 2Z"/>
+      <path d="M18 8a4 4 0 0 1 0 8"/>
+    </symbol>
+
+    <!-- 警告三角 -->
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 2 21h20L12 3Z"/>
+      <path d="M12 10v5M12 18v.5"/>
+    </symbol>
+
+    <!-- 反馈/便签 -->
+    <symbol id="i-feedback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/>
+      <path d="M8 9h8M8 13h6M8 17h4"/>
+    </symbol>
+
+    <!-- 星 -->
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1 6L12 16.8 6.7 19.6l1-6L3.4 9.4l6-.9L12 3Z"/>
+    </symbol>
+
+    <!-- 邮件 -->
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2"/>
+      <path d="m3 7 9 6 9-6"/>
+    </symbol>
+
+    <!-- 趋势图 -->
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/>
+      <path d="M7 15l4-4 3 3 5-7"/>
+    </symbol>
+
+    <!-- 盾牌 -->
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3Z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </symbol>
+
+    <!-- 钥匙 -->
+    <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8" cy="15" r="4"/>
+      <path d="m11 12 9-9M16 7l3 3"/>
+    </symbol>
+
+    <!-- 日志 -->
+    <symbol id="i-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/>
+      <path d="M8 10h8M8 14h8M8 18h5"/>
+    </symbol>
+
+    <!-- 退出 -->
+    <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/>
+      <path d="M10 17l-5-5 5-5M5 12h11"/>
+    </symbol>
+
+    <!-- 搜索 -->
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <path d="m20 20-3.5-3.5"/>
+    </symbol>
+
+    <!-- 主题/调色板 -->
+    <symbol id="i-theme" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="13.5" cy="6.5" r=".8" fill="currentColor"/>
+      <circle cx="17.5" cy="10.5" r=".8" fill="currentColor"/>
+      <circle cx="8.5" cy="7.5" r=".8" fill="currentColor"/>
+      <circle cx="6.5" cy="12.5" r=".8" fill="currentColor"/>
+      <path d="M12 2a10 10 0 0 0 0 20c1.5 0 2-1 2-2 0-1.2-1-1.5-1-2.5s.8-1.5 2-1.5h2.5a4.5 4.5 0 0 0 4.5-4.5C22 6 17.5 2 12 2Z"/>
+    </symbol>
+
+    <!-- 铃铛 -->
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 6 2 7H4c.5-1 2-3 2-7Z"/>
+      <path d="M10 19a2 2 0 0 0 4 0"/>
+    </symbol>
+
+    <!-- 全屏 -->
+    <symbol id="i-fullscreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"/>
+    </symbol>
+
+    <!-- 下拉雪佛龙 -->
+    <symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </symbol>
+
+    <!-- 闪电 -->
+    <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>
+    </symbol>
+
+    <!-- 刷新 -->
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 0 1 15.5-6.3L21 8M21 3v5h-5"/>
+      <path d="M21 12a9 9 0 0 1-15.5 6.3L3 16M3 21v-5h5"/>
+    </symbol>
+
+    <!-- 加号 -->
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M12 5v14M5 12h14"/>
+    </symbol>
+
+    <!-- 太阳/问候 -->
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+    </symbol>
+
+    <!-- 下载 -->
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>
+    </symbol>
+
+    <!-- 用户（个人中心） -->
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>
+    </symbol>
+
+    <!-- 列表 -->
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 6h13M8 12h13M8 18h13"/>
+      <circle cx="4" cy="6" r="1" fill="currentColor"/>
+      <circle cx="4" cy="12" r="1" fill="currentColor"/>
+      <circle cx="4" cy="18" r="1" fill="currentColor"/>
+    </symbol>
+
+    <!-- 群 -->
+    <symbol id="i-group" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.5"/>
+      <path d="M5 21a7 7 0 0 1 14 0"/>
+    </symbol>
+
+    <!-- 上箭头 -->
+    <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </symbol>
+
+    <!-- 下箭头 -->
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </symbol>
+
+    <!-- 定位/地图 -->
+    <symbol id="i-location" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+      <circle cx="12" cy="9" r="2.5"/>
+    </symbol>
+
+    <!-- 地图 -->
+    <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/>
+      <path d="M9 4v14M15 6v14"/>
+    </symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2"/>
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+      <path d="M2 13h20"/>
+    </symbol>
+    <!-- 图片/图鉴 -->
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <path d="M21 15l-5-5L5 21"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ 命令面板 (⌘K) ============ -->
+<div class="cmdk-overlay" id="cmdkOverlay" onclick="if(event.target===this)closeCmdK()">
+  <div class="cmdk-box">
+    <div class="cmdk-input-wrap">
+      <svg class="ic" width="18" height="18"><use href="#i-search"/></svg>
+      <input type="text" id="cmdkInput" placeholder="搜索功能、页面、设置… (输入即跳转)" autocomplete="off">
+      <kbd style="background:rgba(31,27,18,0.05);padding:3px 8px;border-radius:5px;font-size:11px;color:var(--t3);font-weight:700">ESC</kbd>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+    <div class="cmdk-footer">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> 选择</span>
+      <span><kbd>↵</kbd> 打开</span>
+      <span><kbd>ESC</kbd> 关闭</span>
+    </div>
+  </div>
+</div>
+
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="56" height="56"><use href="#i-logo"/></svg>
+    </div>
+    <h1>校园服务平台后台</h1>
+    <div class="sub">校园综合服务平台 · 控制台</div>
+    <div class="login-input-wrap">
+      <svg class="li-ic" width="18" height="18"><use href="#i-user"/></svg>
+      <input type="text" id="loginUser" placeholder="管理员账号" autocomplete="off">
+    </div>
+    <div class="login-input-wrap">
+      <svg class="li-ic" width="18" height="18"><use href="#i-lock"/></svg>
+      <input type="password" id="loginPass" placeholder="管理员密码" onkeydown="if(event.key==='Enter')window.doLogin&&doLogin()">
+    </div>
+    <button onclick="doLogin()">登 录</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="appPage">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><svg width="24" height="24"><use href="#i-logo"/></svg></div>
+      <div class="brand-text">
+        <div class="name">校园服务平台后台</div>
+        <div class="role" id="sidebarRole">管理员</div>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+        <svg width="16" height="16"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="ng">概览</div>
+      <div class="ni active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="ic"><svg width="18" height="18"><use href="#i-dashboard"/></svg></span><span class="ni-text">数据概览</span></div>
+
+      <div class="ng">业务</div>
+      <div class="ni" data-page="users" onclick="switchPage('users')"><span class="ic"><svg width="18" height="18"><use href="#i-users"/></svg></span><span class="ni-text">用户管理</span></div>
+      <div class="ni" data-page="verifications" onclick="switchPage('verifications')"><span class="ic"><svg width="18" height="18"><use href="#i-idcard"/></svg></span><span class="ni-text">实名认证</span><span class="badge" id="verifyBadge" style="display:none">0</span></div>
+      <div class="ni" data-page="modulePosts" onclick="switchPage('modulePosts')"><span class="ic"><svg width="18" height="18"><use href="#i-box"/></svg></span><span class="ni-text">模块帖子</span></div>
+      <div class="ni" data-page="forums" onclick="switchPage('forums')"><span class="ic"><svg width="18" height="18"><use href="#i-list"/></svg></span><span class="ni-text">校园墙管理</span></div>
+      <div class="ni" onclick="openAuditConfirm()"><span class="ic"><svg width="18" height="18"><use href="#i-zap"/></svg></span><span class="ni-text">内容审核台</span></div>
+      <div class="ni" data-page="messages" onclick="switchPage('messages')"><span class="ic"><svg width="18" height="18"><use href="#i-chat"/></svg></span><span class="ni-text">聊天管理</span></div>
+      <div class="ni" data-page="announcements" onclick="switchPage('announcements')"><span class="ic"><svg width="18" height="18"><use href="#i-megaphone"/></svg></span><span class="ni-text">公告管理</span></div>
+      <div class="ni" data-page="mapPoi" onclick="switchPage('mapPoi')"><span class="ic"><svg width="18" height="18"><use href="#i-map"/></svg></span><span class="ni-text">地图地标</span></div>
+      <div class="ni" data-page="guideFeed" onclick="switchPage('guideFeed')"><span class="ic"><svg width="18" height="18"><use href="#i-image"/></svg></span><span class="ni-text">图鉴管理</span></div>
+      <div class="ni" data-page="parttime" onclick="switchPage('parttime')"><span class="ic"><svg width="18" height="18"><use href="#i-briefcase"/></svg></span><span class="ni-text">兼职管理</span></div>
+
+      <div class="ng">处理</div>
+      <div class="ni" data-page="complaints" onclick="switchPage('complaints')"><span class="ic"><svg width="18" height="18"><use href="#i-alert"/></svg></span><span class="ni-text">投诉处理</span><span class="badge" id="complaintBadge" style="display:none">0</span></div>
+      <div class="ni" data-page="feedback" onclick="switchPage('feedback')"><span class="ic"><svg width="18" height="18"><use href="#i-feedback"/></svg></span><span class="ni-text">反馈管理</span><span class="badge" id="feedbackBadge" style="display:none">0</span></div>
+            <div class="ni" data-page="contact" onclick="switchPage('contact')"><span class="ic"><svg width="18" height="18"><use href="#i-mail"/></svg></span><span class="ni-text">留言管理</span></div>
+
+      <div class="ng">系统</div>
+      <div class="ni" data-page="stats" onclick="switchPage('stats')"><span class="ic"><svg width="18" height="18"><use href="#i-chart"/></svg></span><span class="ni-text">数据统计</span></div>
+      <div class="ni" data-page="ipmanage" onclick="switchPage('ipmanage')"><span class="ic"><svg width="18" height="18"><use href="#i-shield"/></svg></span><span class="ni-text">IP / 敏感词</span></div>
+      <div class="ni" data-page="admins" onclick="switchPage('admins')"><span class="ic"><svg width="18" height="18"><use href="#i-key"/></svg></span><span class="ni-text">管理员</span></div>
+      <div class="ni" data-page="logs" onclick="switchPage('logs')"><span class="ic"><svg width="18" height="18"><use href="#i-log"/></svg></span><span class="ni-text">操作日志</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user" onclick="openCmdK()">
+        <div class="avatar" id="sidebarAvatar">A</div>
+        <div class="uname" id="sidebarUname">Admin</div>
+      </div>
+      <div class="logout" onclick="doLogout()">
+        <svg width="14" height="14"><use href="#i-logout"/></svg>
+        退出登录
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()">
+          <svg width="18" height="18"><use href="#i-menu"/></svg>
+        </button>
+        <div class="topbar-title" id="topbarTitle">数据概览</div>
+        <span class="topbar-subtitle" id="topbarSubtitle">实时数据</span>
+      </div>
+
+      <div class="topbar-search">
+        <svg class="icon" width="16" height="16"><use href="#i-search"/></svg>
+        <input type="text" id="topSearchInput" placeholder="搜索用户、帖子、订单…" onfocus="openCmdK()">
+        <span class="shortcut">⌘K</span>
+      </div>
+
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" id="themeBtn" onclick="toggleThemePanel()" title="主题色">
+          <svg width="18" height="18"><use href="#i-theme"/></svg>
+        </button>
+        <button class="topbar-icon-btn" id="notifBtn" onclick="toggleNotifPanel()" title="通知">
+          <svg width="18" height="18"><use href="#i-bell"/></svg>
+          <span class="dot" id="notifDot" style="display:none"></span>
+        </button>
+        <button class="topbar-icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏">
+          <svg width="18" height="18"><use href="#i-fullscreen"/></svg>
+        </button>
+        <div class="topbar-user" onclick="showProfileMenu()">
+          <div class="avatar" id="topAvatar">A</div>
+          <span class="uname" id="topUname">Admin</span>
+          <svg class="chev" width="11" height="11"><use href="#i-chevron-down"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- 通知面板 -->
+    <div class="topbar-popover" id="notifPanel">
+      <div class="popover-header">
+        <span>
+          <svg width="14" height="14" style="vertical-align:-2px;margin-right:4px"><use href="#i-bell"/></svg>
+          通知中心
+        </span>
+        <span class="link" onclick="clearAllNotifs()">全部已读</span>
+      </div>
+      <div class="popover-body" id="notifBody">
+        <div class="notif-empty">加载中...</div>
+      </div>
+    </div>
+
+    <!-- 主题面板 -->
+    <div class="topbar-popover" id="themePanel">
+      <div class="popover-header">
+        <span>
+          <svg width="14" height="14" style="vertical-align:-2px;margin-right:4px"><use href="#i-theme"/></svg>
+          主题外观
+        </span>
+        <span class="link" onclick="resetTheme()">恢复默认</span>
+      </div>
+      <div class="popover-body">
+        <div style="padding:12px 20px 4px;font-size:11px;color:var(--t3);font-weight:700;letter-spacing:1px;text-transform:uppercase">主色调</div>
+        <div class="theme-grid" id="themeGrid"></div>
+        <div style="padding:8px 20px 16px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--t2);font-weight:600">紧凑模式</span>
+          <label style="position:relative;display:inline-block;width:40px;height:22px;cursor:pointer">
+            <input type="checkbox" id="compactToggle" style="opacity:0;width:0;height:0" onchange="toggleCompact(this.checked)">
+            <span style="position:absolute;inset:0;background:var(--bd);border-radius:99px;transition:0.3s" class="toggle-track"></span>
+            <span style="position:absolute;top:2px;left:2px;width:18px;height:18px;background:#FFFFFF;border-radius:50%;transition:0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.15)" class="toggle-knob"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 仪表板 -->
+    <section class="ds active" id="sec-dashboard">
+      <div class="page-head">
+        <div>
+          <div class="ti">欢迎回来，<span id="helloName">Admin</span>
+            <svg width="22" height="22" style="vertical-align:-3px;margin-left:6px"><use href="#i-sun"/></svg>
+          </div>
+          <div class="sub" id="helloMsg">今天是个适合拯救世界的好日子</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="openCmdK()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-zap"/></svg>
+            快速跳转
+          </button>
+          <button class="action-btn primary" onclick="switchPage('stats')">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-chart"/></svg>
+            查看完整报表
+          </button>
+        </div>
+      </div>
+
+      <div class="quick-nav" id="quickNav"></div>
+
+      <div class="stats-grid" id="statCards"></div>
+      <div class="chart-card" id="trendChart" style="display:none">
+        <div class="chart-title">近 14 天趋势</div>
+        <div class="chart-bars" id="trendBars"></div>
+        <div class="chart-labels" id="trendLabels"></div>
+      </div>
+    </section>
+
+    <!-- 用户管理 -->
+    <section class="ds" id="sec-users">
+      <div class="page-head">
+        <div>
+          <div class="ti">用户管理</div>
+          <div class="sub">查看与管理平台所有用户</div>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><input type="text" id="userSearch" placeholder="搜索昵称/手机/学号..." onkeyup="if(event.key==='Enter')loadUsers(1)"><select id="userStatus" onchange="loadUsers(1)"><option value="">全部状态</option><option value="active">正常</option><option value="banned">已封禁</option><option value="disabled">已禁用</option></select><button class="action-btn" onclick="loadUsers(1)">搜索</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>头像</th><th>昵称</th><th class="sortable" data-sort="creditScore" onclick="sortUsers('creditScore')">信用分<span class="sort-arrow"></span></th><th>ID</th><th>状态</th><th class="sortable" data-sort="lastLoginTime" onclick="sortUsers('lastLoginTime')">最近登录<span class="sort-arrow"></span></th><th>操作</th></tr></thead><tbody id="userBody"></tbody></table></div>
+      <div class="pagination" id="userPg"></div>
+    </section>
+
+    <!-- 实名认证审核 -->
+    <section class="ds" id="sec-verifications">
+      <div class="page-head">
+        <div>
+          <div class="ti">实名认证审核</div>
+          <div class="sub">审核用户上传的学生证/身份证等认证材料</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card mini"><div class="stat-num" id="verifyStat-pending">0</div><div class="stat-label">待审核</div></div>
+        <div class="stat-card mini"><div class="stat-num" id="verifyStat-approved">0</div><div class="stat-label">已通过</div></div>
+        <div class="stat-card mini"><div class="stat-num" id="verifyStat-rejected">0</div><div class="stat-label">已拒绝</div></div>
+        <div class="stat-card mini"><div class="stat-num" id="verifyStat-total">0</div><div class="stat-label">累计</div></div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="verifyStatus" onchange="loadVerifications(1)"><option value="approved">已通过</option><option value="pending">待审核</option><option value="rejected">已拒绝</option><option value="">全部</option></select><button class="action-btn" onclick="loadVerifications(1)">刷新</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>用户</th><th>昵称</th><th>ID</th><th>类型</th><th>材料图片</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead><tbody id="verifyBody"></tbody></table></div>
+      <div class="pagination" id="verifyPg"></div>
+    </section>
+
+    <!-- 公告管理 -->
+    <section class="ds" id="sec-announcements">
+      <div class="page-head">
+        <div>
+          <div class="ti">公告管理</div>
+          <div class="sub">发布、编辑、撤回平台公告</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn primary" onclick="showAnnounceForm()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-plus"/></svg>
+            新建公告
+          </button>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="announceStatus" onchange="loadAnnouncements(1)"><option value="">全部状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="recalled">已撤回</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>标题</th><th>类型</th><th>状态</th><th>置顶</th><th>浏览</th><th>发布时间</th><th>操作</th></tr></thead><tbody id="announceBody"></tbody></table></div>
+      <div class="pagination" id="announcePg"></div>
+    </section>
+
+    <!-- 模块帖子 -->
+    <section class="ds" id="sec-modulePosts">
+      <div class="page-head">
+        <div>
+          <div class="ti">模块帖子管理</div>
+          <div class="sub">管理各个业务模块下的帖子</div>
+        </div>
+      </div>
+      <div class="mp-tabs" id="mpTabs"></div>
+      <div class="toolbar"><div class="search-group"><input type="text" id="mpSearch" placeholder="搜索标题/内容..." onkeyup="if(event.key==='Enter')loadModulePosts(1)"><select id="mpAudit" onchange="loadModulePosts(1)"><option value="">全部审核</option><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已拒绝</option></select><select id="mpStatus" onchange="loadModulePosts(1)"><option value="">全部状态</option><option value="active">活跃</option><option value="completed">已完成</option><option value="cancelled">已下架</option><option value="closed">已关闭</option></select><button class="action-btn" onclick="loadModulePosts(1)">搜索</button></div></div>
+      <div class="table-wrap"><table><thead id="mpHead"><tr><th>模块</th><th>标题</th><th>发布者</th><th>状态</th><th>数据</th><th>发布时间</th><th>操作</th></tr></thead><tbody id="mpBody"></tbody></table></div>
+      <div class="pagination" id="mpPg"></div>
+    </section>
+
+    <!-- 校园墙管理 -->
+    <section class="ds" id="sec-forums">
+      <div class="page-head">
+        <div>
+          <div class="ti">校园墙管理</div>
+          <div class="sub">校园墙帖子独立审核（新帖默认待审，通过后展示）</div>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><input type="text" id="fSearch" placeholder="搜索标题/内容/作者..." onkeyup="if(event.key==='Enter')loadForums(1)"><select id="fAudit" onchange="loadForums(1)"><option value="">全部审核状态</option><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已拒绝</option></select><select id="fStatus" onchange="loadForums(1)"><option value="">全部状态</option><option value="active">展示中</option><option value="cancelled">已下架</option><option value="closed">已关闭</option></select><button class="action-btn" onclick="loadForums(1)">搜索</button></div></div>
+      <div class="table-wrap"><table><thead id="fHead"><tr><th>标题</th><th>作者</th><th>标签</th><th>审核</th><th>状态</th><th>数据</th><th>发布时间</th><th>操作</th></tr></thead><tbody id="fBody"></tbody></table></div>
+      <div class="pagination" id="fPg"></div>
+    </section>
+
+    <!-- 聊天管理 -->
+    <section class="ds" id="sec-messages">
+      <div class="page-head">
+        <div>
+          <div class="ti">聊天管理</div>
+          <div class="sub">查看与管理平台所有聊天对话</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="msg-tab active" data-mode="private" onclick="setMsgMode('private')">
+          <svg width="14" height="14" style="vertical-align:-2px;margin-right:4px"><use href="#i-chat"/></svg>私信对话
+        </button>
+        <button class="msg-tab" data-mode="group" onclick="setMsgMode('group')">
+          <svg width="14" height="14" style="vertical-align:-2px;margin-right:4px"><use href="#i-group"/></svg>拼车群聊
+        </button>
+        <button class="msg-tab" data-mode="search" onclick="document.getElementById('msgSearchBox').style.display='flex';setMsgMode('search')">
+          <svg width="14" height="14" style="vertical-align:-2px;margin-right:4px"><use href="#i-search"/></svg>消息搜索
+        </button>
+      </div>
+      <div id="msgSearchBox" style="display:none;margin-bottom:16px">
+        <div class="search-group" style="width:100%"><input type="text" id="msgKeyword" placeholder="输入关键词搜索所有消息..." onkeyup="if(event.key==='Enter')doMsgSearch()"><button class="action-btn" onclick="doMsgSearch()">搜索</button></div>
+      </div>
+      <div class="table-wrap"><table><thead id="msgHead"><tr><th>用户A</th><th>用户B</th><th>最后消息</th><th>消息数</th><th>最后时间</th><th>操作</th></tr></thead><tbody id="msgBody"></tbody></table></div>
+      <div class="pagination" id="msgPg"></div>
+    </section>
+
+    <!-- 评价管理（已停用） -->
+    <section class="ds" id="sec-reviews" style="display:none">
+      <div class="page-head">
+        <div>
+          <div class="ti">评价管理</div>
+          <div class="sub">查看和处理用户评价</div>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="rvRating" onchange="loadReviews(1)"><option value="">全部评分</option><option value="5">5星</option><option value="4">4星</option><option value="3">3星</option><option value="2">2星</option><option value="1">1星</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>评价者</th><th>被评价者</th><th>评分</th><th>内容</th><th>关联拼车</th><th>时间</th><th>操作</th></tr></thead><tbody id="rvBody"></tbody></table></div>
+      <div class="pagination" id="rvPg"></div>
+    </section>
+
+    <!-- 留言管理 -->
+    <section class="ds" id="sec-contact">
+      <div class="page-head">
+        <div>
+          <div class="ti">留言管理</div>
+          <div class="sub">回复用户留言</div>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="ctRead" onchange="loadContacts(1)"><option value="">全部</option><option value="false">未回复</option><option value="true">已回复</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>昵称</th><th>联系方式</th><th>内容</th><th>回复</th><th>时间</th><th>操作</th></tr></thead><tbody id="ctBody"></tbody></table></div>
+      <div class="pagination" id="ctPg"></div>
+    </section>
+
+    <!-- 投诉处理 -->
+    <section class="ds" id="sec-complaints">
+      <div class="page-head">
+        <div>
+          <div class="ti">投诉处理</div>
+          <div class="sub">处理用户投诉与纠纷</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="loadComplaints(1)">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-refresh"/></svg>
+            刷新
+          </button>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="complaintStatus" onchange="loadComplaints(1)"><option value="">全部</option><option value="pending">待处理</option><option value="investigating">调查中</option><option value="resolved">已处理</option><option value="rejected">已驳回</option></select><select id="complaintSeverity" onchange="loadComplaints(1)"><option value="">全部严重程度</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option><option value="urgent">紧急</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>投诉人</th><th>被投诉</th><th>类型</th><th>原因</th><th>严重</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody id="complaintBody"></tbody></table></div>
+      <div class="pagination" id="complaintPg"></div>
+    </section>
+
+    <!-- 反馈管理 -->
+    <section class="ds" id="sec-feedback">
+      <div class="page-head">
+        <div>
+          <div class="ti">反馈管理</div>
+          <div class="sub">查看与处理用户反馈</div>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="feedbackStatus" onchange="loadFeedback(1)"><option value="">全部</option><option value="pending">待处理</option><option value="reviewing">审核中</option><option value="resolved">已处理</option><option value="rejected">已驳回</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>提交者</th><th>标题</th><th>类型</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody id="feedbackBody"></tbody></table></div>
+      <div class="pagination" id="feedbackPg"></div>
+    </section>
+
+    <!-- 数据统计 -->
+    <section class="ds" id="sec-stats">
+      <div class="page-head">
+        <div>
+          <div class="ti">数据统计</div>
+          <div class="sub">深度数据洞察与趋势分析</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="exportStats()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-download"/></svg>
+            导出数据
+          </button>
+        </div>
+      </div>
+      <div class="stats-grid" id="statsCards"></div>
+      <div class="chart-card"><div class="chart-title">用户增长趋势（近30天）</div><div class="chart-bars" id="growthBars"></div><div class="chart-labels" id="growthLabels"></div></div>
+      <div class="chart-card"><div class="chart-title">热门路线 TOP 10</div><div id="hotRoutes"></div></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)" id="distCards"></div>
+    </section>
+
+    <!-- IP / 敏感词 -->
+    <section class="ds" id="sec-ipmanage">
+      <div class="page-head">
+        <div>
+          <div class="ti">风控中心</div>
+          <div class="sub">IP 封禁与敏感词管理</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <button class="action-btn info" onclick="showIPSection()">IP 风控</button>
+        <button class="action-btn info" onclick="showSWSection()">敏感词管理</button>
+      </div>
+      <div id="ipSection" style="display:none"><div class="toolbar"><div class="search-group"><select id="ipBlocked" onchange="loadIPs(1)"><option value="">全部</option><option value="true">已封锁</option><option value="false">未封锁</option></select></div><button class="action-btn" onclick="showBlockIPForm()">封锁 IP</button></div><div class="table-wrap"><table><thead><tr><th>IP</th><th>封锁</th><th>记录数</th><th>最后访问</th><th>操作</th></tr></thead><tbody id="ipBody"></tbody></table></div><div class="pagination" id="ipPg"></div></div>
+      <div id="swSection" style="display:none"><div class="toolbar"><div class="search-group"><select id="swCategory" onchange="loadSW(1)"><option value="">全部分类</option><option value="abuse">辱骂</option><option value="spam">广告</option><option value="politics">政治</option><option value="other">其他</option></select></div><button class="action-btn" onclick="showAddSWForm()">+ 添加敏感词</button></div><div class="table-wrap"><table><thead><tr><th>敏感词</th><th>级别</th><th>分类</th><th>替换词</th><th>状态</th><th>操作</th></tr></thead><tbody id="swBody"></tbody></table></div><div class="pagination" id="swPg"></div></div>
+    </section>
+
+    <!-- 管理员 -->
+    <section class="ds" id="sec-admins">
+      <div class="page-head">
+        <div>
+          <div class="ti">管理员</div>
+          <div class="sub">管理后台账号与权限</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn primary" onclick="showAdminForm()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-plus"/></svg>
+            添加管理员
+          </button>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="adminStatus" onchange="loadAdmins(1)"><option value="">全部状态</option><option value="active">正常</option><option value="disabled">已禁用</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>用户名</th><th>昵称</th><th>角色</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table></div>
+      <div class="pagination" id="adminPg"></div>
+    </section>
+
+    <!-- 操作日志 -->
+    <section class="ds" id="sec-logs">
+      <div class="page-head">
+        <div>
+          <div class="ti">操作日志</div>
+          <div class="sub">查看所有后台操作记录</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="loadLogs(1)">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-refresh"/></svg>
+            刷新
+          </button>
+        </div>
+      </div>
+      <div class="toolbar"><div class="search-group"><select id="logModule" onchange="loadLogs(1)"><option value="">全部模块</option><option value="user">用户</option><option value="carpool">拼车</option><option value="admin">管理员</option><option value="system">系统</option><option value="complaint">投诉</option><option value="feedback">反馈</option></select></div></div>
+      <div class="table-wrap"><table><thead><tr><th>操作人</th><th>模块</th><th>操作</th><th>描述</th><th>IP</th><th>时间</th></tr></thead><tbody id="logBody"></tbody></table></div>
+      <div class="pagination" id="logPg"></div>
+    </section>
+    <!-- 地图地标管理 -->
+    <section class="ds" id="sec-mapPoi">
+      <div class="page-head">
+        <div>
+          <div class="ti">地图地标管理</div>
+          <div class="sub">管理校园地图上的所有地标坐标</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="loadMapPois()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-refresh"/></svg>
+            刷新
+          </button>
+          <button class="action-btn" onclick="openMapEditor()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-location"/></svg>
+            可视化编辑
+          </button>
+          <button class="action-btn primary" onclick="showPoiForm()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-plus"/></svg>
+            新建地标
+          </button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-group">
+          <input type="text" id="poiSearch" placeholder="搜索地标名称..." onkeyup="poiFilterChange()">
+          <select id="poiCategory" onchange="poiFilterChange()">
+            <option value="">全部分类</option>
+            <option value="campus">校园地标</option>
+            <option value="dorm">宿舍楼号</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名称</th>
+              <th>分类</th>
+              <th>坐标 (u, v)</th>
+              <th>状态</th>
+              <th>排序</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="poiBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 图鉴广场管理 -->
+        <section class="ds" id="sec-parttime">
+      <div class="page-head">
+        <div>
+          <div class="ti">兼职管理</div>
+          <div class="sub">兼职信息管理</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="loadParttime(1)">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-refresh"/></svg>
+            刷新
+          </button>
+          <button class="action-btn primary" onclick="showParttimeForm()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-plus"/></svg>
+            添加兼职
+          </button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-group">
+          <select id="ptType" onchange="loadParttime(1)">
+            <option value="">全部类型</option>
+            <option value="tutor">家教</option>
+            <option value="promotion">推广</option>
+            <option value="service">服务</option>
+            <option value="intern">实习</option>
+            <option value="other">其他</option>
+          </select>
+          <select id="ptStatus" onchange="loadParttime(1)">
+            <option value="">全部状态</option>
+            <option value="pending">待审核</option>
+            <option value="approved">已通过</option>
+            <option value="rejected">已拒绝</option>
+          </select>
+          <input type="text" id="ptSearch" placeholder="搜索标题..." onkeyup="if(event.key==='Enter')loadParttime(1)">
+        </div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>标题</th><th>类型</th><th>薪资</th><th>地点</th><th>发布者</th><th>状态</th><th>上架</th><th>创建时间</th><th>操作</th></tr></thead><tbody id="ptBody"></tbody></table></div>
+      <div class="pagination" id="ptPg"></div>
+    </section>
+    <section class="ds" id="sec-guideFeed">
+      <div class="page-head">
+        <div>
+          <div class="ti">图鉴管理</div>
+          <div class="sub">管理小程序「图鉴大全」的分类与元素（支持增删改、上下架）</div>
+        </div>
+        <div class="actions">
+          <button class="action-btn" onclick="loadGuideFeed(1)">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-refresh"/></svg>
+            刷新
+          </button>
+          <button class="action-btn" onclick="openCatManage()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-list"/></svg>
+            管理分类
+          </button>
+          <button class="action-btn primary" onclick="showFeedForm()">
+            <svg width="13" height="13" style="vertical-align:-1px;margin-right:4px"><use href="#i-plus"/></svg>
+            添加元素
+          </button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-group">
+          <select id="gfCategory" onchange="loadGuideFeed(1)">
+            <option value="">全部分类</option>
+          </select>
+          <select id="gfActive" onchange="loadGuideFeed(1)">
+            <option value="">全部状态</option>
+            <option value="1">已上架</option>
+            <option value="0">已下架</option>
+          </select>
+          <input type="text" id="gfSearch" placeholder="搜索元素名称/描述..." onkeyup="if(event.key==='Enter')loadGuideFeed(1)">
+          <button class="action-btn" onclick="loadGuideFeed(1)">搜索</button>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>图标</th><th>名称</th><th>分类</th><th>描述</th><th>状态</th><th>排序</th><th>操作</th></tr></thead>
+        <tbody id="gfBody"></tbody>
+      </table></div>
+      <div class="pagination" id="gfPg"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
+
+<script type="module" src="app.js?v=19"></script>
+</body>
+</html>

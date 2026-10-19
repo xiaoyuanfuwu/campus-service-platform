@@ -1,0 +1,27 @@
+{
+  "privacy_version": "2",
+  "notice_method": "popup",
+  "use_openid": true,
+  "required_privacy_scope": [
+    {
+      "scope": "userInfo",
+      "desc": "收集你的微信昵称、头像，用于注册平台的头像和昵称"
+    },
+    {
+      "scope": "album",
+      "desc": "收集你选中的照片或视频信息，用于获取头像，以及聊天界面图片的发送"
+    },
+    {
+      "scope": "phoneNumber",
+      "desc": "收集你的手机号，用于绑定手机号"
+    },
+    {
+      "scope": "writePhotosAlbum",
+      "desc": "使用你的相册（仅写入）权限，用于保存图片"
+    },
+    {
+      "scope": "clipboardData",
+      "desc": "读取你的剪切板，用于经用户同意快速获取取件码"
+    }
+  ]
+}

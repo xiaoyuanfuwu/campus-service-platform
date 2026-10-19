@@ -1,0 +1,199 @@
+<!-- pages/life/parttime/parttime.wxml — 兼职专区 -->
+<view class="page-life">
+
+  <!-- 渐变背景 -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 状态栏填充 -->
+  <view class="life-status-bg" style="height: {{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="life-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="life-nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand">
+        <text class="brand-emoji"><view class="svg-ico svg-ico-briefcase"></view></text>
+        <text class="brand-name">兼职专区</text>
+      </view>
+      <view class="nav-publish tap-shrink" catchtap="onOpenPublish">
+        <view class="np-icon">
+          <view class="np-plus-h"></view>
+          <view class="np-plus-v"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 占位，推开非 fixed 元素 -->
+  <view class="life-nav-spacer" style="height: {{navBarHeight}}px;"></view>
+
+  <!-- 内容滚动区（fixed，顶部在 nav-bar 下方，内容不会穿到 nav-bar 上） -->
+  <scroll-view
+    class="life-scroll"
+    style="top: {{navBarHeight}}px;"
+    scroll-y enhanced
+    show-scrollbar="{{false}}"
+    bindscrolltolower="onLoadMore"
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onPullRefresh"
+  >
+
+    <!-- 简介 hero -->
+    <view class="life-hero">
+      <text class="life-hero-title">兼职专区</text>
+      <text class="life-hero-sub">靠谱校内兼职 / 实习机会，避免黑中介</text>
+    </view>
+
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <input class="search-input" placeholder="搜索岗位 / 公司..." value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+      <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+    </view>
+
+    <!-- 分类筛选 -->
+    <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <view
+          wx:for="{{typeOptions}}" wx:key="key"
+          class="filter-chip {{activeType === item.key ? 'active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onTypeChange"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 空状态 -->
+    <view wx:if="{{list.length === 0}}" class="empty-state">
+      <view class="empty-icon"><view class="svg-ico svg-ico-briefcase"></view></view>
+      <text class="empty-text">还没有内容</text>
+      <text class="empty-hint">快来发布第一条分享吧</text>
+    </view>
+
+    <!-- 列表 -->
+    <view wx:else class="life-list">
+      <view
+        wx:for="{{list}}" wx:key="_id"
+        class="life-card tap-shrink"
+        data-id="{{item._id}}"
+        bindtap="onItemTap"
+      >
+        <view class="life-card-header">
+          <image wx:if="{{item.image_url}}" class="life-card-image" src="{{item.image_url}}" mode="aspectFill" bindtap="onPreviewImage" data-url="{{item.image_url}}" />
+          <text class="life-card-title">{{item.title}}</text>
+          <view class="life-card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <view class="life-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</view>
+          </view>
+        </view>
+
+        <view class="life-card-meta" wx:if="{{item.location || item.time || item.salary || item.gender}}">
+          <text wx:if="{{item.location}}"><view class="svg-ico svg-ico-pin"></view> {{item.location}}</text>
+          <text wx:if="{{item.time}}">· <view class="svg-ico svg-ico-clock-3"></view> {{item.time}}</text>
+          <text wx:if="{{item.gender}}">· {{item.gender}}</text>
+          <text wx:if="{{item.salary}}" class="life-card-salary">{{item.salary}}</text>
+        </view>
+
+        <text class="life-card-desc">{{item.desc}}</text>
+
+        <view class="life-card-footer">
+          <view class="life-rec-count">
+            <text class="life-rec-icon"><view class="svg-ico svg-ico-eyes"></view></text>
+            <text>{{item.viewCount || 0}} 浏览</text>
+          </view>
+          <view
+            class="life-rec-btn tap-shrink"
+            catchtap="onContact"
+            data-contact="{{item.contact}}"
+            data-id="{{item._id}}"
+          >
+            <text><view class="svg-ico svg-ico-phone"></view> 联系</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部 -->
+    <view class="page-footer">
+      <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+      <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+    </view>
+    <view class="bottom-safe"></view>
+  </scroll-view>
+
+  <!-- 右下角悬浮按钮：联系开发者发布兼职 -->
+  <view class="contact-fab tap-shrink" catchtap="onOpenContactModal">
+    <text class="fab-icon"><view class="svg-ico svg-ico-envelope"></view>️</text>
+    <text class="fab-text">联系发布</text>
+  </view>
+
+
+  <!-- 发布弹窗 -->
+  <view class="publish-overlay" wx:if="{{showPublish}}" bindtap="onClosePublish">
+    <view class="publish-modal" catchtap="">
+      <view class="publish-header">
+        <text class="publish-title">发布到兼职专区</text>
+        <view class="publish-close tap-shrink" bindtap="onClosePublish">✕</view>
+      </view>
+
+      <view class="publish-form">
+        <view class="pf-item">
+          <text class="pf-label">标题</text>
+          <input class="pf-input" placeholder="一句话说清楚 靠谱校内兼职 / 实习机会，避免黑中介" value="{{publishTitle}}" bindinput="onPublishTitleInput" maxlength="40"/>
+        </view>
+
+        <view class="pf-item">
+          <text class="pf-label">类型</text>
+          <view class="pf-options">
+            <view
+              wx:for="{{typeOptions}}" wx:key="key"
+              class="pf-option {{publishType === item.key ? 'active' : ''}}"
+              data-key="{{item.key}}"
+              bindtap="onPublishTypeChange"
+            >{{item.name}}</view>
+          </view>
+        </view>
+
+        <view class="pf-item">
+          <text class="pf-label">图片（选填）</text>
+          <view class="publish-image-picker" bindtap="choosePublishImage">
+            <image wx:if="{{publishImage}}" src="{{publishImage}}" mode="aspectFill" bindtap="previewPublishImage" />
+            <text wx:else>点击选择图片</text>
+          </view>
+        </view>
+
+        <view class="pf-item">
+          <text class="pf-label">详情描述</text>
+          <textarea class="pf-textarea" placeholder="详细说说你需要的条件 / 内容 / 期待..." value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="300"/>
+        </view>
+
+        <view class="pf-submit tap-shrink" bindtap="onSubmitPublish">发布</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+  <!-- 联系开发者弹窗 -->
+  <view class="publish-overlay" wx:if="{{showContactModal}}" bindtap="onCloseContactModal">
+    <view class="publish-modal" catchtap="">
+      <view class="publish-header">
+        <text class="publish-title">联系开发者发布</text>
+        <view class="publish-close tap-shrink" bindtap="onCloseContactModal">✕</view>
+      </view>
+
+      <view class="publish-form">
+        <view class="pf-item">
+          <text class="pf-label">描述你想发布的兼职信息</text>
+          <textarea class="pf-textarea" placeholder="详细描述兼职内容、要求、薪资、地点等，开发者看到后会帮你发布..." value="{{contactForm.content}}" bindinput="onContactInput" data-field="content" maxlength="500"/>
+        </view>
+
+        <view class="pf-item">
+          <text class="pf-label">联系方式（选填）</text>
+          <input class="pf-input" placeholder="微信 / QQ / 手机号，方便开发者联系你" value="{{contactForm.contact}}" bindinput="onContactInput" data-field="contact" maxlength="50"/>
+        </view>
+
+        <view class="pf-submit tap-shrink" bindtap="onSubmitContact">提交</view>
+      </view>
+    </view>
+  </view>

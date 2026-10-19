@@ -1,0 +1,74 @@
+<!-- pages/my-complaints/my-complaints.wxml -->
+<view class="page-my-complaints">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景 -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏（与"我的信息"一致） -->
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">我的投诉</view>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+  <scroll-view scroll-y class="content" style="padding-top: {{statusBarHeight + 50}}px;">
+    <view class="list-empty" wx:if="{{!listLoading && list.length === 0}}">
+      <text>暂无投诉记录</text>
+    </view>
+    <view class="complaint-list" wx:elif="{{list.length > 0}}">
+      <view class="complaint-card glass-card tap-shrink" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="tapComplaint">
+        <view class="complaint-top">
+          <text class="complaint-title">{{item.title || '投诉'}}</text>
+          <text class="status-tag {{item.status}}">{{item._statusLabel}}</text>
+        </view>
+        <text class="complaint-category">{{item.category || ''}} · {{item.targetType || ''}}</text>
+        <text class="complaint-preview">{{item.content || ''}}</text>
+        <text class="complaint-time">{{item._timeText}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 弹窗 -->
+  <view class="detail-mask" wx:if="{{showPopup}}" bindtap="onClosePopup"></view>
+  <view class="detail-modal {{showPopup ? 'show' : ''}}">
+    <view class="detail-card">
+      <view class="detail-close tap-shrink" bindtap="onClosePopup">✕</view>
+      <block wx:if="{{popupItem}}">
+        <view class="detail-meta">
+          <text class="status-tag {{popupItem.status}}">{{popupItem._statusLabel}}</text>
+          <text class="info-time">{{popupItem._timeText}}</text>
+        </view>
+        <text class="detail-title">{{popupItem.title || '投诉详情'}}</text>
+        <view class="detail-rows">
+          <text class="detail-row">类型：{{popupItem.category || '-'}}</text>
+          <text class="detail-row">对象：{{popupItem.targetType || '-'}}</text>
+          <text class="detail-row">严重程度：{{popupItem.severity || '-'}}</text>
+        </view>
+        <scroll-view class="detail-scroll" scroll-y>
+          <text class="detail-label">问题描述</text>
+          <text class="detail-content">{{popupItem.content || '暂无内容'}}</text>
+          <block wx:if="{{popupItem.handleResult || popupItem.resolution}}">
+            <text class="detail-label" style="margin-top:24rpx">处理结果</text>
+            <text class="detail-content">{{popupItem.handleResult || popupItem.resolution}}</text>
+          </block>
+        </scroll-view>
+        <view class="detail-actions" wx:if="{{popupItem.status === 'resolved' || popupItem.status === 'rejected'}}">
+          <view class="btn-outline" bindtap="goAppeal">提交申诉</view>
+        </view>
+      </block>
+      <view class="popup-loading" wx:elif="{{popupLoading}}">
+        <text>加载中...</text>
+      </view>
+    </view>
+  </view>
+</view>

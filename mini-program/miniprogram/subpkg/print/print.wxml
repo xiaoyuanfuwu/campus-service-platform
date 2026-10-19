@@ -1,0 +1,194 @@
+<!-- pages/print/print.wxml — 打印跑腿 -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">打印跑腿</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 四Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 大厅 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+        <view class="search-bar">
+          <input class="search-input" placeholder="{{config.desc}}" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+        <!-- 骨架加载 -->
+        <view wx:if="{{loading && list.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <!-- 错误 -->
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy-face"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+          <view class="retry-btn tap-shrink" bindtap="onRetry">点击重试</view>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+          <view class="empty-icon">{{config.icon}}</view>
+          <text class="empty-text">{{config.empty}}</text>
+          <text class="empty-hint">快来发布第一条吧</text>
+        </view>
+        <!-- 列表 -->
+        <block wx:else>
+          <view class="module-list">
+            <view wx:for="{{list}}" wx:key="_id" class="module-card tap-shrink" data-id="{{item._id}}" data-module="{{moduleName}}" bindtap="tapDetail">
+              <view class="module-card-header">
+                <text class="module-card-title">{{item.title}}</text>
+                <view class="module-card-badge {{item.status === 'closed' ? 'badge-done' : 'badge-active'}}">{{item.status === 'closed' ? '已结束' : '进行中'}}</view>
+              </view>
+              <view class="module-card-body">{{item.desc || item.content || item.note || '暂无描述'}}</view>
+              <view class="module-card-footer">
+                <view class="module-card-user">
+                  <image class="module-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <text class="module-card-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                </view>
+                <text class="module-card-meta">{{item._timeAgo || item.createTime || ''}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 加载更多 -->
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{!hasMore && list.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <!-- 底部 -->
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 发布 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <!-- 编辑模式横条 -->
+          <view class="edit-mode-bar" wx:if="{{editMode}}">
+            <view class="edit-mode-cancel tap-shrink" bindtap="onCancelEdit">✕</view>
+            <text class="edit-mode-title">编辑模式</text>
+            <view class="edit-mode-placeholder"></view>
+          </view>
+          <view class="card type-switch">
+            <text class="type-label">发布类型</text>
+            <view class="type-options">
+              <view class="type-option {{publishType === 'offer' ? 'active' : ''}}" data-type="offer" bindtap="onPublishTypeChange"><text>提供</text></view>
+              <view class="type-option {{publishType === 'find' ? 'active' : ''}}" data-type="find" bindtap="onPublishTypeChange"><text>需求</text></view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>标题</text></view>
+              <input class="form-input" placeholder="请输入标题" value="{{publishTitle}}" bindinput="onPublishTitleInput" maxlength="50"/>
+            </view>
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>描述</text></view>
+            </view>
+            <textarea class="form-textarea" placeholder="请详细描述..." value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="500"/>
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>联系方式</text></view>
+              <input class="form-input" placeholder="微信/QQ/手机号" value="{{publishContact}}" bindinput="onPublishContactInput"/>
+            </view>
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>价格（元）</text></view>
+              <input class="form-input" type="digit" placeholder="选填" value="{{publishPrice}}" bindinput="onPublishPriceInput"/>
+            </view>
+          </view>
+            <view class="card form-card">
+    <view class="notify-row">
+      <view class="notify-info">
+        <text class="notify-label"><view class="svg-ico svg-ico-bell"></view> 微信消息通知</text>
+        <text class="notify-hint">有人接单时通过微信服务号通知你</text>
+      </view>
+      <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#00A693"/>
+    </view>
+  </view>
+          <view class="publish-btn tap-shrink" bindtap="onSubmitPublish" wx:if="{{!editMode}}">立即发布</view>
+          <view class="publish-btn publish-btn-edit tap-shrink" bindtap="onSaveEdit" wx:if="{{editMode}}">保存修改</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 2: 我的 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <view class="mine-header">
+            <image class="mine-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="mine-info">
+              <text class="mine-name">{{userInfo.nickName || '未登录'}}</text>
+              <text class="mine-school" wx:if="{{userInfo.school}}">{{userInfo.school}}</text>
+            </view>
+          </view>
+          <view class="mine-stats">
+            <view class="mine-stat"><text class="ms-num">{{stats.posts || 0}}</text><text class="ms-label">发布</text></view>
+            <view class="mine-stat"><text class="ms-num">{{stats.orders || 0}}</text><text class="ms-label">订单</text></view>
+            <view class="mine-stat"><text class="ms-num">{{stats.favorites || 0}}</text><text class="ms-label">收藏</text></view>
+          </view>
+          <view class="menu-group">
+            <view class="menu-item tap-shrink" bindtap="onMyPosts"><text class="menu-text">我的发布</text><text class="menu-arrow">›</text></view>
+            <view class="menu-item tap-shrink" bindtap="onMyFavorites"><text class="menu-text">我的收藏</text><text class="menu-arrow">›</text></view>
+            <view class="menu-item tap-shrink" bindtap="onFeedback"><text class="menu-text">意见反馈</text><text class="menu-arrow">›</text></view>
+            <view class="menu-item tap-shrink" bindtap="onAbout"><text class="menu-text">关于我们</text><text class="menu-arrow">›</text></view>
+          </view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部 TabBar -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:if="{{currentTab === 0}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab0}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:if="{{currentTab === 1}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab1}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:if="{{currentTab === 2}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

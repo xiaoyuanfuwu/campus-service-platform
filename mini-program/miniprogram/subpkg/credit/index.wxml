@@ -1,0 +1,109 @@
+<!-- pages/credit/index.wxml — 信用分详情 -->
+<view class="page-credit" style="padding-top: {{statusBarHeight + 44}}px;">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+  <!-- 品牌导航栏（与其他页面一致的 shared-nav 结构） -->
+  <view class="shared-nav credit-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand nav-brand-center">
+        <text class="brand-name">信用分</text>
+      </view>
+      <view class="nav-bell nav-placeholder"></view>
+    </view>
+  </view>
+
+  <!-- 顶部信用分卡片 -->
+  <view class="credit-card">
+    <view class="gold-dot dot-lg dot-1"></view>
+    <view class="gold-dot dot-md dot-2"></view>
+    <view class="gold-dot dot-sm dot-3"></view>
+    <view class="gold-dot dot-xs dot-4"></view>
+    <view class="gold-dot dot-md dot-5"></view>
+    <view class="gold-dot dot-sm dot-6"></view>
+    <view class="credit-circle {{creditLevel.class}}">
+      <text class="credit-score">{{creditScore}}</text>
+      <text class="credit-level">{{creditLevel.text}}</text>
+    </view>
+    <view class="credit-desc">
+      信用分是平台对用户行为的综合评价
+    </view>
+  </view>
+
+  <!-- 信用等级说明 -->
+  <view class="level-section card">
+    <view class="section-title">信用等级</view>
+    <view class="level-list">
+      <view class="level-item" wx:for="{{levelConfig}}" wx:key="level">
+        <view class="level-dot" style="background-color: {{item.color}}"></view>
+        <view class="level-info">
+          <text class="level-text">{{item.text}}</text>
+          <text class="level-range">{{item.min}}-{{item.max}}分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 信用变动记录 -->
+  <view class="record-section card" wx:if="{{recordList.length > 0}}">
+    <view class="section-title">最近变动</view>
+    <view class="record-list">
+      <view class="record-item" wx:for="{{recordList}}" wx:key="id">
+        <view class="record-left">
+          <text class="record-title">{{item.title}}</text>
+          <text class="record-time">{{item.time}}</text>
+        </view>
+        <view class="record-right">
+          <text class="record-change {{item.change > 0 ? 'plus' : 'minus'}}">
+            {{item.change > 0 ? '+' : ''}}{{item.change}}
+          </text>
+        </view>
+      </view>
+    </view>
+    <view class="load-more" wx:if="{{hasMore && loading}}">加载中...</view>
+    <view class="load-more empty" wx:elif="{{!hasMore}}">— 没有更多了 —</view>
+  </view>
+  <view class="empty-state" wx:elif="{{loading === false && recordList.length === 0}}">
+    <text class="empty-text">暂无信用变动记录</text>
+  </view>
+
+  <!-- 信用分规则 -->
+  <view class="rule-section card">
+    <view class="section-title">信用分规则</view>
+    <view class="rule-list">
+      <view class="rule-item minus">
+        <view class="rule-icon">-</view>
+        <view class="rule-content">
+          <text class="rule-title">用户投诉违规</text>
+          <text class="rule-desc">-5 分/次</text>
+        </view>
+      </view>
+      <view class="rule-item minus">
+        <view class="rule-icon">-</view>
+        <view class="rule-content">
+          <text class="rule-title">投诉情节严重</text>
+          <text class="rule-desc">-10 分/次</text>
+        </view>
+      </view>
+      <view class="rule-item ban">
+        <view class="rule-icon">封</view>
+        <view class="rule-content">
+          <text class="rule-title">欺诈诈骗行为</text>
+          <text class="rule-desc">永久封号处理</text>
+        </view>
+      </view>
+    </view>
+    <view class="rule-footer">
+      <text>• 信用分范围：0-110分，最高 110 分，分数越高信用越好</text>
+      <text>• 初始信用分：100分</text>
+      <text>• 普通投诉扣 5 分；投诉情节严重扣 10 分</text>
+      <text>• 存在欺诈诈骗行为将永久封号</text>
+      <text>• 如有疑问可联系管理员申诉</text>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+</view>

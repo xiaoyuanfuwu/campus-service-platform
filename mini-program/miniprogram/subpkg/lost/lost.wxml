@@ -1,0 +1,375 @@
+<!-- pages/lost/lost.wxml — 失物招领 -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 品牌导航栏 -->
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">失物招领</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 四Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 大厅 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+        <view class="search-bar">
+          <input class="search-input" placeholder="{{config.desc}}" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+        <!-- 骨架加载 -->
+        <view wx:if="{{loading && list.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <!-- 错误 -->
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy-face"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+          <view class="retry-btn tap-shrink" bindtap="onRetry">点击重试</view>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+          <image class="empty-icon-img" src="/images/icon-grid-lost.png?v=2" mode="aspectFit" />
+          <text class="empty-text">{{config.empty}}</text>
+          <text class="empty-hint">快来发布第一条吧</text>
+        </view>
+        <!-- 列表 -->
+        <block wx:else>
+          <view class="module-list">
+            <view wx:for="{{list}}" wx:key="_id" class="module-card tap-shrink" data-id="{{item._id}}" data-module="{{moduleName}}" bindtap="tapDetail">
+              <view class="module-card-header">
+                <text class="module-card-title">{{item.title}}</text>
+                <view class="module-card-badge {{item.status === 'closed' ? 'badge-done' : 'badge-active'}}">{{item.status === 'closed' ? '已结束' : '进行中'}}</view>
+              </view>
+              <!-- 卡片图片缩略图 -->
+              <view class="card-image-grid" wx:if="{{item.images && item.images.length > 0}}">
+                <image wx:for="{{item.images}}" wx:key="*this" wx:if="{{index < 3}}" class="card-image-thumb" src="{{item}}" mode="aspectFill"/>
+                <view wx:if="{{item.images.length > 3}}" class="card-image-more">+{{item.images.length - 3}}</view>
+              </view>
+              <view class="module-card-body">{{item.desc || item.content || item.note || '暂无描述'}}</view>
+              <view class="module-card-footer">
+                <view class="module-card-user">
+                  <image class="module-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <text class="module-card-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                </view>
+                <text class="module-card-meta">{{item._timeAgo || item.createTime || ''}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 加载更多 -->
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{!hasMore && list.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <!-- 底部 -->
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 发布 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <!-- 编辑模式横条 -->
+          <view class="edit-mode-bar" wx:if="{{editMode}}">
+            <view class="edit-mode-cancel tap-shrink" bindtap="onCancelEdit">✕</view>
+            <text class="edit-mode-title">编辑模式</text>
+            <view class="edit-mode-placeholder"></view>
+          </view>
+          <view class="card type-switch">
+            <text class="type-label">发布类型</text>
+            <view class="type-options">
+              <view class="type-option {{publishType === 'offer' ? 'active' : ''}}" data-type="offer" bindtap="onPublishTypeChange"><text>找主人</text></view>
+              <view class="type-option {{publishType === 'find' ? 'active' : ''}}" data-type="find" bindtap="onPublishTypeChange"><text>找失物</text></view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>标题</text></view>
+              <input class="form-input" placeholder="请输入标题" value="{{publishTitle}}" bindinput="onPublishTitleInput" maxlength="50"/>
+            </view>
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>描述</text></view>
+            </view>
+            <textarea class="form-textarea" placeholder="请详细描述..." value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="500"/>
+
+            <!-- ===== 图片上传区域 ===== -->
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>图片</text><text class="label-hint">（选填，最多9张）</text></view>
+            </view>
+            <view class="image-upload-area">
+              <!-- 已选图片预览 -->
+              <view class="image-preview-grid" wx:if="{{publishImages.length > 0}}">
+                <view class="image-preview-item tap-shrink" wx:for="{{publishImages}}" wx:key="*this" data-index="{{index}}" data-url="{{item}}" bindtap="previewPublishImage">
+                  <image class="preview-thumb" src="{{item}}" mode="aspectFill"/>
+                  <view class="preview-delete" data-index="{{index}}" catchtap="removeImage">
+                    <view class="delete-x"></view>
+                  </view>
+                </view>
+              </view>
+              <!-- 添加按钮 -->
+              <view class="image-add-btn tap-shrink" bindtap="chooseImage" wx:if="{{publishImages.length < 9}}">
+                <view class="add-icon"></view>
+                <text class="add-text">{{publishImages.length > 0 ? '' + publishImages.length + '/9' : '添加图片'}}</text>
+              </view>
+            </view>
+
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text>{{publishType === 'offer' ? '在哪儿找到的' : '在哪儿丢的'}}</text></view>
+              <input class="form-input" placeholder="{{publishType === 'offer' ? '例如：食堂二楼、图书馆门口' : '例如：教学楼A座、操场边'}}" value="{{publishLocation}}" bindinput="onPublishLocationInput"/>
+            </view>
+          </view>
+
+          <!-- 报酬（仅找失物显示） -->
+          <view class="card form-card" wx:if="{{publishType === 'find'}}">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-money-bag"></view> 报酬</text>
+            </view>
+            <view class="price-tag-grid">
+              <view wx:for="{{priceOptions}}" wx:key="*this"
+                class="price-tag {{selectedPrice === item ? 'active' : ''}}"
+                data-price="{{item}}" bindtap="onPriceTagTap">
+                <text>¥{{item}}</text>
+              </view>
+              <view class="price-tag price-tag-custom {{selectedPrice === 'custom' ? 'active' : ''}}" bindtap="onPriceCustomTap">
+                <text>自定义</text>
+              </view>
+            </view>
+            <view class="price-custom-row" wx:if="{{selectedPrice === 'custom'}}">
+              <view class="price-input-wrapper">
+                <text class="price-unit">¥</text>
+                <input class="price-custom-input" type="digit" placeholder="输入金额" value="{{customPrice}}" bindinput="onPriceInput" maxlength="6"/>
+              </view>
+            </view>
+            <view class="price-negotiable-row">
+              <view class="price-negotiable-chip {{priceNegotiable ? 'active' : ''}}" bindtap="onPriceNegotiableTap">
+                <text>价格私聊</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 联系方式 -->
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-mobile"></view> 联系方式</text>
+            </view>
+            <view class="contact-type-row">
+              <view
+                wx:for="{{contactTypes}}"
+                wx:key="*this"
+                class="contact-type-chip {{contactTypeIndex === index ? 'active' : ''}}"
+                data-index="{{index}}"
+                bindtap="onContactTypeTap"
+              >{{item}}</view>
+            </view>
+            <view class="form-item" style="margin-top: 16rpx;">
+              <input class="contact-input" placeholder="输入你的{{contactTypeLabel}}" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="50"/>
+            </view>
+            <view class="quick-fill-capsule tap-shrink" bindtap="onQuickFillContact">{{quickFillLabel}}</view>
+          </view>
+            <view class="card form-card">
+    <view class="notify-row">
+      <view class="notify-info">
+        <text class="notify-label"><view class="svg-ico svg-ico-bell"></view> 微信消息通知</text>
+        <text class="notify-hint">有人接单时通过微信服务号通知你</text>
+      </view>
+      <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#00A693"/>
+    </view>
+  </view>
+          <view class="publish-btn tap-shrink" bindtap="onSubmitPublish" wx:if="{{!editMode}}">有人找到</view>
+          <view class="publish-btn publish-btn-edit tap-shrink" bindtap="onSaveEdit" wx:if="{{editMode}}">保存修改</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 2: 消息 (hidden) -->
+    <swiper-item wx:if="{{false}}">
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="msg-page">
+          <view class="msg-categories">
+            <view class="msg-cat-item tap-shrink" bindtap="onSystemNotices">
+              <view class="cat-icon cat-icon-system"><view class="ci-bell"></view></view>
+              <view class="cat-info"><text class="cat-name">系统通知</text><text class="cat-desc">审核结果、违规提醒等</text></view>
+              <view wx:if="{{systemUnread > 0}}" class="cat-badge">{{systemUnread > 99 ? '99+' : systemUnread}}</view>
+              <text class="cat-arrow">›</text>
+            </view>
+            <view class="msg-cat-item tap-shrink" bindtap="onChatList">
+              <view class="cat-icon cat-icon-chat"><view class="ci-bubble"></view></view>
+              <view class="cat-info"><text class="cat-name">私信</text><text class="cat-desc">与其他用户的对话</text></view>
+              <text class="cat-arrow">›</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 3: 我的 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <!-- 子标签切换 -->
+          <view class="mine-subtap-bar">
+            <view class="mine-subtap-item {{mineSubTab === 0 ? 'active' : ''}}" data-index="0" catchtap="onMineSubTabTap">
+              <text class="mine-subtap-num">{{foundList.length}}</text>
+              <text class="mine-subtap-label">我捡到的</text>
+              <view class="mine-subtap-indicator"></view>
+            </view>
+            <view class="mine-subtap-item {{mineSubTab === 1 ? 'active' : ''}}" data-index="1" catchtap="onMineSubTabTap">
+              <text class="mine-subtap-num">{{lostList.length}}</text>
+              <text class="mine-subtap-label">我丢失的</text>
+              <view class="mine-subtap-indicator"></view>
+            </view>
+          </view>
+
+          <!-- 加载中 -->
+          <view wx:if="{{mineSubTab === 0 && loadingFound || mineSubTab === 1 && loadingLost}}" class="mine-empty-state">
+            <text class="mine-empty-text">加载中...</text>
+          </view>
+
+          <!-- 空状态 -->
+          <view wx:elif="{{mineSubTab === 0 && foundList.length === 0}}" class="mine-empty-state">
+            <text class="mine-empty-icon"><view class="svg-ico svg-ico-search"></view></text>
+            <text class="mine-empty-text">还没有捡到过东西</text>
+          </view>
+          <view wx:elif="{{mineSubTab === 1 && lostList.length === 0}}" class="mine-empty-state">
+            <text class="mine-empty-icon"><view class="svg-ico svg-ico-package"></view></text>
+            <text class="mine-empty-text">还没有丢失过东西</text>
+          </view>
+
+          <!-- 我捡到的列表 -->
+          <view wx:elif="{{mineSubTab === 0}}" class="mine-list">
+            <view wx:for="{{foundList}}" wx:key="_id" class="mine-list-card tap-shrink" data-id="{{item._id}}" data-type="offer" catchtap="onMineCardTap">
+              <view class="mine-card-header">
+                <text class="mine-card-title">{{item.title || '未命名'}}</text>
+                <view class="mine-card-badge {{item.status === 'active' ? 'mine-card-badge-active' : 'mine-card-badge-done'}}">{{item.status === 'active' ? '进行中' : '已结束'}}</view>
+              </view>
+              <view class="mine-card-content">{{item.desc || item.content || '暂无描述'}}</view>
+              <view class="mine-card-user-row">
+                <image class="mine-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="mine-card-nick">{{item.creator ? (item.creator.nickName || '匿名') : '匿名'}}</text>
+                <text class="mine-card-time">{{item._timeAgo || ''}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 我丢失的列表 -->
+          <view wx:elif="{{mineSubTab === 1}}" class="mine-list">
+            <view wx:for="{{lostList}}" wx:key="_id" class="mine-list-card tap-shrink" data-id="{{item._id}}" data-type="find" catchtap="onMineCardTap">
+              <view class="mine-card-header">
+                <text class="mine-card-title">{{item.title || '未命名'}}</text>
+                <view class="mine-card-badge {{item.status === 'active' ? 'mine-card-badge-active' : 'mine-card-badge-done'}}">{{item.status === 'active' ? '进行中' : '已结束'}}</view>
+              </view>
+              <view class="mine-card-content">{{item.desc || item.content || '暂无描述'}}</view>
+              <view class="mine-card-user-row">
+                <image class="mine-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="mine-card-nick">{{item.creator ? (item.creator.nickName || '匿名') : '匿名'}}</text>
+                <text class="mine-card-time">{{item._timeAgo || ''}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部 TabBar（PNG 图标） -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab0}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab1}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 帖子详情弹窗 -->
+  <view wx:if="{{showMineDetailPopup}}" class="overlay-mask" catchtap="closeMineDetailPopup">
+    <view class="detail-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeMineDetailPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">{{mineDetail.type === 'find' ? '我丢失的' : '我捡到的'}}</text>
+        <view class="dp-nav-status {{mineDetail.status === 'active' ? 'dp-nav-active' : 'dp-nav-done'}}">{{mineDetail.status === 'active' ? '进行中' : '已结束'}}</view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="dp-card">
+          <view class="dp-title-row">
+            <text class="dp-title">{{mineDetail.title || '未命名'}}</text>
+          </view>
+          <view class="dp-type-row" wx:if="{{mineDetail.location}}">
+            <text class="dp-location"><view class="svg-ico svg-ico-pin"></view> {{mineDetail.location}}</text>
+          </view>
+        </view>
+        <view class="dp-card" wx:if="{{mineDetail.desc}}">
+          <view class="dp-section-title">详细描述</view>
+          <text class="dp-desc">{{mineDetail.desc}}</text>
+        </view>
+        <view class="dp-card dp-card-images" wx:if="{{mineDetail.hasImages}}">
+          <view class="dp-section-title">图片</view>
+          <view class="dp-image-grid">
+            <view wx:for="{{mineDetail.images}}" wx:key="*this" class="dp-grid-cell">
+              <image class="dp-grid-image tap-shrink" src="{{item}}" mode="aspectFill" data-url="{{item}}" bindtap="onMineDetailPreviewImage"/>
+            </view>
+          </view>
+        </view>
+        <view class="dp-card" wx:if="{{mineDetail.contact}}">
+          <view class="dp-section-title">联系方式</view>
+          <text class="dp-desc">{{mineDetail.contact}}</text>
+        </view>
+        <view class="dp-card">
+          <view class="dp-section-title">发布时间</view>
+          <text class="dp-desc">{{mineDetail.formattedTime || ''}}</text>
+        </view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+      <view class="dp-action-bar">
+        <view class="dp-btn dp-btn-close tap-shrink" bindtap="onMineDetailClose">取消发布</view>
+        <view class="dp-btn dp-btn-primary tap-shrink" bindtap="onMineDetailEdit">编辑</view>
+      </view>
+    </view>
+  </view>
+</view>

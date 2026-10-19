@@ -1,0 +1,142 @@
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 导航栏 -->
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand nav-brand-center">
+        <text class="brand-name">发布题库</text>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+
+
+  <!-- 表单内容 -->
+  <scroll-view class="form-scroll" scroll-y enhanced show-scrollbar="{{false}}" style="top:calc({{navBarHeight}}px - 30rpx);">
+    
+    <!-- 截图上传区 -->
+    <view class="form-section">
+      <view class="section-title">
+        <text class="title-icon camera-icon"></text>
+        <text>题目截图</text>
+        <text class="title-hint">最多9张</text>
+      </view>
+      <view class="image-grid">
+        <view class="img-item" wx:for="{{images}}" wx:key="*this">
+          <image class="img-preview" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}" />
+          <view class="img-del tap-shrink" catchtap="removeImage" data-index="{{index}}">
+            <view class="del-cross"></view>
+          </view>
+        </view>
+        <view class="img-add tap-shrink" bindtap="chooseImage" wx:if="{{images.length < 9}}">
+          <view class="add-icon">
+            <view class="add-h"></view>
+            <view class="add-v"></view>
+          </view>
+          <text class="add-text">添加截图</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类选择 -->
+    <view class="form-section">
+      <view class="section-title">
+        <text class="title-icon tag-icon"></text>
+        <text>学科分类</text>
+        <text class="title-required">*</text>
+      </view>
+      <view class="category-grid">
+        <view class="cat-chip {{selectedCategory === item ? 'active' : ''}}" 
+              wx:for="{{categories}}" wx:key="*this"
+              data-cat="{{item}}" bindtap="selectCategory">
+          <text class="cat-emoji">{{item.emoji}}</text>
+          <text class="cat-label">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="section-title">
+        <text class="title-icon info-icon"></text>
+        <text>基本信息</text>
+        <text class="title-required">*</text>
+      </view>
+      <view class="form-card">
+        <view class="form-row">
+          <text class="form-label">题库名称</text>
+          <input class="form-input" placeholder="如：高等数学期末真题" value="{{name}}" bindinput="onInput" data-field="name" maxlength="50" />
+        </view>
+        <view class="form-divider"></view>
+        <view class="form-row">
+          <text class="form-label">课程名称</text>
+          <input class="form-input" placeholder="如：高等数学、线性代数" value="{{course}}" bindinput="onInput" data-field="course" maxlength="30" />
+        </view>
+        <view class="form-divider"></view>
+        <view class="form-row-inline">
+          <view class="form-row-half">
+            <text class="form-label">年份</text>
+            <input class="form-input" placeholder="2025" value="{{year}}" bindinput="onInput" data-field="year" maxlength="4" type="number" />
+          </view>
+          <view class="form-row-half">
+            <text class="form-label">题目数量</text>
+            <input class="form-input" placeholder="选填" value="{{questionCount}}" bindinput="onInput" data-field="questionCount" maxlength="4" type="number" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签 -->
+    <view class="form-section">
+      <view class="section-title">
+        <text class="title-icon label-icon"></text>
+        <text>标签</text>
+      </view>
+      <view class="form-card">
+        <view class="tag-input-wrap">
+          <view class="tag-badge" wx:for="{{tags}}" wx:key="*this">
+            <text>{{item}}</text>
+            <view class="tag-badge-del" catchtap="removeTag" data-index="{{index}}">×</view>
+          </view>
+          <input class="tag-input" placeholder="{{tags.length ? '' : '输入后按回车添加'}}" 
+                 value="{{tagInput}}" bindinput="onTagInput" bindconfirm="addTag" 
+                 maxlength="10" confirm-type="done" />
+        </view>
+      </view>
+      <view class="quick-tags">
+        <view class="quick-tag {{tags.indexOf(item) >= 0 ? 'selected' : ''}}" 
+              wx:for="{{quickTags}}" wx:key="*this"
+              data-tag="{{item}}" bindtap="toggleQuickTag">{{item}}</view>
+      </view>
+    </view>
+
+    <!-- 描述 -->
+    <view class="form-section">
+      <view class="section-title">
+        <text class="title-icon desc-icon"></text>
+        <text>补充说明</text>
+      </view>
+      <view class="form-card">
+        <textarea class="form-textarea" placeholder="描述题目类型、难度、适用范围等..." 
+                  value="{{description}}" bindinput="onInput" data-field="description"
+                  maxlength="500" auto-height />
+        <view class="textarea-counter">{{description.length || 0}}/500</view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-area">
+      <view class="submit-btn tap-shrink {{submitting ? 'disabled' : ''}}" bindtap="onSubmit">
+        <text class="submit-text">{{submitting ? '提交中...' : '提交题库'}}</text>
+      </view>
+      <text class="submit-hint">提交后需管理员审核，通过后将展示在题库列表中</text>
+    </view>
+
+    <view class="form-bottom-space"></view>
+  </scroll-view>
+</view>

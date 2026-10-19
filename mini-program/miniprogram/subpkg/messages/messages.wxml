@@ -1,0 +1,95 @@
+<!-- pages/messages/messages.wxml -->
+<view class="page-messages">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- ===== 顶部栏（透明，融入背景 - 与首页同款） ===== -->
+  <view class="top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-placeholder"></view>
+      <view class="nav-title">消息</view>
+      <view class="nav-right tap-shrink" bindtap="markAllRead" wx:if="{{notifUnread > 0}}">全部已读</view>
+      <view class="nav-placeholder" wx:else></view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="content" style="top: {{navBarHeight}}px;" bindscrolltolower="loadMore">
+    <!-- 系统公告通知（合并） -->
+    <view class="sys-notif-card glass-card" wx:if="{{mergedNotifs.length > 0}}">
+      <view class="sys-notif-header">
+        <text class="sys-notif-title">系统公告通知</text>
+        <view class="badge" wx:if="{{mergedNotifUnread > 0}}">{{mergedNotifUnread}}</view>
+      </view>
+      <!-- 内联条目（最多2条，公告置顶） -->
+      <view class="sys-notif-item tap-shrink" wx:for="{{mergedNotifs}}" wx:key="_key" data-item="{{item}}" bindtap="tapMergedNotif">
+        <view class="sni-dot-indicator">
+          <view wx:if="{{item._isAnnouncement}}" class="sni-tag-announcement">公告</view>
+          <view wx:else class="sni-tag-notif">通知</view>
+        </view>
+        <view class="sni-body">
+          <text class="sni-text">{{item._displayText}}</text>
+          <text class="sni-time">{{item._timeText}}</text>
+        </view>
+        <view class="sni-arrow"></view>
+      </view>
+      <!-- 底部入口：点击查看详情 -->
+      <view class="sys-notif-footer tap-shrink" bindtap="goNotifications">
+        <text>点击查看详情</text>
+        <view class="sni-arrow"></view>
+      </view>
+    </view>
+
+    <!-- 群聊区 -->
+    <view class="section-header" wx:if="{{groupChats.length > 0}}">
+      <text>群聊</text>
+    </view>
+
+    <view class="conv-item glass-card tap-shrink" wx:for="{{groupChats}}" wx:key="carpoolId" data-carpoolid="{{item.carpoolId}}" bindtap="goGroupChat">
+      <view class="group-avatar">
+        <view class="group-icon-gc">
+          <view class="gic-bubble-1"></view>
+          <view class="gic-bubble-2"></view>
+        </view>
+      </view>
+      <view class="conv-info">
+        <view class="conv-top">
+          <text class="conv-name">{{item.from}} → {{item.to}}</text>
+          <text class="conv-time" wx:if="{{item._timeText}}">{{item._timeText}}</text>
+        </view>
+        <text class="conv-last">{{item.lastMessage || (item.memberCount + '人群聊')}}</text>
+      </view>
+      <view class="member-count">{{item.memberCount}}人</view>
+    </view>
+
+    <!-- 私信列表 -->
+    <view class="section-header">
+      <text>私信</text>
+    </view>
+
+    <view wx:if="{{conversations.length === 0 && !loading}}" class="empty-state">
+      <view class="empty-icon">
+        <view class="ei-chat-bubble"></view>
+      </view>
+      <text class="empty-text">暂无私信</text>
+      <text class="empty-hint">发起同行后会自动创建对话</text>
+    </view>
+
+    <view class="conv-item glass-card tap-shrink" wx:for="{{conversations}}" wx:key="conversationId" data-id="{{item.conversationId}}" data-userid="{{item.otherUserId}}" data-name="{{item.otherUserName}}" bindtap="goChat">
+      <view class="avatar-wrap">
+        <image class="avatar" src="{{item.otherUserAvatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="online-dot" wx:if="{{item._online}}"></view>
+      </view>
+      <view class="conv-info">
+        <view class="conv-top">
+          <view class="name-wrap">
+            <text class="conv-name">{{item.otherUserName}}</text>
+            <text class="stranger-tag" wx:if="{{item._isStranger}}">陌生人</text>
+          </view>
+          <text class="conv-time">{{item.timeText}}</text>
+        </view>
+        <text class="conv-last {{item.unread > 0 ? 'bold' : ''}}">{{item.lastMessage}}</text>
+      </view>
+      <view class="badge" wx:if="{{item.unread > 0}}">{{item.unread}}</view>
+    </view>
+
+    <view class="loading-more" wx:if="{{loading}}">加载中...</view>
+  </scroll-view>
+</view>

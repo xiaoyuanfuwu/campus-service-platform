@@ -1,0 +1,791 @@
+<!-- pages/express/express.wxml — 取快递（任务管理版） -->
+<wxs module="cutil">
+module.exports = {
+  contactLabel: function(type) {
+    var map = { wechat: '微信', qq: 'QQ', phone: '电话', other: '其他', '微信': '微信', 'QQ': 'QQ', '短信': '电话', '电话': '电话' };
+    return map[type] || type || '联系方式';
+  },
+  publishStatusText: function(item) {
+    if (item.status === 'resolved') return '已完成';
+    if (item.status === 'cancelled') return '已取消';
+    if (item.status === 'closed') {
+      if (item.extra && item.extra.taker) return '已接单';
+      return '已关闭';
+    }
+    return '待接单';
+  },
+  publishStatusClass: function(item) {
+    if (item.status === 'resolved') return 'badge-done';
+    if (item.status === 'cancelled') return 'badge-cancelled';
+    if (item.status === 'closed') {
+      if (item.extra && item.extra.taker) return 'badge-taken';
+      return 'badge-done';
+    }
+    return 'badge-active';
+  },
+  splitCodes: function(str) {
+    if (!str) return [];
+    return str.split('、');
+  }
+};
+</wxs>
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+    <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">取快递</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+
+    <!-- ============ Tab 0: 快递大厅 ============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+
+        <!-- 温馨提醒 -->
+        <view class="hall-notice-card">
+          <view class="hnc-icon">
+            <view class="hnc-shield"></view>
+          </view>
+          <text class="hnc-text">本小程序仅提供沟通渠道，不介入资金往来。价格转账需自行协商，建议尽量线下当面结算。如遇诈骗跑路，请立即举报，平台会快速封禁违规账号。</text>
+        </view>
+
+        <view class="search-bar">
+          <input class="search-input" placeholder="{{config.desc}}" value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+        <view class="filter-tags">
+          <view wx:for="{{filterTags}}" wx:key="*this"
+            class="filter-tag {{filterLocation === item ? 'active' : ''}}"
+            data-tag="{{item}}" bindtap="onFilterTap">{{item}}</view>
+        </view>
+        <view wx:if="{{loading && list.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this"><view class="sk-line sk-long"></view><view class="sk-line"></view><view class="sk-line sk-short"></view></view>
+        </view>
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy-face"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+          <view class="retry-btn tap-shrink" bindtap="onRetry">点击重试</view>
+        </view>
+        <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+          <image class="empty-icon-img" src="/images/guide-icons/25.png" mode="aspectFit" />
+          <text class="empty-text">{{config.empty}}</text>
+          <text class="empty-hint">快来发布第一条吧</text>
+        </view>
+        <block wx:else>
+          <view class="module-list">
+            <view wx:for="{{list}}" wx:key="_id" class="express-card tap-shrink" data-id="{{item._id}}" data-module="{{moduleName}}" bindtap="onTaskDetail">
+              <view class="ec-header">
+                <view class="ec-header-left">
+                  <text class="ec-title">{{item.title}}</text>
+                </view>
+                <view class="ec-badge badge-active">待接单</view>
+              </view>
+
+              <view class="ec-body">
+                <view class="ec-body-left">
+                  <view class="ec-route-row">
+                    <view class="ec-route-dot ec-dot-from"></view>
+                    <text class="ec-route-text">{{item.location || '驿站'}}</text>
+                  </view>
+                  <view class="ec-route-line"></view>
+                  <view class="ec-route-row">
+                    <view class="ec-route-dot ec-dot-to"></view>
+                    <text class="ec-route-text">{{item.extra.communityBuilding || '宿舍楼'}}</text>
+                  </view>
+                </view>
+
+                <view class="ec-body-right" wx:if="{{item.extra && item.extra.pickupCode}}">
+                  <view wx:for="{{cutil.splitCodes(item.extra.pickupCode)}}" wx:key="*this" class="ec-code-line">
+                    <text class="ec-code-label">取件码</text>
+                    <text class="ec-code-value">{{item}}</text>
+                  </view>
+                </view>
+              </view>
+
+              <view class="ec-price-row">
+                <view class="ec-size-pill" wx:if="{{item._sizeLabel}}">
+                  <text class="ec-size-pill-icon"><view class="svg-ico svg-ico-package"></view></text>
+                  <text>{{item._sizeLabel}}</text>
+                </view>
+                <view class="ec-price-block">
+                  <text class="ec-price-big" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+                  <text class="ec-price-big ec-price-free-big" wx:else>价格私聊</text>
+                </view>
+              </view>
+
+              <view class="ec-footer">
+                <view class="ec-footer-user">
+                  <image class="ec-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <view class="ec-footer-user-text">
+                    <text class="ec-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                    <view class="ec-footer-meta" wx:if="{{item.creator}}">
+                      <text class="ec-meta-item" wx:if="{{item.creator.userCode}}">ID: {{item.creator.userCode}}</text>
+                      <text class="ec-meta-item ec-credit-level {{item.creator.creditLevelClass}}" wx:if="{{item.creator.creditScore !== undefined}}">{{item.creator.creditLevelText || '信用'}}</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="ec-help-btn tap-shrink" catchtap="onHelpPickup" data-index="{{index}}">
+                  <text>我要帮取</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{!hasMore && list.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ============ Tab 1: 发布 ============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+
+          <!-- 编辑模式横条 -->
+          <view class="edit-mode-bar" wx:if="{{editMode}}">
+            <view class="edit-mode-icon">
+              <view class="svg-ico svg-ico-edit"></view>
+            </view>
+            <text class="edit-mode-text">编辑模式</text>
+            <view class="edit-mode-cancel tap-shrink" bindtap="onCancelEdit">取消</view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-postbox"></view> 驿站地址</text>
+              <text class="form-label-hint">（可多选）</text>
+            </view>
+            <view class="pickup-location-grid">
+              <view
+                wx:for="{{pickupLocations}}"
+                wx:key="*this"
+                class="pickup-loc-chip {{pickupLocationsSelectedMap[item] ? 'active' : ''}}"
+                data-loc="{{item}}"
+                bindtap="onPickupLocationTap"
+              >
+                <view class="loc-check-icon {{pickupLocationsSelectedMap[item] ? 'show' : ''}}"></view>
+                <text>{{item}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="clip-row">
+              <textarea class="clip-input" placeholder="复制取件码到这里，一键识别驿站取件码" value="{{clipText}}" bindinput="onClipInput" auto-height maxlength="500"/>
+              <view class="clip-btn tap-shrink" bindtap="onClipboardFill">识别</view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text><view class="svg-ico svg-ico-home"></view> 社区楼号</text></view>
+              <input class="form-input-pill" placeholder="如：1A" value="{{communityBuilding}}" bindinput="onCommunityBuildingInput" maxlength="30"/>
+            </view>
+            <view class="dorm-fill-row">
+              <view class="dorm-fill-btn {{myDormText ? '' : 'dorm-fill-btn-empty'}} tap-shrink" bindtap="onFillMyDorm">
+                <text class="dorm-fill-icon"><view class="svg-ico svg-ico-lightning"></view></text>
+                <text class="dorm-fill-label" wx:if="{{myDormText}}">一键填入我的宿舍：{{myDormText}}</text>
+                <text class="dorm-fill-label" wx:else>一键填入我的宿舍哦</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-package"></view> 物件大小</text>
+              <text class="form-label-hint">（可多选，以普通鞋盒为标准）</text>
+            </view>
+            <view class="size-option-grid">
+              <view
+                wx:for="{{sizeOptions}}"
+                wx:key="value"
+                class="size-chip {{sizeSelectedMap[item.value] ? 'active' : ''}}"
+                data-value="{{item.value}}"
+                data-label="{{item.label}}"
+                bindtap="onSizeTap"
+              >
+                <view class="size-check-icon {{sizeSelectedMap[item.value] ? 'show' : ''}}"></view>
+                <text class="size-chip-title">{{item.label}}</text>
+                <text class="size-chip-desc">{{item.desc}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-clipboard"></view> 取件码</text>
+            </view>
+            <view wx:for="{{pickupCodes}}" wx:key="index" class="pickup-code-row">
+              <input class="pickup-code-input" placeholder="如：66-2-4225" value="{{item}}" data-index="{{index}}" bindinput="onPickupCodeInput" maxlength="50"/>
+              <view wx:if="{{index === pickupCodes.length - 1}}" class="code-add-btn tap-shrink" bindtap="onAddPickupCode">
+                <view class="code-add-icon"></view>
+              </view>
+              <view wx:else class="code-del-btn tap-shrink" data-index="{{index}}" bindtap="onRemovePickupCode">
+                <view class="code-del-icon"></view>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text><view class="svg-ico svg-ico-memo"></view> 补充说明</text></view>
+            </view>
+            <textarea class="form-textarea" placeholder="取件备注、快递单号等..." value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="500"/>
+
+            <view class="form-divider"></view>
+            <view class="form-item">
+              <view class="form-label"><text><view class="svg-ico svg-ico-camera"></view> 快递截图</text><text class="label-hint">（选填，最多9张）</text></view>
+            </view>
+            <view class="image-upload-area">
+              <view class="image-preview-grid" wx:if="{{publishImages.length > 0}}">
+                <view class="image-preview-item tap-shrink" wx:for="{{publishImages}}" wx:key="*this" data-index="{{index}}" data-url="{{item}}" bindtap="previewPublishImage">
+                  <image class="preview-thumb" src="{{item}}" mode="aspectFill"/>
+                  <view class="preview-delete" data-index="{{index}}" catchtap="removeImage">
+                    <view class="delete-x"></view>
+                  </view>
+                </view>
+              </view>
+              <view class="image-add-btn tap-shrink" bindtap="chooseImage" wx:if="{{publishImages.length < 9}}">
+                <view class="add-icon"></view>
+                <text class="add-text">{{publishImages.length > 0 ? '' + publishImages.length + '/9' : '添加图片'}}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-mobile"></view> 联系方式</text>
+            </view>
+            <view class="contact-type-row">
+              <view
+                wx:for="{{contactTypes}}"
+                wx:key="*this"
+                class="contact-type-chip {{contactTypeIndex === index ? 'active' : ''}}"
+                data-index="{{index}}"
+                bindtap="onContactTypeTap"
+              >{{item}}</view>
+            </view>
+            <view class="form-item" style="margin-top: 16rpx;">
+              <input class="contact-input" placeholder="输入你的{{contactTypeLabel}}" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="50"/>
+            </view>
+            <view class="quick-fill-capsule tap-shrink" bindtap="onQuickFillContact">{{quickFillLabel}}</view>
+          </view>
+
+          <view class="card form-card">
+            <view class="form-label-row">
+              <text class="form-label-text"><view class="svg-ico svg-ico-money-bag"></view> 报酬</text>
+            </view>
+            <view class="price-tag-grid">
+              <view wx:for="{{priceOptions}}" wx:key="*this"
+                class="price-tag {{selectedPrice === item ? 'active' : ''}}"
+                data-price="{{item}}" bindtap="onPriceTagTap">
+                <text>¥{{item}}</text>
+              </view>
+              <view class="price-tag price-tag-custom {{selectedPrice === 'custom' ? 'active' : ''}}" bindtap="onPriceCustomTap">
+                <text>自定义</text>
+              </view>
+            </view>
+            <view class="price-custom-row" wx:if="{{selectedPrice === 'custom'}}">
+              <view class="price-input-wrapper">
+                <text class="price-unit">¥</text>
+                <input class="price-custom-input" type="digit" placeholder="输入金额" value="{{customPrice}}" bindinput="onPriceInput" maxlength="6"/>
+              </view>
+            </view>
+            <view class="price-negotiable-row">
+              <view class="price-negotiable-chip {{priceNegotiable ? 'active' : ''}}" bindtap="onPriceNegotiableTap">
+                <text>价格私聊</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="card form-card">
+            <view class="notify-row">
+              <view class="notify-info">
+                <view class="notify-label-row">
+                  <text class="notify-label"><view class="svg-ico svg-ico-bell"></view> 微信消息通知</text>
+                  <text class="notify-recommend">推荐</text>
+                </view>
+                <text class="notify-hint">有人接单时通过微信服务号通知你</text>
+              </view>
+              <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#FF9500"/>
+            </view>
+          </view>
+
+          <view class="publish-btn tap-shrink" wx:if="{{!editMode}}" bindtap="onSubmitPublish">立即发布</view>
+          <view class="publish-btn tap-shrink publish-btn-edit" wx:else bindtap="onSaveEdit">保存修改</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ============ Tab 2: 我的任务 ============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+
+        <!-- 统计栏 -->
+        <view class="task-stats-bar">
+          <view class="task-stat-item {{taskSubTab === 0 ? 'active' : ''}}" data-index="0" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.pending}}</text>
+            <text class="ts-label">待完成</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+          <view class="task-stat-item {{taskSubTab === 1 ? 'active' : ''}}" data-index="1" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.published}}</text>
+            <text class="ts-label">我的发布</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+          <view class="task-stat-item {{taskSubTab === 2 ? 'active' : ''}}" data-index="2" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.completed}}</text>
+            <text class="ts-label">已结束</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+        </view>
+
+        <!-- ===== 待完成 ===== -->
+        <block wx:if="{{taskSubTab === 0}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{pendingTasks.length === 0}}" class="task-empty-state">
+            <view class="task-empty-icon"><view class="tei-clipboard"><view class="tei-clip"></view><view class="tei-line tei-l1"></view><view class="tei-line tei-l2"></view><view class="tei-line tei-l3"></view></view></view>
+            <text class="task-empty-text">暂无待完成的任务</text>
+            <text class="task-empty-hint">去大厅接一单试试吧</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{pendingTasks}}" wx:key="_id" class="task-card">
+              <view class="task-card-top" data-id="{{item._id}}" bindtap="onMineTaskCardTap">
+                <view class="task-card-header">
+                  <text class="task-card-title">{{item.title}}</text>
+                  <view class="task-badge badge-pending">待完成</view>
+                </view>
+                <view class="express-card-info">
+                  <view class="ec-info-chip ec-location" wx:if="{{item.location}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-postbox"></view></text>
+                    <text class="ec-chip-text">{{item.location}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-size" wx:if="{{item._sizeLabel}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-package"></view></text>
+                    <text class="ec-chip-text">{{item._sizeLabel}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-price">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-money-bag"></view></text>
+                    <text class="ec-chip-text" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+                    <text class="ec-chip-text ec-price-free" wx:else>价格私聊</text>
+                  </view>
+                </view>
+                <view class="ec-code-preview" wx:if="{{item.extra && item.extra.pickupCode}}">
+                  <text class="ec-code-label">取件码</text>
+                  <text class="ec-code-value">{{item.extra.pickupCode}}</text>
+                </view>
+                <view class="task-card-body" wx:if="{{item.content}}">{{item.content}}</view>
+              </view>
+              <!-- 发布者信息 -->
+              <view class="task-card-user-row">
+                <image class="task-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="task-card-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                <text class="task-card-time">{{item._timeAgo}}</text>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="task-card-actions">
+                <view class="task-btn task-btn-chat tap-shrink" data-id="{{item._id}}" catchtap="onContactCreator">
+                  <text>联系发布者</text>
+                </view>
+                <view class="task-btn task-btn-complete tap-shrink" data-id="{{item._id}}" catchtap="onCompleteTask">
+                  <text>确认完成</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <!-- ===== 我的发布 ===== -->
+        <block wx:if="{{taskSubTab === 1}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{myPublishedTasks.length === 0}}" class="task-empty-state">
+            <view class="task-empty-icon"><view class="tei-clipboard"><view class="tei-clip"></view><view class="tei-line tei-l1"></view><view class="tei-line tei-l2"></view><view class="tei-line tei-l3"></view></view></view>
+            <text class="task-empty-text">还没有发布过任务</text>
+            <text class="task-empty-hint">去发布页发一条试试</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{myPublishedTasks}}" wx:key="_id" class="task-card">
+              <view class="task-card-top" data-id="{{item._id}}" bindtap="onMineTaskCardTap">
+                <view class="task-card-header">
+                  <text class="task-card-title">{{item.title}}</text>
+                  <view class="task-badge {{cutil.publishStatusClass(item)}}">{{cutil.publishStatusText(item)}}</view>
+                </view>
+                <view class="express-card-info">
+                  <view class="ec-info-chip ec-location" wx:if="{{item.location}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-postbox"></view></text>
+                    <text class="ec-chip-text">{{item.location}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-size" wx:if="{{item._sizeLabel}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-package"></view></text>
+                    <text class="ec-chip-text">{{item._sizeLabel}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-price">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-money-bag"></view></text>
+                    <text class="ec-chip-text" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+                    <text class="ec-chip-text ec-price-free" wx:else>价格私聊</text>
+                  </view>
+                </view>
+                <view class="ec-code-preview" wx:if="{{item.extra && item.extra.pickupCode}}">
+                  <text class="ec-code-label">取件码</text>
+                  <text class="ec-code-value">{{item.extra.pickupCode}}</text>
+                </view>
+                <!-- 接单人信息 -->
+                <view class="task-taker-info" wx:if="{{item.extra && item.extra.taker}}">
+                  <image class="task-taker-avatar" src="{{item.extra.taker.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                  <view class="task-taker-detail">
+                    <text class="task-taker-name">{{item.extra.taker.nickName || '匿名用户'}}</text>
+                    <text class="task-taker-id">ID: {{item.extra.taker.userCode || item.extra.taker.userId || ''}}</text>
+                    <text class="task-taker-status">已接单 · 等待完成</text>
+                  </view>
+                </view>
+              </view>
+              <view class="task-card-user-row">
+                <text class="task-card-time">{{item._timeAgo}}</text>
+                <text class="task-countdown" wx:if="{{item._countdown}}">剩余 {{item._countdown}}</text>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="task-card-actions" wx:if="{{item.status === 'active'}}">
+                <view class="task-btn task-btn-delete tap-shrink" data-id="{{item._id}}" catchtap="onDeleteMyPost">
+                  <text>删除</text>
+                </view>
+                <view class="task-btn task-btn-edit tap-shrink" data-id="{{item._id}}" catchtap="onEditMyPost">
+                  <text>编辑</text>
+                </view>
+                <view class="task-btn task-btn-close tap-shrink" data-id="{{item._id}}" catchtap="onCloseMyPost">
+                  <text>关闭任务</text>
+                </view>
+              </view>
+              <view class="task-card-actions" wx:elif="{{item.status === 'closed' && item.extra && item.extra.taker}}">
+                <view class="task-btn task-btn-chat tap-shrink" data-id="{{item._id}}" catchtap="onContactTaker">
+                  <text>联系接单人</text>
+                </view>
+                <view class="task-btn task-btn-edit tap-shrink" data-id="{{item._id}}" catchtap="onEditMyPost">
+                  <text>编辑</text>
+                </view>
+                <view class="task-btn task-btn-close tap-shrink" data-id="{{item._id}}" catchtap="onCloseMyPost">
+                  <text>关闭任务</text>
+                </view>
+              </view>
+              <view class="task-card-actions" wx:elif="{{item.status === 'resolved'}}">
+                <view class="task-btn task-btn-chat tap-shrink" data-id="{{item._id}}" catchtap="onContactTaker">
+                  <text>联系接单人</text>
+                </view>
+                <view class="task-btn task-btn-delete tap-shrink" data-id="{{item._id}}" catchtap="onDeleteMyPost">
+                  <text>删除</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <!-- ===== 已结束 ===== -->
+        <block wx:if="{{taskSubTab === 2}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{completedTasks.length === 0}}" class="task-empty-state">
+            <view class="task-empty-icon"><view class="tei-clipboard"><view class="tei-clip"></view><view class="tei-line tei-l1"></view><view class="tei-line tei-l2"></view><view class="tei-line tei-l3"></view></view></view>
+            <text class="task-empty-text">暂无已结束的任务</text>
+            <text class="task-empty-hint">完成的任务会显示在这里</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{completedTasks}}" wx:key="_id" class="task-card task-card-done">
+              <view class="task-card-top" data-id="{{item._id}}" bindtap="onMineTaskCardTap">
+                <view class="task-card-header">
+                  <text class="task-card-title">{{item.title}}</text>
+                  <view class="task-badge badge-done">已完成</view>
+                </view>
+                <view class="express-card-info">
+                  <view class="ec-info-chip ec-location" wx:if="{{item.location}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-postbox"></view></text>
+                    <text class="ec-chip-text">{{item.location}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-size" wx:if="{{item._sizeLabel}}">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-package"></view></text>
+                    <text class="ec-chip-text">{{item._sizeLabel}}</text>
+                  </view>
+                  <view class="ec-info-chip ec-price">
+                    <text class="ec-chip-dot"><view class="svg-ico svg-ico-money-bag"></view></text>
+                    <text class="ec-chip-text" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+                    <text class="ec-chip-text ec-price-free" wx:else>价格私聊</text>
+                  </view>
+                </view>
+                <view class="ec-code-preview" wx:if="{{item.extra && item.extra.pickupCode}}">
+                  <text class="ec-code-label">取件码</text>
+                  <text class="ec-code-value">{{item.extra.pickupCode}}</text>
+                </view>
+              </view>
+              <view class="task-card-user-row">
+                <image class="task-card-avatar" src="{{item.creator ? (item.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <text class="task-card-nick">{{item.creator ? (item.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+                <text class="task-card-time">{{item._timeAgo}}</text>
+              </view>
+              <view class="task-card-actions">
+                <!-- 我发布的 → 联系接单者 + 删除 + 重发 -->
+                <block wx:if="{{item._isOwn}}">
+                  <view wx:if="{{item.extra && item.extra.taker}}" class="task-btn task-btn-chat tap-shrink" data-id="{{item._id}}" catchtap="onContactTaker">
+                    <text>联系接单者</text>
+                  </view>
+                  <view class="task-btn task-btn-chat tap-shrink" wx:if="{{!item.extra || !item.extra.taker}}" data-id="{{item._id}}" catchtap="onRePublish">
+                    <text>重新发布</text>
+                  </view>
+                  <view class="task-btn task-btn-delete tap-shrink" data-id="{{item._id}}" catchtap="onDeleteMyPost">
+                    <text>删除任务</text>
+                  </view>
+                </block>
+                <!-- 我接的 → 联系发布者 -->
+                <block wx:else>
+                  <view class="task-btn task-btn-chat tap-shrink" data-id="{{item._id}}" catchtap="onContactCreator">
+                    <text>联系发布者</text>
+                  </view>
+                </block>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:if="{{currentTab === 0}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab0}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:if="{{currentTab === 1}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab1}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:if="{{currentTab === 2}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:else mode="aspectFit"></image>
+            <view class="task-tab-badge" wx:if="{{taskBadge > 0}}">{{taskBadge > 99 ? '99+' : taskBadge}}</view>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 帮取弹窗 ===== -->
+<view class="help-modal {{helpModalVisible ? 'show' : ''}}" catchtap="onCloseHelpModal">
+  <view class="help-modal-mask"></view>
+  <view class="help-modal-card" catchtap="">
+    <view class="hm-close tap-shrink" bindtap="onCloseHelpModal">✕</view>
+    <image class="hm-avatar" src="{{helpModalItem.creator ? (helpModalItem.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+    <text class="hm-nick">{{helpModalItem.creator ? (helpModalItem.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+    <text class="hm-title">{{helpModalItem.title || '快递代取'}}</text>
+
+    <view class="hm-detail-card">
+      <view class="hm-detail-row">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-postbox"></view> 驿站</text>
+        <text class="hm-detail-value">{{helpModalItem.location || '未指定'}}</text>
+      </view>
+      <view class="hm-detail-row">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-home"></view> 宿舍地址</text>
+        <text class="hm-detail-value">{{helpModalItem.extra && helpModalItem.extra.communityBuilding ? helpModalItem.extra.communityBuilding : '未填写'}}</text>
+      </view>
+      <view class="hm-detail-row hm-detail-row-codes" wx:if="{{helpModalItem.extra && helpModalItem.extra.pickupCode}}">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-clipboard"></view> 取件码</text>
+        <view class="hm-code-list">
+          <text wx:for="{{cutil.splitCodes(helpModalItem.extra.pickupCode)}}" wx:key="*this" class="hm-code-chip">{{item}}</text>
+        </view>
+      </view>
+      <view class="hm-detail-row" wx:else>
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-clipboard"></view> 取件码</text>
+        <text class="hm-detail-value hm-empty">未填写</text>
+      </view>
+      <view class="hm-detail-row">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-package"></view> 物件大小</text>
+        <text class="hm-detail-value">{{helpModalItem._sizeLabel || '未填写'}}</text>
+      </view>
+      <view class="hm-detail-row">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-memo"></view> 备注</text>
+        <text class="hm-detail-value hm-note">{{helpModalItem.content || '无备注'}}</text>
+      </view>
+      <view class="hm-detail-row">
+        <text class="hm-detail-label"><view class="svg-ico svg-ico-money-bag"></view> 报酬</text>
+        <text class="hm-detail-value hm-price" wx:if="{{helpModalItem.price > 0}}">¥{{helpModalItem.price}}</text>
+        <text class="hm-detail-value hm-price" wx:else>价格私聊</text>
+      </view>
+    </view>
+
+    <view class="hm-divider"></view>
+    <view class="hm-contact-box hm-contact-locked">
+      <text class="hm-contact-value"><view class="svg-ico svg-ico-lock"></view> 接单后显示联系方式</text>
+    </view>
+    <view class="hm-actions">
+      <button class="hm-btn hm-btn-chat" bindtap="onGoChat" data-item="{{helpModalItem}}">私聊</button>
+      <button class="hm-btn hm-btn-take" bindtap="onConfirmHelp" data-index="{{helpModalIndex}}">我要帮取</button>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 联系方式弹窗 ===== -->
+<view class="help-modal {{contactModalVisible ? 'show' : ''}}" catchtap="onCloseContactModal">
+  <view class="help-modal-mask"></view>
+  <view class="help-modal-card" catchtap="">
+    <view class="hm-close tap-shrink" bindtap="onCloseContactModal">✕</view>
+    <image class="hm-avatar" src="{{contactModalItem.creator ? (contactModalItem.creator.avatarUrl || '/images/default-avatar.png') : '/images/default-avatar.png'}}" mode="aspectFill"/>
+    <text class="hm-nick">{{contactModalItem.creator ? (contactModalItem.creator.nickName || '匿名用户') : '匿名用户'}}</text>
+    <text class="hm-title" style="font-size:26rpx; margin-bottom:8rpx;">{{contactModalItem.title || '快递代取'}}</text>
+    <view class="hm-divider"></view>
+    <view class="hm-contact-box" style="text-align:center;">
+      <block wx:if="{{contactModalItem.contact}}">
+        <text class="hm-contact-type">{{cutil.contactLabel(contactModalItem.contactType)}}</text>
+        <text class="hm-contact-value" style="font-size:32rpx; font-weight:600; color:#333;">{{contactModalItem.contact}}</text>
+      </block>
+      <text wx:else class="hm-contact-value">暂未填写联系方式</text>
+    </view>
+    <view class="hm-actions">
+      <button class="hm-btn hm-btn-take" bindtap="onContactChat" data-item="{{contactModalItem}}">私信</button>
+    </view>
+  </view>
+</view>
+
+<!-- ===== 我的任务详情弹窗（lost 同款点开看详情） ===== -->
+<view class="mtp-mask {{mineTaskModalVisible ? 'mtp-show' : ''}}" catchtap="closeMineTaskModal">
+  <view class="mtp-popup" catchtap="">
+    <!-- 顶部导航 -->
+    <view class="mtp-nav">
+      <view class="mtp-nav-back tap-shrink" bindtap="closeMineTaskModal">
+        <view class="back-arrow"></view>
+      </view>
+      <text class="mtp-nav-title">任务详情</text>
+      <view wx:if="{{mineTaskModalItem._publishStatus}}" class="mtp-nav-badge {{mineTaskModalItem._publishStatus.class}}">{{mineTaskModalItem._publishStatus.label}}</view>
+      <view wx:else class="mtp-nav-placeholder"></view>
+    </view>
+
+    <scroll-view class="mtp-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <!-- 标题 + 信息 chips -->
+      <view class="mtp-card">
+        <text class="mtp-title">{{mineTaskModalItem.title || '快递代取'}}</text>
+        <view class="mtp-chips">
+          <view class="mtp-chip" wx:if="{{mineTaskModalItem.location}}">
+            <text><view class="svg-ico svg-ico-postbox"></view> {{mineTaskModalItem.location}}</text>
+          </view>
+          <view class="mtp-chip" wx:if="{{mineTaskModalItem._sizeLabel}}">
+            <text><view class="svg-ico svg-ico-package"></view> {{mineTaskModalItem._sizeLabel}}</text>
+          </view>
+          <view class="mtp-chip">
+            <text wx:if="{{mineTaskModalItem.price > 0}}"><view class="svg-ico svg-ico-money-bag"></view> ¥{{mineTaskModalItem.price}}</text>
+            <text wx:else><view class="svg-ico svg-ico-money-bag"></view> 价格私聊</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 取件码 -->
+      <view class="mtp-card" wx:if="{{mineTaskModalItem.extra && mineTaskModalItem.extra.pickupCode}}">
+        <view class="mtp-section-title">取件码</view>
+        <view class="mtp-codes-row">
+          <text wx:for="{{cutil.splitCodes(mineTaskModalItem.extra.pickupCode)}}" wx:key="*this" class="mtp-code-chip">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- 宿舍地址 -->
+      <view class="mtp-card" wx:if="{{mineTaskModalItem.extra && mineTaskModalItem.extra.communityBuilding}}">
+        <view class="mtp-section-title">宿舍地址</view>
+        <text class="mtp-desc">{{mineTaskModalItem.extra.communityBuilding}}</text>
+      </view>
+
+      <!-- 备注 / 内容 -->
+      <view class="mtp-card" wx:if="{{mineTaskModalItem.content}}">
+        <view class="mtp-section-title">备注</view>
+        <text class="mtp-desc">{{mineTaskModalItem.content}}</text>
+      </view>
+
+      <!-- 发布者 -->
+      <view class="mtp-card" wx:if="{{mineTaskModalItem.creator}}">
+        <view class="mtp-section-title">发布者</view>
+        <view class="mtp-user-row">
+          <image class="mtp-avatar" src="{{mineTaskModalItem.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+          <view class="mtp-user-info">
+            <text class="mtp-user-name">{{mineTaskModalItem.creator.nickName || '匿名用户'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 接单人 -->
+      <view class="mtp-card" wx:if="{{mineTaskModalItem.extra && mineTaskModalItem.extra.taker}}">
+        <view class="mtp-section-title">接单人</view>
+        <view class="mtp-user-row">
+          <image class="mtp-avatar" src="{{mineTaskModalItem.extra.taker.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+          <view class="mtp-user-info">
+            <text class="mtp-user-name">{{mineTaskModalItem.extra.taker.nickName || '匿名用户'}}</text>
+            <text class="mtp-user-sub">ID: {{mineTaskModalItem.extra.taker.userCode || mineTaskModalItem.extra.taker.userId || ''}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 发布时间 -->
+      <view class="mtp-card">
+        <view class="mtp-section-title">发布时间</view>
+        <text class="mtp-desc">{{mineTaskModalItem._timeAgo || ''}}</text>
+      </view>
+
+      <view class="mtp-bottom-space"></view>
+    </scroll-view>
+
+    <!-- 底部操作栏（按身份 + 状态显示） -->
+    <view class="mtp-action-bar">
+      <!-- 我发布的 + 进行中：删除 / 编辑 / 关闭任务 -->
+      <block wx:if="{{mineTaskModalItem._isOwn && mineTaskModalItem.status === 'active'}}">
+        <view class="mtp-btn mtp-btn-secondary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onDeleteMyPost">删除</view>
+        <view class="mtp-btn mtp-btn-secondary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onEditMyPost">编辑</view>
+        <view class="mtp-btn mtp-btn-primary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onCloseMyPost">关闭任务</view>
+      </block>
+      <!-- 我发布的 + 已接单：联系接单人 / 编辑 / 关闭任务 -->
+      <block wx:elif="{{mineTaskModalItem._isOwn && mineTaskModalItem.status === 'closed' && mineTaskModalItem.extra && mineTaskModalItem.extra.taker}}">
+        <view class="mtp-btn mtp-btn-primary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onContactTaker">联系接单人</view>
+        <view class="mtp-btn mtp-btn-secondary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onEditMyPost">编辑</view>
+        <view class="mtp-btn mtp-btn-danger tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onCloseMyPost">关闭任务</view>
+      </block>
+      <!-- 我接的 + 待完成：联系发布者 / 确认完成 -->
+      <block wx:elif="{{!mineTaskModalItem._isOwn && mineTaskModalItem.status !== 'resolved'}}">
+        <view class="mtp-btn mtp-btn-primary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onContactCreator">联系发布者</view>
+        <view class="mtp-btn mtp-btn-success tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onCompleteTask">确认完成</view>
+      </block>
+      <!-- 已结束 -->
+      <block wx:else>
+        <view class="mtp-btn mtp-btn-primary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="{{mineTaskModalItem._isOwn ? 'onContactTaker' : 'onContactCreator'}}">{{mineTaskModalItem._isOwn ? '联系接单者' : '联系发布者'}}</view>
+        <view wx:if="{{mineTaskModalItem._isOwn && mineTaskModalItem.status === 'closed' && (!mineTaskModalItem.extra || !mineTaskModalItem.extra.taker)}}" class="mtp-btn mtp-btn-secondary tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onRePublish">重新发布</view>
+        <view wx:if="{{mineTaskModalItem._isOwn}}" class="mtp-btn mtp-btn-danger tap-shrink" data-id="{{mineTaskModalItem._id}}" catchtap="onDeleteMyPost">删除</view>
+      </block>
+    </view>
+  </view>
+</view>

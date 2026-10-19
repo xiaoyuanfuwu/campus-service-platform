@@ -1,0 +1,112 @@
+<!-- subpkg/achievement-detail/achievement-detail.wxml — 赛道成就列表 + 上传 -->
+<view class="page-ach-detail">
+
+  <!-- 渐变背景 -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 状态栏填充 -->
+  <view class="page-status-bg" style="height:{{statusBarHeight}}px;"></view>
+
+  <!-- 自定义导航栏 -->
+  <view class="shared-nav" style="padding-top:{{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <text class="brand-name">{{trackName}}</text>
+      </view>
+      <view class="nav-right">
+        <text class="nav-progress">{{unlocked}}/{{achievements.length}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 滚动内容 -->
+  <scroll-view class="ad-scroll" style="top:{{navBarHeight}}px;" scroll-y enhanced show-scrollbar="{{false}}">
+
+    <!-- 说明提示 -->
+    <view class="ad-tip">
+      <image class="ad-tip-icon" src="{{tipIcon}}" mode="aspectFit" />
+      <text class="ad-tip-text">点击对应成就卡片，上传证书图片，审核通过即可点亮该成就。</text>
+    </view>
+
+    <!-- 成就网格 -->
+    <view class="ad-grid">
+      <view
+        wx:for="{{achievements}}" wx:key="key"
+        class="ad-card ad-card-{{trackTheme}} {{item.status !== 'approved' ? 'ad-card-locked' : ''}} tap-shrink"
+        data-index="{{index}}"
+        bindtap="onAchievementTap"
+      >
+        <!-- 状态角标 -->
+        <view class="ad-status-badge ad-badge-{{item.status}}">
+          <text>{{item.statusLabel}}</text>
+        </view>
+        <!-- 图标 -->
+        <view class="ad-icon-wrap {{item.status !== 'approved' ? 'ad-icon-dim' : ''}}">
+          <view class="svg-ico svg-ico-{{item.icon}}"></view>
+        </view>
+        <!-- 名称 -->
+        <text class="ad-name">{{item.name}}</text>
+        <!-- 描述 -->
+        <text class="ad-desc">{{item.desc}}</text>
+      </view>
+    </view>
+
+    <!-- 底部安全区 -->
+    <view class="bottom-safe"></view>
+  </scroll-view>
+
+</view>
+
+<!-- ===== 上传弹窗 ===== -->
+<view class="upload-overlay" wx:if="{{showUpload}}" bindtap="closeUpload">
+  <view class="upload-modal" catchtap="">
+    <view class="upload-header">
+      <text class="upload-title">上传证书 — {{currentItem.name}}</text>
+      <view class="upload-close tap-shrink" bindtap="closeUpload">
+        <image class="upload-close-icon" src="{{closeIcon}}" mode="aspectFit" />
+      </view>
+    </view>
+
+    <view class="upload-body">
+      <!-- 图片预览区 -->
+      <view class="upload-preview" bindtap="onChooseImage">
+        <block wx:if="{{uploadImage}}">
+          <image class="upload-img" src="{{uploadImage}}" mode="aspectFit" />
+        </block>
+        <block wx:else>
+          <view class="upload-placeholder">
+            <image class="up-icon" src="{{cameraIcon}}" mode="aspectFit" />
+            <text class="up-text">点击选择证书图片</text>
+          </view>
+        </block>
+      </view>
+
+      <!-- 补充说明 -->
+      <view class="upload-field">
+        <text class="uf-label">补充说明（选填）</text>
+        <textarea
+          class="uf-textarea"
+          placeholder="如等级、获得时间、颁发机构等信息..."
+          value="{{uploadNote}}"
+          bindinput="onUploadNoteInput"
+          maxlength="200"
+        />
+      </view>
+
+      <view class="upload-submit tap-shrink" bindtap="onSubmitUpload">
+        <text>{{uploading ? "提交中..." : "提交审核"}}</text>
+      </view>
+    </view>
+  </view>
+</view>

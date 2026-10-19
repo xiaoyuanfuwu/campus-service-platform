@@ -1,0 +1,36 @@
+/* pages/recommend/recommend.wxss */
+.page-recommend { min-height: 100vh; background: transparent; }
+
+/* 内容区 */
+.content { min-height: 100vh; padding: 24rpx 32rpx; box-sizing: border-box; }
+
+/* Tab 切换栏 */
+.tab-bar { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
+.tab-item {
+  flex: 1; text-align: center; padding: 20rpx;
+  border-radius: 999rpx; font-size: var(--font-sm);
+  background: var(--bg-card); color: var(--text-secondary);
+  border: 1rpx solid var(--border-light);
+  transition: all 0.2s;
+}
+.tab-item.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* 路线卡片 */
+.route-card { display: flex; flex-direction: column; gap: 12rpx; }
+.route-info { display: flex; align-items: center; gap: 16rpx; }
+.route-from { font-size: var(--font-lg); font-weight: 600; }
+.arrow { font-size: var(--font-md); color: var(--text-hint); }
+.route-to { font-size: var(--font-lg); font-weight: 600; }
+.route-meta { display: flex; gap: 24rpx; }
+.meta-item { font-size: var(--font-xs); color: var(--text-hint); }
+.btn-sm { align-self: flex-start; font-size: var(--font-xs); color: var(--primary); padding: 8rpx 24rpx; border: 2rpx solid var(--primary); border-radius: 999rpx; }
+
+/* 就近匹配卡片 */
+.nearby-card { display: flex; flex-direction: column; gap: 16rpx; }
+.user-row { display: flex; align-items: center; gap: 16rpx; }
+.avatar { width: 80rpx; height: 80rpx; border-radius: 50%; }
+.user-info { display: flex; flex-direction: column; }
+.name { font-size: var(--font-md); font-weight: 600; }
+.distance { font-size: var(--font-xs); color: var(--text-hint); }
+.info-content { font-size: var(--font-md); color: var(--text-secondary); }
+.reason { font-size: var(--font-xs); color: var(--primary); }

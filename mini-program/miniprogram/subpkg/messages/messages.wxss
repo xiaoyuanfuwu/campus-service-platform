@@ -1,0 +1,255 @@
+/* pages/messages/messages.wxss */
+
+.page-messages { min-height: 100vh; background: transparent; }
+
+/* ===== 顶部栏（与首页同款，透明融入渐变） ===== */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: transparent;
+}
+.top-bar-inner {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+}
+
+.nav-title { font-size: var(--font-lg); font-weight: 600; flex: 1; text-align: center; color: var(--text-primary); white-space: nowrap; }
+.nav-right { padding: 0 32rpx; font-size: var(--font-sm); color: var(--primary); }
+.nav-placeholder { width: 72rpx; flex-shrink: 0; }
+
+.content { position: fixed; top: 0; left: 0; right: 0; bottom: 0; padding: 24rpx 32rpx; box-sizing: border-box; }
+
+.glass-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx 32rpx;
+  margin-bottom: 16rpx;
+  border: 1rpx solid var(--border-light);
+  transition: background 0.2s;
+}
+
+.glass-card:active { background: var(--bg-card-hover); }
+
+/* 系统公告通知卡片 */
+.sys-notif-card {
+  padding: 28rpx 32rpx;
+}
+.sys-notif-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+.sys-notif-title {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 内联条目 */
+.sys-notif-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 16rpx;
+  border-top: 1rpx solid var(--border-light);
+  gap: 16rpx;
+}
+.sys-notif-item:active { background: var(--bg-card-hover); }
+
+.sni-dot-indicator {
+  flex-shrink: 0;
+}
+.sni-tag-announcement,
+.sni-tag-notif {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  font-weight: 500;
+}
+.sni-tag-announcement {
+  color: var(--danger);
+  background: var(--danger-bg-light);
+}
+.sni-tag-notif {
+  color: var(--primary);
+  background: var(--primary-bg-light);
+}
+
+.sni-body {
+  flex: 1;
+  min-width: 0;
+}
+.sni-text {
+  font-size: var(--font-md);
+  color: var(--text-primary);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sni-time {
+  font-size: var(--font-xs);
+  color: var(--text-hint);
+  display: block;
+  margin-top: 6rpx;
+}
+
+.sni-arrow {
+  width: 12rpx; height: 12rpx;
+  border-right: 3rpx solid var(--text-hint);
+  border-bottom: 3rpx solid var(--text-hint);
+  transform: rotate(-45deg);
+  flex-shrink: 0;
+}
+
+/* 底部入口 */
+.sys-notif-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx 16rpx 0;
+  border-top: 1rpx solid var(--border-light);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+.sys-notif-footer:active { opacity: 0.7; }
+
+.section-header {
+  padding: 32rpx 8rpx 16rpx;
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* 私信列表 */
+.conv-item { display: flex; align-items: center; }
+.avatar-wrap {
+  position: relative;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.avatar {
+  width: 80rpx; height: 80rpx;
+  border-radius: 50%;
+  background: var(--card-inner-bg-3);
+  display: block;
+}
+/* 在线绿点 */
+.online-dot {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 20rpx; height: 20rpx;
+  border-radius: 50%;
+  background: var(--success);
+  border: 3rpx solid var(--bg-card);
+}
+
+/* 群聊头像 */
+.group-avatar {
+  width: 80rpx; height: 80rpx;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+.group-icon-gc {
+  position: relative;
+  width: 40rpx; height: 32rpx;
+}
+.gic-bubble-1 {
+  position: absolute; top: 0; left: 0;
+  width: 26rpx; height: 20rpx;
+  border: 2rpx solid var(--primary);
+  border-radius: 8rpx;
+  background: transparent;
+}
+.gic-bubble-2 {
+  position: absolute; bottom: 0; right: 0;
+  width: 26rpx; height: 20rpx;
+  border: 2rpx solid var(--primary);
+  border-radius: 8rpx;
+  background: var(--bg-card);
+}
+
+.conv-info { flex: 1; min-width: 0; }
+.conv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.name-wrap { display: flex; align-items: center; gap: 8rpx; min-width: 0; overflow: hidden; }
+.conv-name { font-size: var(--font-md); font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stranger-tag {
+  font-size: 18rpx;
+  color: var(--warning);
+  background: var(--warning-bg-mid);
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  flex-shrink: 0;
+}
+.conv-time { font-size: var(--font-xs); color: var(--text-hint); flex-shrink: 0; }
+.conv-last {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: block;
+}
+.conv-last.bold { color: var(--text-primary); font-weight: 600; }
+
+.member-count {
+  font-size: var(--font-xs);
+  color: var(--text-hint);
+  background: var(--card-inner-bg-2);
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.badge {
+  min-width: 32rpx; height: 32rpx;
+  line-height: 32rpx; text-align: center;
+  font-size: 20rpx; color: var(--text-on-primary);
+  background: var(--danger);
+  border-radius: 999rpx;
+  padding: 0 8rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 120rpx 0;
+}
+.empty-icon {
+  width: 96rpx; height: 96rpx;
+  border-radius: 50%;
+  background: var(--card-inner-bg);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24rpx;
+  border: 1rpx solid var(--border);
+}
+.ei-chat-bubble {
+  width: 40rpx; height: 30rpx;
+  border: 3rpx solid var(--text-hint);
+  border-radius: 10rpx;
+  position: relative;
+}
+.ei-chat-bubble::after {
+  content: ''; position: absolute; bottom: -8rpx; left: 8rpx;
+  width: 0; height: 0;
+  border-left: 5rpx solid transparent;
+  border-right: 5rpx solid transparent;
+  border-top: 8rpx solid var(--text-hint);
+}
+.empty-text {
+  font-size: var(--font-lg); color: var(--text-secondary); margin-bottom: 8rpx;
+}
+.empty-hint { font-size: var(--font-sm); color: var(--text-hint); }
+
+.loading-more {
+  display: flex; justify-content: center;
+  padding: 32rpx; color: var(--text-hint); font-size: var(--font-sm);
+}

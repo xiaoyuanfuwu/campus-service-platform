@@ -1,0 +1,278 @@
+<!-- pages/hall-task/hall-task.wxml — 大厅任务（聚合多模块任务） -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- 顶部导航栏 -->
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand">
+        <view class="brand-logo post-brand-icon">
+          <view class="post-brand-sheet"></view>
+          <view class="post-brand-line post-brand-line-1"></view>
+          <view class="post-brand-line post-brand-line-2"></view>
+          <view class="post-brand-dot"></view>
+        </view>
+        <text class="brand-name">互助大厅</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="page-nav-spacer" style="height: {{navBarHeight}}px;"></view>
+
+  <!-- 分类筛选（不换行，超出可滚动） -->
+  <scroll-view class="hall-filter" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="hall-filter-inner">
+      <view class="hall-chip {{filterModule === item.val ? 'active' : ''}}" wx:for="{{filterOptions}}" wx:key="val" data-val="{{item.val}}" bindtap="onFilterTap">{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 搜索 -->
+  <view class="hall-search">
+    <input class="hall-search-input" placeholder="搜索任务标题、地点..." value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
+    <view class="hall-search-btn tap-shrink" bindtap="onSearch">搜索</view>
+  </view>
+
+  <!-- 列表 -->
+  <scroll-view class="hall-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+    <!-- 骨架 -->
+    <view wx:if="{{loading && list.length === 0}}" class="hall-grid">
+      <view class="hall-card skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="hall-card-cover" style="background:#fff; aspect-ratio:4/3;"></view>
+        <view class="hall-card-body">
+          <view class="sk-line sk-long"></view>
+          <view class="sk-line"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空 -->
+    <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+      <view class="empty-icon"><view class="svg-ico svg-ico-mailbox-empty"></view></view>
+      <text class="empty-text">暂无任务</text>
+      <text class="empty-hint">切换其他分类试试，或发布一个</text>
+    </view>
+
+    <!-- 卡片列表（瀑布流） -->
+    <view class="hall-grid" wx:else>
+
+      <!-- ========== 快递代取 ========== -->
+      <view class="hall-card {{item._module}} {{(item.cover_image || item.image) ? 'hall-card--has-img' : ''}}" wx:for="{{list}}" wx:key="id" wx:if="{{item._module === 'express'}}"
+        data-id="{{item.id}}" data-module="{{item._module}}" bindtap="onItemTap">
+        <!-- 有封面图：3:4 图 + 4:3 渐变带 -->
+        <block wx:if="{{item.cover_image || item.image}}">
+          <view class="hall-card-imgbox">
+            <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+            <image class="hall-card-img" src="{{item.cover_image || item.image}}" mode="aspectFill" />
+            <view class="hall-card-tag {{item._module}}">代取</view>
+          </view>
+          <view class="hall-card-band {{item._module}}">
+            <view class="express-top-row">
+              <view class="express-route-col">
+                <view class="express-from">
+                  <view class="express-dot express-dot-from"></view>
+                  <text class="express-text">{{item.location || '驿站'}}</text>
+                </view>
+                <view class="express-line"></view>
+                <view class="express-to">
+                  <view class="express-dot express-dot-to"></view>
+                  <text class="express-text">{{item._expressTo || item.extra.communityBuilding || item.communityBuilding || item.target_location || item.dorm || '宿舍楼'}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <view class="express-footer-right">
+                <view class="express-cover-size" wx:if="{{item._sizeLabel}}">{{item._sizeLabel}}</view>
+                <text class="hall-card-price-text">{{item._priceText}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+        <!-- 无封面图：4:3 渐变 + 浮层 -->
+        <view wx:else class="hall-card-cover {{item._module}}">
+          <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+          <view class="hall-card-cover-mask"></view>
+          <view class="hall-card-tag {{item._module}}">代取</view>
+          <view class="express-route-col">
+            <view class="express-from">
+              <view class="express-dot express-dot-from"></view>
+              <text class="express-text">{{item.location || '驿站'}}</text>
+            </view>
+            <view class="express-line"></view>
+            <view class="express-to">
+              <view class="express-dot express-dot-to"></view>
+              <text class="express-text">{{item._expressTo || item.extra.communityBuilding || item.communityBuilding || item.target_location || item.dorm || '宿舍楼'}}</text>
+            </view>
+          </view>
+          <view class="express-cover-footer">
+            <text class="hall-card-time">{{item._timeAgo}}</text>
+            <view class="express-footer-right">
+              <text class="express-cover-size" wx:if="{{item._sizeLabel}}">{{item._sizeLabel}}</text>
+              <text class="hall-card-price-text express-price-text">{{item._priceText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ========== 失物招领 ========== -->
+      <view class="hall-card {{item._module}} {{(item.cover_image || item.image) ? 'hall-card--has-img' : ''}}" wx:for="{{list}}" wx:key="id" wx:if="{{item._module === 'lost'}}"
+        data-id="{{item.id}}" data-module="{{item._module}}" bindtap="onItemTap">
+        <block wx:if="{{item.cover_image || item.image}}">
+          <view class="hall-card-imgbox">
+            <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+            <image class="hall-card-img" src="{{item.cover_image || item.image}}" mode="aspectFill" />
+            <view class="hall-card-tags-row">
+              <view class="hall-card-tag {{item._module}}">失物招领</view>
+              <view class="lost-type-tag {{item.type === 'find' ? 'find' : 'offer'}}">{{item.type === 'find' ? '寻物' : '拾到'}}</view>
+            </view>
+          </view>
+          <view class="hall-card-band {{item._module}}">
+            <view class="hall-card-title">{{item.title || (item.type === 'offer' ? '捡到物品' : '丢失物品')}}</view>
+            <view class="hall-card-desc" wx:if="{{item.location}}">在{{item.location}}{{item.type === 'offer' ? '捡到' : '丢失'}}</view>
+            <view class="hall-card-desc" wx:elif="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text" wx:if="{{item.type === 'find'}}">{{item._priceText}}</text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="hall-card-cover {{item._module}}">
+          <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+          <view class="hall-card-cover-mask"></view>
+          <view class="hall-card-tags-row">
+            <view class="hall-card-tag {{item._module}}">失物招领</view>
+            <view class="lost-type-tag {{item.type === 'find' ? 'find' : 'offer'}}">{{item.type === 'find' ? '寻物' : '拾到'}}</view>
+          </view>
+          <view class="hall-card-body">
+            <view class="hall-card-title">{{item.title || (item.type === 'offer' ? '捡到物品' : '丢失物品')}}</view>
+            <view class="hall-card-desc" wx:if="{{item.location}}">在{{item.location}}{{item.type === 'offer' ? '捡到' : '丢失'}}</view>
+            <view class="hall-card-desc" wx:elif="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text" wx:if="{{item.type === 'find'}}">{{item._priceText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ========== 二手市集 ========== -->
+      <view class="hall-card {{item._module}} {{(item.cover_image || item.image) ? 'hall-card--has-img' : ''}}" wx:for="{{list}}" wx:key="id" wx:if="{{item._module === 'secondhand'}}"
+        data-id="{{item.id}}" data-module="{{item._module}}" bindtap="onItemTap">
+        <block wx:if="{{item.cover_image || item.image}}">
+          <view class="hall-card-imgbox">
+            <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+            <image class="hall-card-img" src="{{item.cover_image || item.image}}" mode="aspectFill" />
+            <view class="hall-card-tags-row">
+              <view class="hall-card-tag {{item._module}}">二手市集</view>
+              <view class="secondhand-type-tag {{item.type === 'find' ? 'buy' : 'sell'}}">{{item.type === 'find' ? '收购' : '出售'}}</view>
+            </view>
+          </view>
+          <view class="hall-card-band {{item._module}}">
+            <view class="hall-card-title">{{item.title || item.name || '未命名'}}</view>
+            <view class="hall-card-desc" wx:if="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-quality" wx:if="{{item.quality || item._qualityLabel}}">
+              <text>{{item.quality || item._qualityLabel}}</text>
+            </view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text">{{item._priceText}}</text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="hall-card-cover {{item._module}}">
+          <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+          <view class="hall-card-cover-mask"></view>
+          <view class="hall-card-tags-row">
+            <view class="hall-card-tag {{item._module}}">二手市集</view>
+            <view class="secondhand-type-tag {{item.type === 'find' ? 'buy' : 'sell'}}">{{item.type === 'find' ? '收购' : '出售'}}</view>
+          </view>
+          <view class="hall-card-body">
+            <view class="hall-card-title">{{item.title || item.name || '未命名'}}</view>
+            <view class="hall-card-desc" wx:if="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-quality" wx:if="{{item.quality || item._qualityLabel}}">
+              <text>{{item.quality || item._qualityLabel}}</text>
+            </view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text">{{item._priceText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ========== 短租 ========== -->
+      <view class="hall-card {{item._module}} {{(item.cover_image || item.image) ? 'hall-card--has-img' : ''}}" wx:for="{{list}}" wx:key="id" wx:if="{{item._module === 'rental'}}"
+        data-id="{{item.id}}" data-module="{{item._module}}" bindtap="onItemTap">
+        <block wx:if="{{item.cover_image || item.image}}">
+          <view class="hall-card-imgbox">
+            <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+            <image class="hall-card-img" src="{{item.cover_image || item.image}}" mode="aspectFill" />
+            <view class="hall-card-tags-row">
+              <view class="hall-card-tag {{item._module}}">短租</view>
+              <view class="rental-type-tag {{item.type === 'offer' ? 'rent-out' : 'rent-in'}}">{{item.type === 'offer' ? '出租' : '求租'}}</view>
+            </view>
+          </view>
+          <view class="hall-card-band {{item._module}}">
+            <view class="hall-card-title">{{item.title || '短租'}}</view>
+            <view class="hall-card-desc" wx:if="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text">{{item._priceText === '价格面议' ? '价格面议' : item._priceText + '/天'}}</text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="hall-card-cover {{item._module}}">
+          <view class="hall-card-status {{item._cardStatus.className}}">{{item._cardStatus.text}}</view>
+          <view class="hall-card-cover-mask"></view>
+          <view class="hall-card-tags-row">
+            <view class="hall-card-tag {{item._module}}">短租</view>
+            <view class="rental-type-tag {{item.type === 'offer' ? 'rent-out' : 'rent-in'}}">{{item.type === 'offer' ? '出租' : '求租'}}</view>
+          </view>
+          <view class="hall-card-body">
+            <view class="hall-card-title">{{item.title || '短租'}}</view>
+            <view class="hall-card-desc" wx:if="{{item.description || item.content}}">{{item.description || item.content}}</view>
+            <view class="hall-card-footer">
+              <text class="hall-card-time">{{item._timeAgo}}</text>
+              <text class="hall-card-price-text">{{item._priceText === '价格面议' ? '价格面议' : item._priceText + '/天'}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- ========== 拼车 ========== -->
+      <view class="hall-card {{item._module}} {{(item.cover_image || item.image) ? 'hall-card--has-img' : ''}}" wx:for="{{list}}" wx:key="id" wx:if="{{item._module === 'carpool'}}"
+        data-id="{{item.id}}" data-module="{{item._module}}" bindtap="onItemTap">
+        <view class="hall-card-cover {{item._module}}">
+          <view class="hall-card-cover-mask"></view>
+          <view class="hall-card-tags-row">
+            <view class="hall-card-tag {{item._module}}">拼车</view>
+            <view class="secondhand-type-tag {{item.type === 'offer' ? 'sell' : 'buy'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</view>
+          </view>
+          <view class="carpool-route-col">
+            <view class="carpool-from">
+              <view class="carpool-dot carpool-dot-from"></view>
+              <text class="carpool-text">{{item.from || ''}}</text>
+            </view>
+            <view class="carpool-dash-line"></view>
+            <view class="carpool-to">
+              <view class="carpool-dot carpool-dot-to"></view>
+              <text class="carpool-text">{{item.to || ''}}</text>
+            </view>
+          </view>
+          <view class="carpool-bottom-row">
+            <text class="hall-card-time">{{item._timeAgo}}</text>
+            <text class="carpool-seats-badge" wx:if="{{item._seatsText}}">{{item._seatsText}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="loading-more" wx:if="{{loadingMore}}">加载中…</view>
+      <view class="loading-more end" wx:elif="{{!hasMore && list.length > 0}}">— 没有更多了 —</view>
+    </view>
+
+    <view class="panel-bottom-space"></view>
+  </scroll-view>
+</view>

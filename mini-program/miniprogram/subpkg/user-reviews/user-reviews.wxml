@@ -1,0 +1,33 @@
+<!-- pages/user-reviews/user-reviews.wxml -->
+<view class="page-reviews">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">评价记录</text>
+    <view class="nav-placeholder"></view>
+  </view>
+  <scroll-view scroll-y class="content" style="padding-top: {{navBarHeight}}px;">
+    <view wx:if="{{list.length === 0 && !loading}}" class="empty-state">
+      <view class="empty-icon"><text>⭐</text></view>
+      <text class="empty-text">暂无评价</text>
+    </view>
+    <view class="review-card glass-card" wx:for="{{list}}" wx:key="_id">
+      <view class="review-top">
+        <image class="avatar-sm" src="{{item.reviewer.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <text class="reviewer-name">{{item.isAnonymous ? '匿名用户' : (item.reviewer.nickName || '用户')}}</text>
+        <view class="stars">
+          <text class="star" wx:for="{{[1,2,3,4,5]}}" wx:for-item="s" wx:key="*this">{{s <= item.rating ? '★' : '☆'}}</text>
+        </view>
+      </view>
+      <text class="review-content" wx:if="{{item.content}}">{{item.content}}</text>
+      <view class="review-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+        <text class="tag-chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+      </view>
+      <text class="review-time">{{item._timeText}}</text>
+    </view>
+    <view class="loading-more" wx:if="{{loading}}">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+  </scroll-view>
+</view>

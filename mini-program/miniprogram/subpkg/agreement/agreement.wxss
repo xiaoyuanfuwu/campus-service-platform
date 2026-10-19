@@ -1,0 +1,49 @@
+/* pages/agreement/agreement.wxss */
+.agreement-page {
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* 自定义导航栏 — 与收藏页完全一致，复用全局 .nav-bar 样式 */
+/* nav-bar / nav-back / nav-back-icon / nav-title / nav-placeholder 来自 app.wxss */
+
+/* 协议内容 */
+.agreement-content {
+  min-height: 100vh;
+  padding: 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 40rpx;
+}
+.section-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+.update-date {
+  display: block;
+  font-size: 24rpx;
+  color: #999999;
+}
+.para-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16rpx;
+}
+.para {
+  display: block;
+  font-size: 28rpx;
+  color: #555555;
+  line-height: 1.8;
+  margin-bottom: 12rpx;
+}
+
+.footer-space {
+  height: 80rpx;
+}

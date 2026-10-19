@@ -1,0 +1,70 @@
+<!-- pages/_shared/nav-bar.wxml — 共享品牌导航栏 -->
+<template name="nav-bar">
+  <view class="shared-nav" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="nav-brand">
+        <view class="brand-logo">
+          <view class="duck-icon">
+            <view class="duck-head"></view>
+            <view class="duck-eye"></view>
+            <view class="duck-beak"></view>
+            <view class="duck-body"></view>
+            <view class="duck-wing"></view>
+            <view class="duck-tail"></view>
+          </view>
+        </view>
+        <text class="brand-name">校园服务平台</text>
+      </view>
+      <view class="nav-bell tap-shrink" bindtap="goMsg">
+        <view class="bell-icon">
+          <view class="bell-top"></view>
+          <view class="bell-bottom"></view>
+        </view>
+        <view wx:if="{{hasNotification}}" class="bell-red-dot"></view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<!-- 底部二级 TabBar -->
+<template name="tab-bar">
+  <view class="shared-tabbar safe-bottom">
+    <view wx:for="{{tabs}}" wx:key="name" class="tabbar-item {{currentTab === index ? 'active' : ''}}" data-index="{{index}}" bindtap="switchTab">
+      <view class="tb-icon {{currentTab === index ? 'active' : ''}}">
+        <block wx:if="{{index === 0}}">
+          <view class="tbi-house-roof"></view>
+          <view class="tbi-house-body"></view>
+        </block>
+        <block wx:elif="{{index === 1}}">
+          <view class="tbi-plus-h"></view>
+          <view class="tbi-plus-v"></view>
+        </block>
+        <block wx:elif="{{index === 2}}">
+          <view class="tbi-chat-bubble"></view>
+          <view wx:if="{{notifUnread > 0}}" class="tbi-msg-badge">{{notifUnread > 99 ? '99+' : notifUnread}}</view>
+        </block>
+        <block wx:elif="{{index === 3}}">
+          <view class="tbi-head"></view>
+          <view class="tbi-body"></view>
+        </block>
+      </view>
+      <text class="tb-label">{{item.name}}</text>
+    </view>
+  </view>
+</template>
+
+<!-- 微信订阅消息通知开关 -->
+<template name="notify-switch">
+  <view class="card form-card">
+    <view class="notify-row">
+      <view class="notify-info">
+        <text class="notify-label"><view class="svg-ico svg-ico-bell"></view> 微信消息通知</text>
+        <text class="notify-hint">有人接单时通过微信服务号通知你</text>
+      </view>
+      <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#00A693"/>
+    </view>
+  </view>
+</template>

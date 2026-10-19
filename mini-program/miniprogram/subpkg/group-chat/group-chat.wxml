@@ -1,0 +1,156 @@
+<!-- pages/group-chat/group-chat.wxml -->
+<view class="page-gc">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="nav-back-icon"></view>
+    </view>
+    <view class="nav-title-wrap">
+      <text class="nav-title">{{groupDisplayName || navTitle}}</text>
+      <text class="nav-sub" wx:if="{{groupRemark}}">原: {{navTitle}}</text>
+      <text class="nav-sub" wx:elif="{{departureStatus}}">{{departureStatus}}</text>
+    </view>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 主体内容区 — 推下 nav bar -->
+  <view class="gc-body" style="padding-top: {{navHeight}}px;">
+
+  <!-- 群信息头部 -->
+  <view class="group-header" wx:if="{{group}}">
+    <view class="gh-row1">
+      <text class="gh-route">{{group.from}} → {{group.to}}</text>
+      <view class="gh-remark-btn tap-shrink" bindtap="onEditGroupRemark">
+        <text class="gh-remark-text">{{groupRemark ? '修改备注' : '添加备注'}}</text>
+      </view>
+    </view>
+    <view class="gh-row2">
+      <text class="gh-time">{{departureStatus}}</text>
+      <text class="gh-count">{{group.memberCount}}人参与</text>
+    </view>
+    <view class="gh-row3">
+      <scroll-view scroll-x class="gh-avatars" enhanced show-scrollbar="{{false}}">
+        <view class="gh-avatar" wx:for="{{group.members}}" wx:key="_id" wx:for-item="m" data-id="{{m._id}}" bindtap="goUserProfile">
+          <image wx:if="{{m.avatarUrl}}" src="{{m.avatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="avatar-text">{{m._avatarText}}</view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view
+    scroll-y
+    class="msg-list"
+    scroll-into-view="{{scrollToView}}"
+    scroll-with-animation
+  >
+    <!-- 安全提示卡片 -->
+    <view class="chat-notice-card">
+      <view class="chat-notice-icon">
+        <view class="cni-shield"></view>
+      </view>
+      <text class="chat-notice-text">本聊天框仅用于校内师生互助沟通，请友好交流，注意隐私，谨防上当受骗。禁止辱骂、发送广告骚扰他人；如遇骚扰、诈骗，请立即点击对方头像进行举报。</text>
+    </view>
+
+    <view class="loading-box" wx:if="{{loading && messages.length === 0}}">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+
+    <view class="empty-state" wx:elif="{{!loading && messages.length === 0}}">
+      <view class="empty-icon"><text><view class="svg-ico svg-ico-chat"></view></text></view>
+      <text class="empty-text">暂无消息</text>
+      <text class="empty-hint">发送第一条群聊消息吧</text>
+    </view>
+
+    <block wx:for="{{messages}}" wx:key="_uid">
+      <!-- 日期分隔线 -->
+      <view class="date-sep" wx:if="{{item._isDate}}">{{item.label}}</view>
+
+      <!-- 消息行 -->
+      <view class="msg-row {{item.isMine ? 'mine' : 'other'}}" wx:else>
+        <!-- 头像 -->
+        <view class="msg-avatar" data-id="{{item.senderId}}" data-idcode="{{item.senderIdCode}}" data-name="{{item.senderNick}}" bindtap="tapMsgAvatar">
+          <image wx:if="{{item.senderAvatar}}" src="{{item.senderAvatar}}" mode="aspectFill"></image>
+          <view wx:else class="avatar-text">{{item._avatarText}}</view>
+        </view>
+        <view class="msg-body">
+          <view class="msg-nickname" wx:if="{{!item.isMine}}">{{item.senderNick}} <text class="msg-idcode" wx:if="{{item.senderIdCode}}">#{{item.senderIdCode}}</text></view>
+          <view class="msg-bubble {{item.isMine ? 'me' : 'other'}} {{item.isRecalled ? 'recalled' : ''}}"
+                data-id="{{item._id}}" data-time="{{item.createTime}}"
+                bindlongpress="onLongPress">
+            <text wx:if="{{item.isRecalled}}" class="recalled-text">此消息已撤回</text>
+            <text wx:else>{{item.content}}</text>
+          </view>
+          <view class="msg-time" wx:if="{{item._timeText}}">{{item._timeText}}<text wx:if="{{item.isMine && item._showRead}}" class="msg-read-tag"> 已读</text></view>
+        </view>
+      </view>
+    </block>
+
+    <view id="msg-bottom" class="msg-bottom"></view>
+  </scroll-view>
+
+  </view><!-- /gc-body -->
+
+  <!-- 用户操作弹窗 -->
+  <view class="user-action-overlay" wx:if="{{showUserAction}}" bindtap="closeUserAction">
+    <view class="user-action-card" catchtap="">
+      <view class="ua-avatar">
+        <image wx:if="{{actionUserAvatar}}" src="{{actionUserAvatar}}" mode="aspectFill"></image>
+        <view wx:else class="avatar-text">{{actionUserInitial}}</view>
+      </view>
+      <text class="ua-name">{{actionUserName}}</text>
+      <text class="ua-idcode" wx:if="{{actionUserIdCode}}">ID: {{actionUserIdCode}}</text>
+      <view class="ua-btns">
+        <view class="ua-btn" bindtap="goReviewUser">⭐ 评价</view>
+        <view class="ua-btn ua-report" bindtap="goReportUser"><view class="svg-ico svg-ico-warning"></view>️ 举报</view>
+      </view>
+      <view class="ua-close" bindtap="closeUserAction">取消</view>
+    </view>
+  </view>
+
+  <!-- 评价弹窗 -->
+  <view class="user-action-overlay" wx:if="{{showReviewModal}}" bindtap="closeReviewModal">
+    <view class="user-action-card" catchtap="">
+      <text class="ua-name">评价 {{reviewTargetName}}</text>
+      <view class="review-stars">
+        <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="review-star {{reviewScore >= item ? 'active' : ''}}" data-score="{{item}}" bindtap="setReviewScore">{{reviewScore >= item ? '★' : '☆'}}</text>
+      </view>
+      <textarea class="review-input" placeholder="写下你的评价..." value="{{reviewContent}}" bindinput="onReviewInput" maxlength="200"/>
+      <view class="ua-btns">
+        <view class="ua-btn" bindtap="submitReview">提交评价</view>
+      </view>
+      <view class="ua-close" bindtap="closeReviewModal">取消</view>
+    </view>
+  </view>
+
+  <!-- 举报弹窗 -->
+  <view class="user-action-overlay" wx:if="{{showReportModal}}" bindtap="closeReportModal">
+    <view class="user-action-card" catchtap="">
+      <text class="ua-name">举报 {{reportTargetName}}</text>
+      <textarea class="review-input" placeholder="请描述举报原因..." value="{{reportContent}}" bindinput="onReportInput" maxlength="300"/>
+      <view class="ua-btns">
+        <view class="ua-btn ua-report" bindtap="submitReport">提交举报</view>
+      </view>
+      <view class="ua-close" bindtap="closeReportModal">取消</view>
+    </view>
+  </view>
+
+  <!-- 输入栏 -->
+  <view class="input-bar safe-bottom">
+    <input
+      class="input"
+      value="{{inputText}}"
+      placeholder="输入消息..."
+      placeholder-class="input-ph"
+      confirm-type="send"
+      bindinput="onInput"
+      bindconfirm="onSend"
+    />
+    <view class="send-btn tap-shrink {{inputText ? 'active' : ''}}" bindtap="onSend">
+      {{sending ? '...' : '发送'}}
+    </view>
+  </view>
+</view>

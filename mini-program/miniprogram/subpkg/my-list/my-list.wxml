@@ -1,0 +1,216 @@
+<!-- pages/my-list/my-list.wxml -->
+<view class="page-my-list">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 顶部栏（统一风格：透明背景 + 鸭鸭Logo + 橙色标题） -->
+  <view class="profile-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <view class="profile-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="nav-back-icon"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view><view class="td-eye"></view><view class="td-beak"></view>
+          <view class="td-body"></view><view class="td-wing"></view><view class="td-tail"></view>
+        </view>
+        <view class="brand-name">{{brandName || '二手市集'}}</view>
+      </view>
+      <view class="nav-placeholder"></view>
+    </view>
+  </view>
+  <view style="height: {{statusBarHeight + 50}}px;"></view>
+
+  <!-- 消息通知列表 -->
+  <block wx:if="{{type === 'notifications'}}">
+    <view class="notification-list">
+      <block wx:if="{{notificationList.length > 0}}">
+        <view
+          wx:for="{{notificationList}}"
+          wx:key="_id"
+          class="notif-item {{!item.read ? 'unread' : ''}} tap-shrink"
+          data-item="{{item}}"
+          bindtap="tapNotification"
+        >
+          <view class="notif-dot" wx:if="{{!item.read}}"></view>
+          <view class="notif-content">
+            <view class="notif-header">
+              <text class="notif-type {{item.type}}">{{item.type === 'system' ? '系统' : item.type}}</text>
+              <text class="notif-time">{{item._timeAgo}}</text>
+            </view>
+            <text class="notif-title">{{item.title || '消息通知'}}</text>
+            <text class="notif-desc">{{item.content || ''}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空状态 -->
+      <view wx:if="{{!loading && notificationList.length === 0}}" class="empty-state">
+        <view class="empty-icon-circle"><view class="ei-bell-body"></view><view class="ei-bell-top"></view></view>
+        <text class="empty-text">暂无通知</text>
+        <text class="empty-hint">同行相关的消息会在这里显示</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 评价列表 -->
+  <block wx:elif="{{type === 'reviews'}}">
+    <view class="carpool-list">
+      <block wx:if="{{list.length > 0}}">
+        <view wx:for="{{list}}" wx:key="_id" class="carpool-card card">
+          <view class="card-header">
+            <view class="card-type type-offer">{{item._targetName}}</view>
+            <view class="stars-row">
+              <text class="star" wx:for="{{[1,2,3,4,5]}}" wx:for-item="s" wx:key="*this">{{s <= item.rating ? '★' : '☆'}}</text>
+            </view>
+          </view>
+          <text class="review-content" wx:if="{{item.content}}">{{item.content}}</text>
+          <view class="tag-row" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" class="tag-item">{{tag}}</text>
+          </view>
+          <view class="review-footer">
+            <text class="notif-time">{{item._timeAgo}}</text>
+            <view class="btn-delete-review tap-shrink" data-id="{{item._id}}" catchtap="tapDeleteReview">
+              <text>删除</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view wx:if="{{!loading && list.length === 0}}" class="empty-state">
+        <view class="empty-icon-circle"><view class="ei-chat-bubble"></view></view>
+        <text class="empty-text">暂无评价</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 同行卡片列表 -->
+  <block wx:else>
+    <view class="carpool-list">
+      <block wx:if="{{list.length > 0}}">
+        <!-- 拼车卡片 -->
+        <block wx:for="{{list}}" wx:key="_id">
+          <view
+            wx:if="{{item._moduleType === 'carpool'}}"
+            class="carpool-card card tap-shrink"
+            data-item="{{item}}"
+            bindtap="tapDetail"
+          >
+            <!-- 卡片头部 -->
+            <view class="card-header">
+              <view class="card-time">
+                <text class="time-text">{{item._formattedTime}}</text>
+              </view>
+              <view class="card-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">
+                {{item.type === 'offer' ? '我有空位' : '我找同行'}}
+              </view>
+              <view class="card-status {{item.status}}">
+                {{item.status === 'active' ? '进行中' : '已结束'}}
+              </view>
+            </view>
+            <view class="card-route">
+              <view class="route-line">
+                <view class="line-dot start-dot"></view>
+                <view class="line-dash"></view>
+                <view class="line-dot end-dot"></view>
+              </view>
+              <view class="route-info">
+                <view class="route-from">{{item.from}}</view>
+                <view class="route-to">{{item.to}}</view>
+              </view>
+              <view class="route-seats">
+                <text class="seats-left">还差{{item.remainSeats}}人</text>
+                <text class="seats-total">/共{{item.totalSeats}}人</text>
+              </view>
+            </view>
+            <view class="card-participants" wx:if="{{item.participants && item.participants.length > 0}}">
+              <text class="pt-label">已加入：</text>
+              <view class="pt-avatars">
+                <image
+                  wx:for="{{item.participants}}"
+                  wx:key="_openid"
+                  wx:for-item="p"
+                  class="pt-avatar"
+                  src="{{p.avatarUrl || '/images/default-avatar.png'}}"
+                  mode="aspectFill"
+                />
+              </view>
+            </view>
+            <view class="tag-row" wx:if="{{item.tags && item.tags.length > 0}}">
+              <text wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" class="tag-item">{{tag}}</text>
+            </view>
+            <view class="card-action" wx:if="{{item.status === 'active' && type === 'publish'}}">
+              <view class="btn-edit tap-shrink" data-id="{{item._id}}" catchtap="tapEdit">
+                <text>编辑</text>
+              </view>
+              <view class="btn-end tap-shrink" data-id="{{item._id}}" catchtap="tapEnd">
+                <text>结束行程</text>
+              </view>
+              <view class="btn-cancel tap-shrink" data-id="{{item._id}}" catchtap="tapCancel">
+                <text>取消发布</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 模块卡片（快递/任务/二手等） -->
+          <view
+            wx:elif="{{item._moduleType === 'module'}}"
+            class="module-card card tap-shrink"
+            data-item="{{item}}"
+            bindtap="tapDetail"
+          >
+            <view class="module-top">
+              <view class="module-badge">{{item._moduleName}}</view>
+              <text class="module-title">{{item._displayTitle || item.title || '未命名'}}</text>
+            </view>
+            <view class="audit-tag-row" wx:if="{{item._auditLabel}}">
+              <text class="audit-tag {{item.auditStatus}}">{{item._auditLabel}}</text>
+              <text class="audit-hint" wx:if="{{item.auditStatus === 'pending'}}">审核通过后将对全校可见</text>
+              <text class="audit-hint" wx:elif="{{item.auditStatus === 'rejected' && item.auditReason}}">原因：{{item.auditReason}}</text>
+            </view>
+            <view class="module-meta-row" wx:if="{{item.price || item.location}}">
+              <text class="module-price" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+              <text class="module-price module-price-free" wx:elif="{{item.price === 0}}">免费</text>
+              <text class="module-location" wx:if="{{item.location}}">{{item.location}}</text>
+            </view>
+            <text class="module-desc" wx:if="{{item.desc || item.content || item.note}}">{{item.desc || item.content || item.note}}</text>
+            <view class="module-images" wx:if="{{item.images && item.images.length > 0}}">
+              <image wx:for="{{item.images}}" wx:key="*this" wx:if="{{index < 3}}" class="module-img" src="{{item}}" mode="aspectFill"/>
+              <view wx:if="{{item.images.length > 3}}" class="module-img-more">+{{item.images.length - 3}}</view>
+            </view>
+            <view class="module-footer">
+              <text class="module-time">{{item._timeAgo}}</text>
+              <view class="module-status {{item.status || 'active'}}">{{item.status === 'closed' ? '已关闭' : (item.status === 'completed' ? '已完成' : '进行中')}}</view>
+            </view>
+            <!-- 操作按钮 -->
+            <view class="card-action" wx:if="{{item.status !== 'closed' && item.status !== 'completed' && type === 'publish'}}">
+              <view class="btn-end tap-shrink" data-id="{{item._id}}" data-module="{{item._module}}" catchtap="tapModuleClose">
+                <text>结束</text>
+              </view>
+              <view class="btn-cancel tap-shrink" data-id="{{item._id}}" data-module="{{item._module}}" catchtap="tapModuleDelete">
+                <text>取消发布</text>
+              </view>
+            </view>
+          </view>
+        </block>
+      </block>
+
+      <!-- 加载更多 -->
+      <view wx:if="{{loading}}" class="loading-more">
+        <text>加载中...</text>
+      </view>
+
+      <view wx:if="{{!hasMore && list.length > 0}}" class="loading-more">
+        <text class="no-more">— 没有更多了 —</text>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:if="{{!loading && list.length === 0}}" class="empty-state">
+        <view class="empty-icon-circle"><view class="ei-list"></view></view>
+        <text class="empty-text">{{type === 'publish' ? '暂无发布内容' : (type === 'history' ? '暂无历史同行' : '暂无参与的行程')}}</text>
+        <text class="empty-hint">{{type === 'publish' ? '快去发布第一条信息吧～' : (type === 'history' ? '完成的行程会在这里显示' : '快去加入别人的同行吧～')}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 底部占位 -->
+  <view class="bottom-placeholder"></view>
+</view>

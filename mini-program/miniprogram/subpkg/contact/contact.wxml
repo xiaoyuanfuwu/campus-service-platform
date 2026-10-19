@@ -1,0 +1,101 @@
+<!-- pages/contact/contact.wxml -->
+<view class="page-contact">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">联系作者</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <scroll-view scroll-y class="content" style="padding-top: {{navBarHeight}}px;" bindscrolltolower="onScrollToLower">
+    <!-- 作者信息卡片 -->
+    <view class="author-card glass-card">
+      <view class="author-avatar-wrap">
+        <view class="author-avatar">
+          <view class="av-circle"></view>
+          <view class="av-line av-line-1"></view>
+          <view class="av-line av-line-2"></view>
+        </view>
+      </view>
+      <view class="author-info">
+        <text class="author-name">校园服务平台开发者</text>
+        <text class="author-desc">有问题或建议？欢迎留言交流</text>
+      </view>
+    </view>
+
+    <!-- 留言表单 -->
+    <view class="form-section" wx:if="{{!showHistory}}">
+      <view class="form-title">写下你的留言</view>
+      <view class="form-item">
+        <textarea
+          class="form-textarea"
+          placeholder="说点什么吧...（功能建议、Bug反馈、合作意向等）"
+          placeholder-class="placeholder"
+          value="{{form.content}}"
+          bindinput="onInput"
+          data-field="content"
+          maxlength="500"
+          auto-height
+        />
+        <view class="char-count">{{form.content.length}}/500</view>
+      </view>
+
+      <view class="form-item">
+        <input
+          class="form-input"
+          placeholder="联系方式（选填，方便回复你）"
+          placeholder-class="placeholder"
+          value="{{form.contact}}"
+          bindinput="onInput"
+          data-field="contact"
+          maxlength="50"
+        />
+      </view>
+
+      <view class="submit-btn grad-btn tap-shrink" bindtap="submit">
+        <text>提交留言</text>
+      </view>
+    </view>
+
+    <!-- 我的留言历史 -->
+    <view class="history-section" wx:if="{{showHistory}}">
+      <block wx:if="{{list.length > 0}}">
+        <view class="msg-card glass-card" wx:for="{{list}}" wx:key="_id">
+          <view class="msg-header">
+            <text class="msg-time">{{item._timeAgo}}</text>
+            <view class="msg-status {{item.reply ? 'replied' : 'pending'}}">
+              <text>{{item.reply ? '已回复' : '待回复'}}</text>
+            </view>
+          </view>
+          <text class="msg-content">{{item.content}}</text>
+          <view class="msg-contact" wx:if="{{item.contact}}">
+            <text>联系方式：{{item.contact}}</text>
+          </view>
+          <view class="reply-block" wx:if="{{item.reply}}">
+            <view class="reply-label">作者回复：</view>
+            <text class="reply-content">{{item.reply}}</text>
+            <text class="reply-time">{{item._repliedAgo}}</text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:if="{{!loading && list.length === 0}}" class="empty-state">
+        <view class="empty-icon"><text><view class="svg-ico svg-ico-chat"></view></text></view>
+        <text class="empty-text">暂无留言</text>
+        <text class="empty-hint">点击下方按钮写下第一条留言</text>
+      </view>
+
+      <view wx:if="{{loading}}" class="loading-more">
+        <view class="spinner"></view>
+        <text>加载中...</text>
+      </view>
+    </view>
+
+    <!-- 切换按钮 -->
+    <view class="toggle-btn tap-shrink" bindtap="toggleView">
+      <text>{{showHistory ? '写留言' : '我的留言'}}</text>
+    </view>
+
+    <view class="bottom-placeholder"></view>
+  </scroll-view>
+</view>

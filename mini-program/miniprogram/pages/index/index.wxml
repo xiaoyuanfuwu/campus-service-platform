@@ -1,0 +1,357 @@
+<!-- pages/index/index.wxml — 首页（校园服务平台风格·3D 拟物图标） -->
+<view class="page-index {{themeClass}}" style="--theme-color: {{themeColor}}; --theme-strong: {{themeStrong}}; --theme-shadow: {{themeShadow}};">
+
+  <!-- 全屏背景插画（延伸到 top bar 后方） -->
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+
+  <!-- ===== 顶部栏（透明，融入背景） ===== -->
+  <view class="top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <!-- 左侧：Logo 校园服务平台 + 学校定位 -->
+      <view class="tb-left">
+        <text class="tb-brand">校园服务平台</text>
+        <view class="top-duck-icon tb-duck">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+      </view>
+      <view class="tb-location">
+        <view class="tb-loc-pin"></view>
+        <text class="tb-loc-name">{{schoolName}}</text>
+      </view>
+      <!-- 右侧：分享按钮已移除 -->
+    </view>
+  </view>
+
+  <!-- ===== 滚动内容区 ===== -->
+  <scroll-view class="main-scroll" scroll-y enhanced show-scrollbar="{{false}}" style="top:{{navBarHeight}}px;" scroll-into-view="{{hallScrollInto}}" scroll-with-animation bindscroll="_onHallScroll" bindscrolltolower="onHallReachBottom" lower-threshold="100">
+
+    <!-- 回顶锚点（一键回顶 scroll-into-view 目标） -->
+    <view id="hall-top-anchor"></view>
+
+    <!-- 校园图片轮播横幅（暂时隐藏，恢复时去掉 wx:if 即可） -->
+    <view class="hero-banner" wx:if="{{false}}">
+      <swiper class="hero-swiper" autoplay interval="3000" duration="500" circular indicator-dots="{{false}}" bindchange="onHeroSwiperChange">
+        <swiper-item>
+          <image class="hero-slide-img" src="/images/index-icons/hero-1.jpg" mode="aspectFill" />
+          <view class="hero-cta tap-shrink" bindtap="onHeroCta">
+            <text>去查看</text>
+            <text class="hero-cta-arrow">→</text>
+          </view>
+        </swiper-item>
+        <swiper-item>
+          <image class="hero-slide-img" src="/images/index-icons/hero-2.jpg" mode="aspectFill" />
+          <view class="hero-cta tap-shrink" bindtap="onHeroCta">
+            <text>去查看</text>
+            <text class="hero-cta-arrow">→</text>
+          </view>
+        </swiper-item>
+        <swiper-item>
+          <image class="hero-slide-img" src="/images/index-icons/hero-3.jpg" mode="aspectFill" />
+          <view class="hero-cta tap-shrink" bindtap="onHeroCta">
+            <text>去查看</text>
+            <text class="hero-cta-arrow">→</text>
+          </view>
+        </swiper-item>
+        <swiper-item>
+          <image class="hero-slide-img" src="/images/index-icons/hero-4.jpg" mode="aspectFill" />
+          <view class="hero-cta tap-shrink" bindtap="onHeroCta">
+            <text>去查看</text>
+            <text class="hero-cta-arrow">→</text>
+          </view>
+        </swiper-item>
+        <swiper-item>
+          <image class="hero-slide-img" src="/images/index-icons/hero-5.jpg" mode="aspectFill" />
+          <view class="hero-cta tap-shrink" bindtap="onHeroCta">
+            <text>去查看</text>
+            <text class="hero-cta-arrow">→</text>
+          </view>
+        </swiper-item>
+      </swiper>
+      <!-- 自定义指示点 -->
+      <view class="hero-dots">
+        <view wx:for="{{[0,1,2,3,4]}}" wx:key="*this" class="hero-dot {{heroIndex === index ? 'hero-dot-active' : ''}}"></view>
+      </view>
+    </view>
+
+    <!-- 新生大厅入口横幅 -->
+    <view class="freshman-banner tap-shrink" bindtap="onFreshmanTap">
+      <image class="fb-bg" src="/images/freshman-banner-vector.svg" mode="aspectFill" />
+      <view class="fb-title-wrap">
+        <text class="fb-title">新生指南</text>
+        <text class="fb-subtitle">示例大学 · 新生入学指南</text>
+      </view>
+      <view class="fb-btn">立即查看</view>
+    </view>
+
+    <!-- 公告横条 -->
+    <view class="notice-bar tap-shrink" bindtap="onPinnedBannerTap">
+      <view class="nb-icon">
+        <text class="nb-icon-text"><view class="svg-ico svg-ico-bullhorn"></view></text>
+      </view>
+      <text class="nb-label">公告</text>
+      <
+        text class="nb-text {{noticeAnimating ? 'nb-fade-out' : 'nb-fade-in'}}">{{pinnedBanner[noticeIndex].title || '关于校园拼车功能优化升级的通知'}}</text>
+      <text class="nb-arrow">›</text>
+    </view>
+
+    <!-- 功能宫格：左右两屏滑动（第一屏 10 项，第二屏 7 项） -->
+    <view class="serve-card">
+      <swiper class="serve-swiper" current="{{servePage}}" bindchange="onServePageChange" duration="250">
+        <swiper-item>
+          <view class="serve-grid">
+            <view
+              wx:for="{{serveGrid}}" wx:key="serve"
+              wx:if="{{index < 10}}"
+              class="serve-item tap-shrink"
+              data-serve="{{item.serve}}"
+              bindtap="onServeTap"
+            >
+              <view class="serve-icon-box">
+                <image class="serve-icon-img" src="{{item.iconUrl || '/images/index-icons/grid-' + item.icon + '.png'}}" mode="aspectFit" width="20" height="20" />
+              </view>
+              <text class="serve-name">{{item.name}}</text>
+            </view>
+          </view>
+        </swiper-item>
+        <swiper-item>
+          <view class="serve-grid">
+            <view
+              wx:for="{{serveGrid}}" wx:key="serve"
+              wx:if="{{index >= 10}}"
+              class="serve-item tap-shrink"
+              data-serve="{{item.serve}}"
+              bindtap="onServeTap"
+            >
+              <view class="serve-icon-box">
+                <image class="serve-icon-img" src="{{item.iconUrl || '/images/index-icons/grid-' + item.icon + '.png'}}" mode="aspectFit" width="20" height="20" />
+              </view>
+              <text class="serve-name">{{item.name}}</text>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+      <!-- 分页指示点 -->
+      <view class="serve-dots">
+        <view class="serve-dot {{servePage === 0 ? 'serve-dot-active' : ''}}"></view>
+        <view class="serve-dot {{servePage === 1 ? 'serve-dot-active' : ''}}"></view>
+      </view>
+    </view>
+
+    <!-- 校园互助墙大板块（详细帖子卡 + 分类切换） -->
+    <view class="task-board">
+      <view class="tb-header tap-shrink" bindtap="onHotTaskTap">
+        <view class="tb-header-left">
+          <text class="tb-title">校园互助墙</text>
+        </view>
+        <view class="tb-more">
+          <text>更多</text>
+          <text class="tb-more-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 分类切换（横滑） -->
+      <scroll-view class="tb-tabs {{hallStuck ? 'tb-tabs-stuck' : ''}}" scroll-x enhanced show-scrollbar="{{false}}" scroll-with-animation>
+        <view class="tb-tabs-inner">
+          <view
+            wx:for="{{taskTabs}}" wx:key="key"
+            class="tb-tab {{taskTab === item.key ? 'tb-tab-active' : ''}} tap-shrink"
+            data-key="{{item.key}}"
+            bindtap="onTaskTabTap"
+          >{{item.name}}</view>
+        </view>
+      </scroll-view>
+
+      <!-- 详细帖子列表 -->
+      <view class="tb-list" wx:if="{{displayTasks.length > 0}}">
+        <view
+          wx:for="{{displayTasks}}" wx:key="_key"
+          class="tb-post {{pressIndex === index ? 'tb-post-pressed' : ''}}"
+          data-id="{{item.id || item._id}}"
+          data-module="{{item._module}}"
+          data-index="{{index}}"
+          hover-class="tb-post-pressed"
+          hover-stay-time="80"
+          bindtap="onHotTaskItemTap"
+        >
+          <!-- 头部：头像 / 等级 / 昵称 / 时间·热度 / 更多按钮 -->
+          <view class="tb-post-head">
+            <image class="tb-post-avatar" src="{{item._avatar}}" />
+            <view class="tb-post-user">
+              <view class="tb-post-name-row">
+                <text class="tb-post-name">{{item._nick}}</text>
+                <view class="tb-post-lv {{item._level >= 5 ? 'tb-post-lv-red' : ''}}" wx:if="{{item._level}}">LV{{item._level}}</view>
+              </view>
+              <text class="tb-post-meta">{{item._timeAgo || '刚刚'}} · {{item._heatText}}热度</text>
+            </view>
+            <view class="tb-post-more" catchtap="onTaskMoreTap" data-index="{{index}}" hover-class="tb-post-more-pressed" hover-stay-time="80">
+              <text class="tb-more-dot"></text>
+              <text class="tb-more-dot"></text>
+              <text class="tb-more-dot"></text>
+            </view>
+          </view>
+
+          <!-- 正文：拼车 出发时间+状态 一行 → 标题；其他 标题+摘要 -->
+          <view class="tb-post-body">
+            <view class="tb-post-depart-row" wx:if="{{item._module === 'carpool' && item._departTime}}">
+              <text class="tb-post-depart">{{item._departTime}}</text>
+              <text class="tb-post-status {{item._statusClass}}" wx:if="{{item._statusText}}">{{item._statusText}}</text>
+            </view>
+            <text class="tb-post-title" wx:if="{{item._title}}">{{item._title}}</text>
+            <text class="tb-post-content" wx:if="{{item._excerpt && item._module !== 'carpool'}}">{{item._excerpt}}</text>
+            <!-- 快递代取：大小物件标记 + 驿站→社区 旁的取件码，绿色高亮 -->
+            <view class="tb-post-codes" wx:if="{{item._module === 'express' && (item._sizeLabel || item._pickupCodes.length > 0)}}">
+              <text class="tb-post-size" wx:if="{{item._sizeLabel}}">{{item._sizeLabel}}</text>
+              <text class="tb-post-code-label" wx:if="{{item._pickupCodes.length > 0}}">取件码</text>
+              <text class="tb-post-code" wx:for="{{item._pickupCodes}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
+
+          <!-- 图片：最多 3 张，多余数量叠在最后一张上，点击进详情 -->
+          <view class="tb-post-imgs" wx:if="{{item._images.length > 0}}">
+            <view class="tb-img-wrap" wx:for="{{item._images}}" wx:for-item="img" wx:for-index="imgIdx" wx:key="*this">
+              <image class="tb-img" src="{{img}}" mode="aspectFill" />
+              <view class="tb-img-mask" wx:if="{{item._imagesMore > 0 && imgIdx === 2}}">
+                <text class="tb-img-mask-text">+{{item._imagesMore}}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 底部：模块标签（左） + 点赞/留言（右，同一行） -->
+          <view class="tb-post-foot">
+            <view class="tb-post-tag hc-task-tag {{item._module}}"><text class="tb-tag-hash">#</text>{{item._badgeText}}</view>
+            <view class="tb-post-stat">
+              <view class="tb-stat-item {{item._liked ? 'liked' : ''}}" catchtap="onTaskLikeTap" data-index="{{index}}">
+                <view class="tb-stat-ico tb-stat-like"></view>
+                <text class="tb-stat-num">{{item.likeCount || 0}}</text>
+              </view>
+              <view class="tb-stat-item" catchtap="onTaskCommentTap" data-id="{{item.id || item._id}}" data-module="{{item._module}}">
+                <view class="tb-stat-ico tb-stat-comment"></view>
+                <text class="tb-stat-num">{{item.commentCount || 0}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 触底加载提示 -->
+      <view class="tb-load-more" wx:if="{{displayTasks.length > 0}}">
+        <text wx:if="{{hallLoading}}">加载中...</text>
+        <text wx:elif="{{hallHasMore}}">上拉加载更多</text>
+        <text wx:else>— 已经到底啦 —</text>
+      </view>
+
+      <view class="tb-empty tap-shrink" wx:else bindtap="onHotTaskTap">
+        <text class="tb-empty-text">暂时没有更多～</text>
+      </view>
+    </view>
+
+    <!-- 底部安全区 -->
+    <view class="bottom-safe"></view>
+  </scroll-view>
+
+</view>
+
+<!-- ===== 一键回顶（标签贴顶后浮现） ===== -->
+<view class="back-top {{hallStuck ? 'back-top-show' : ''}}" style="background: {{themeStrong}};" bindtap="onBackTop">
+  <text class="back-top-arrow">↑</text>
+  <text class="back-top-text">回顶</text>
+</view>
+
+<!-- ===== 搜索弹窗 ===== -->
+<view class="search-overlay" wx:if="{{showSearchOverlay}}" catchtap="onCloseSearch">
+  <view class="search-modal" catchtap="">
+    <view class="search-modal-header">
+      <view class="search-modal-input-wrap">
+        <view class="smi-icon">
+          <view class="si-glass"></view>
+          <view class="si-handle"></view>
+        </view>
+        <input
+          class="search-modal-input"
+          value="{{searchKeyword}}"
+          placeholder="搜索拼车、跑腿、任务..."
+          placeholder-class="sm-placeholder"
+          focus="{{true}}"
+          bindinput="onSearchModalInput"
+          bindconfirm="onDoSearch"
+          confirm-type="search"
+        />
+      </view>
+      <view class="search-modal-cancel tap-shrink" bindtap="onCloseSearch">
+        <text>取消</text>
+      </view>
+    </view>
+    <scroll-view class="search-modal-body" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="search-modal-empty" wx:if="{{!searchLoading && searchResults.length === 0 && searchSearched}}">
+        <text>未找到相关内容</text>
+      </view>
+      <view
+        wx:for="{{searchResults}}" wx:key="_id"
+        class="sr-item tap-shrink"
+        data-type="{{item.type}}"
+        data-id="{{item._id}}"
+        bindtap="onSearchResultTap"
+      >
+        <view class="sr-item-tag" style="background:{{item.color}}">
+          <text class="sr-tag-text">{{item.typeName}}</text>
+        </view>
+        <view class="sr-item-info">
+          <text class="sr-item-title">{{item.title}}</text>
+          <text class="sr-item-desc">{{item.desc}}</text>
+        </view>
+        <text class="sr-item-arrow">›</text>
+      </view>
+      <view class="search-modal-loading" wx:if="{{searchLoading}}">
+        <text>搜索中...</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 新生大厅引导弹窗 -->
+  <view class="intro-mask" wx:if="{{showFreshmanIntro}}" bindtap="closeFreshmanIntro">
+    <view class="intro-card" catchtap="noop">
+      <!-- 左上角关闭 -->
+      <view class="intro-close tap-shrink" catchtap="closeFreshmanIntro">
+        <text class="intro-close-x">✕</text>
+      </view>
+
+      <!-- 头部渐变横幅 -->
+      <view class="intro-head">
+        <view class="intro-head-deco deco-1"></view>
+        <view class="intro-head-deco deco-2"></view>
+        <view class="intro-head-deco deco-3"></view>
+        <image class="intro-head-icon" src="/images/freshman-icons/campus.png" mode="aspectFit" />
+        <text class="intro-head-title">新生大厅</text>
+        <text class="intro-head-sub">示例大学 2026 入学指南</text>
+      </view>
+
+      <!-- 介绍内容 -->
+      <view class="intro-body">
+        <text class="intro-desc">一站式新生入学指南，攻略、地图、食堂、新生群全都有～</text>
+        <view class="intro-feature">
+          <view class="intro-dot"></view>
+          <text class="intro-feature-text">新生必看 · 问答 / 须知 / 转专业 / 保研攻略</text>
+        </view>
+        <view class="intro-feature">
+          <view class="intro-dot"></view>
+          <text class="intro-feature-text">校园指南 · 地图 / 食堂 / 宿舍 / 学院介绍</text>
+        </view>
+        <view class="intro-feature">
+          <view class="intro-dot"></view>
+          <text class="intro-feature-text">一键加群 · 2026 新生群二维码</text>
+        </view>
+      </view>
+
+      <!-- 去看看按钮 -->
+      <view class="intro-btn tap-shrink" catchtap="goFreshmanFromIntro">
+        <text class="intro-btn-text">去看看</text>
+        <text class="intro-btn-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,103 @@
+<!-- pages/message/index.wxml — 消息中心 -->
+<view class="page-message">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">消息</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+  <scroll-view
+    class="page-scroll"
+    style="top: {{navBarHeight}}px;"
+    scroll-y
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+    refresher-default-style="black"
+  >
+  <view class="page-content">
+  <!-- 新消息横幅 -->
+  <view class="new-msg-banner" wx:if="{{newMsgBanner}}">
+    <text class="new-msg-bell"><view class="svg-ico svg-ico-bell"></view></text>
+    <text>收到 {{newMsgCount}} 条新消息</text>
+  </view>
+  <!-- 消息分类入口 -->
+  <view class="msg-categories">
+    <view class="msg-cat-item tap-shrink" bindtap="onSystemNotices">
+      <view class="cat-icon cat-icon-system">
+        <view class="ci-bell"></view>
+      </view>
+      <view class="cat-info">
+        <text class="cat-name">系统通知</text>
+        <text class="cat-desc">接单、回复、加入拼车等</text>
+      </view>
+      <view class="cat-badge" wx:if="{{systemUnread > 0}}">{{systemUnread > 99 ? '99+' : systemUnread}}</view>
+      <text class="cat-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 最近消息 -->
+  <view class="recent-section" wx:if="{{recentMessages.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最近消息</text>
+    </view>
+    <view
+      wx:for="{{recentMessages}}" wx:key="_id"
+      class="recent-item tap-shrink"
+      data-id="{{item._id}}"
+      bindtap="onRecentTap"
+      bindlongpress="onRecentLongPress"
+    >
+      <image
+        wx:if="{{item.avatar}}"
+        class="recent-avatar" src="{{item.avatar}}" mode="aspectFill"
+      />
+      <view wx:else class="recent-avatar-text">
+        <text class="recent-avatar-char">{{item.nicknameFirst}}</text>
+      </view>
+      <view class="recent-info">
+        <text class="recent-name">{{item.nickname}}</text>
+        <text class="recent-preview">{{item.lastMessage || '暂无消息'}}</text>
+      </view>
+      <view class="recent-right">
+        <view class="recent-badge" wx:if="{{item.unread > 0}}">{{item.unread > 99 ? '99+' : item.unread}}</view>
+        <text class="recent-time">{{item.time || ''}}</text>
+      </view>
+    </view>
+
+    <!-- 折叠/展开按钮 -->
+    <view class="msg-toggle-btn tap-shrink" bindtap="onToggleExpand" wx:if="{{hasMore}}">
+      <text class="msg-toggle-text">{{expanded ? '收起' : '展开更多 (' + (allMessages.length - 9) + '条)'}}</text>
+      <view class="msg-toggle-arrow {{expanded ? 'arrow-up' : 'arrow-down'}}"></view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{!loading && recentMessages.length === 0}}">
+    <view class="empty-icon">
+      <view class="ei-bubble">
+        <view class="ei-dot"></view>
+        <view class="ei-dot"></view>
+      </view>
+    </view>
+    <text class="empty-text">{{(!isLogin && !hasToken) ? '请登录后查看消息' : '暂无消息'}}</text>
+    <view class="empty-login-btn" wx:if="{{!isLogin && !hasToken}}" bindtap="goLogin">去登录</view>
+  </view>
+
+  <view class="msg-bottom-safe"></view>
+  </view>
+  </scroll-view>
+</view>

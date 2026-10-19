@@ -1,0 +1,152 @@
+/* pages/announcement-detail/announcement-detail.wxss */
+.msg-status-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 99;
+  background: transparent;
+}
+.msg-top-bar {
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+  left: 0; right: 0;
+}
+.msg-top-bar-spacer {}
+.msg-top-bar .top-bar-inner {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24rpx;
+}
+.msg-top-bar .brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.msg-top-bar .nav-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.msg-top-bar .back-arrow {
+  width: 18rpx;
+  height: 18rpx;
+  border-left: 3rpx solid var(--text-primary);
+  border-bottom: 3rpx solid var(--text-primary);
+  transform: rotate(45deg);
+  margin-left: 4rpx;
+}
+.msg-top-bar .brand-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.msg-top-bar .brand-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FF9500;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+}
+.msg-top-bar .top-duck-icon {
+  position: relative;
+  width: 36rpx;
+  height: 36rpx;
+}
+.msg-top-bar .td-head {
+  position: absolute; top: 4rpx; left: 6rpx;
+  width: 22rpx; height: 22rpx;
+  background: #FFC54A;
+  border-radius: 50%;
+}
+.msg-top-bar .td-eye {
+  position: absolute; top: 12rpx; left: 18rpx;
+  width: 4rpx; height: 4rpx;
+  background: #333;
+  border-radius: 50%;
+}
+.msg-top-bar .td-beak {
+  position: absolute; top: 18rpx; left: 24rpx;
+  width: 8rpx; height: 5rpx;
+  background: #FF9500;
+  border-radius: 0 4rpx 4rpx 0;
+}
+.msg-top-bar .td-body {
+  position: absolute; bottom: 0; left: 4rpx;
+  width: 28rpx; height: 18rpx;
+  background: #FFFFFF;
+  border-radius: 14rpx 14rpx 12rpx 12rpx;
+  border: 2rpx solid #FFC54A;
+  box-sizing: border-box;
+}
+.msg-top-bar .td-wing {
+  position: absolute; bottom: 6rpx; left: 14rpx;
+  width: 12rpx; height: 8rpx;
+  background: #FFE0A0;
+  border-radius: 6rpx;
+}
+.msg-top-bar .td-tail {
+  position: absolute; bottom: 8rpx; left: 0;
+  width: 6rpx; height: 6rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #FFC54A;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+page { background: #F5F5F7 !important; }
+.page-ann-detail { min-height: 100vh; background: transparent !important; }
+
+/* 内容区 */
+.content { padding: 0 32rpx; position: relative; z-index: 1; }
+
+/* 合并卡片 */
+.ann-card { padding: 32rpx; margin-bottom: 24rpx; }
+.ann-title { font-size: var(--font-lg); font-weight: 700; display: block; margin-bottom: 12rpx; }
+.ann-meta { display: flex; gap: 24rpx; font-size: var(--font-sm); color: var(--text-hint); margin-bottom: 8rpx; }
+.ann-divider { height: 1rpx; background: var(--border-light); margin: 20rpx 0; }
+.ann-content { display: block; padding: 0; }
+.ann-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 20rpx; margin-top: 8rpx; border-top: 1rpx solid var(--border-light); }
+.ann-footer-time { font-size: var(--font-xs); color: var(--text-hint); }
+
+/* 点赞按钮 */
+.like-btn { display: flex; align-items: center; padding: 8rpx 20rpx; border-radius: 999rpx; background: var(--bg-page); border: 1rpx solid var(--border-light); font-size: var(--font-sm); }
+.like-btn:active { transform: scale(0.95); }
+
+/* 心形矢量文字图标 */
+.heart-icon {
+  font-size: 28rpx;
+  line-height: 1;
+  flex-shrink: 0;
+  color: #bbb;
+}
+.like-btn.active .heart-icon {
+  color: #e74c3c;
+}
+.like-count {
+  margin-left: 16rpx;
+  font-size: var(--font-sm);
+}
+
+/* 留言区 */
+.comment-section { margin-bottom: 40rpx; }
+.comment-header { padding: 0 0 16rpx; }
+.comment-title { font-size: var(--font-md); font-weight: 600; color: var(--text-primary); }
+.comment-list { display: flex; flex-direction: column; gap: 16rpx; margin-top: 30rpx; }
+.comment-item { padding: 24rpx; }
+.comment-top { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
+.comment-avatar { width: 44rpx; height: 44rpx; border-radius: 50%; flex-shrink: 0; }
+.comment-name { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); }
+.comment-time { flex: 1; font-size: var(--font-xs); color: var(--text-hint); text-align: right; }
+.comment-del { font-size: var(--font-xs); color: var(--danger); padding: 4rpx 12rpx; }
+.comment-body { font-size: var(--font-sm); color: var(--text-secondary); line-height: 1.6; display: block; }
+.comment-empty { text-align: center; padding: 48rpx 0; font-size: var(--font-sm); color: var(--text-hint); }
+.comment-input-box { display: flex; align-items: center; gap: 16rpx; margin-top: 20rpx; padding: 16rpx 20rpx; background: var(--bg-card); border-radius: 999rpx; }
+.comment-input { flex: 1; font-size: var(--font-sm); height: 48rpx; }
+.comment-send-btn { padding: 10rpx 28rpx; background: var(--primary); color: #fff; border-radius: 999rpx; font-size: var(--font-sm); }
+.comment-send-btn.disabled { opacity: .5; pointer-events: none; }

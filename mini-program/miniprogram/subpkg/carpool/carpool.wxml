@@ -1,0 +1,700 @@
+<!-- pages/carpool/carpool.wxml - 校园拼车（swiper + 底部二级TabBar） -->
+<view class="page-carpool">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}} {{carpoolBgStyle}}"></view>
+  <!-- 拼车彩色背景的淡出直接合并到 page-bg 本体，避免跨 swiper 图层覆盖。 -->
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">校园服务平台</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- ========== Swiper 四个Tab内容 ========== -->
+  <swiper class="carpool-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- Tab 0: 行程大厅 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore">
+        <!-- 路线选择器 -->
+        <view class="route-row">
+          <view class="route-selector card">
+            <view class="route-item tap-shrink" bindtap="onPickFrom">
+              <view class="route-dot from-dot"></view>
+              <text class="route-text">{{from}}</text>
+            </view>
+            <view class="route-swap tap-shrink" bindtap="swapRoute">
+              <view class="swap-icon-h"></view>
+              <view class="swap-icon-v"></view>
+            </view>
+            <view class="route-item tap-shrink" bindtap="onPickTo">
+              <view class="route-dot to-dot"></view>
+              <text class="route-text">{{to || (isToAny ? '任意目的地' : '目的地')}}</text>
+            </view>
+          </view>
+          <view class="route-search tap-shrink {{isSearching ? 'search-cancel' : ''}}" bindtap="toggleSearch">
+            <text>{{isSearching ? '取消' : '查找'}}</text>
+          </view>
+        </view>
+
+        <!-- 热门目的地快捷标签 -->
+        <scroll-view class="hot-dest-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="hot-dest-list">
+            <view wx:for="{{hotDestinations}}" wx:key="name" class="hot-dest-chip hot-c{{item.hotColor}} tap-shrink" data-name="{{item.name}}" bindtap="onHotDestinationTap">
+              <view class="hot-dest-icon-wrap">
+                <view class="svg-ico svg-ico-{{item.icon}}"></view>
+              </view>
+              <text class="hot-dest-name">{{item.name}}</text>
+            </view>
+            <view class="hot-dest-spacer"></view>
+          </view>
+        </scroll-view>
+
+        <!-- 筛选标签 -->
+        <scroll-view class="filter-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="filter-tags">
+            <view wx:for="{{filterTabs}}" wx:key="value" class="filter-chip {{activeFilter === item.value ? 'active' : ''}} tap-shrink" data-value="{{item.value}}" bindtap="selectFilter">{{item.label}}</view>
+          </view>
+        </scroll-view>
+
+        <!-- 热门路线 -->
+        <view class="hot-routes" wx:if="{{hotRoutes.length > 0 && activeFilter === 'all'}}">
+          <view class="hot-title"><view class="hot-flame"></view><text>热门路线</text></view>
+          <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
+            <view class="hot-list">
+              <view wx:for="{{hotRoutes}}" wx:key="_id" class="hot-item tap-shrink" data-from="{{item.from}}" data-to="{{item.to}}" bindtap="onHotRoute">
+                <text class="hot-route-name">{{item.from}} → {{item.to}}</text>
+                <text class="hot-route-count" wx:if="{{item.count}}">{{item.count}}人走过</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- 拼车卡片列表 -->
+        <view class="carpool-list">
+          <view wx:for="{{carpoolList}}" wx:key="_id" class="carpool-card card tap-shrink" data-id="{{item._id}}" bindtap="tapDetail">
+            <view class="card-header">
+              <view class="card-time"><text class="time-text">{{item._formattedTime}}</text><text class="time-ago">{{item._timeAgo}}</text></view>
+              <view class="card-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</view>
+            </view>
+            <view class="route-block">
+              <view class="route-line"><view class="line-dot start-dot"></view><view class="line-dash"></view><view class="line-dot end-dot"></view></view>
+              <view class="route-info">
+                <view class="route-from">{{item.from}}</view>
+                <view class="route-seats"><text class="seats-left">还差{{item.remainSeats}}人</text><text class="seats-total"> / 共{{item.totalSeats}}人</text></view>
+                <view class="route-to">{{item.to}}</view>
+              </view>
+            </view>
+            <view class="card-notes" wx:if="{{(item.tags && item.tags.length > 0) || item.note}}">
+              <text class="card-note-text" wx:if="{{item.note}}">备注：{{item.note}}</text>
+              <view class="tag-row" wx:if="{{item.tags && item.tags.length > 0}}">
+                <text wx:for="{{item.tags}}" wx:for-index="ti" wx:key="*this" class="tag-item tag-c{{ti % 4}}">{{item}}</text>
+              </view>
+            </view>
+            <view class="card-footer">
+              <view class="creator-info">
+                <image class="creator-avatar" src="{{item.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                <view class="creator-detail">
+                  <view class="creator-name-row"><text class="creator-name">{{item.creator.nickName || '匿名用户'}}</text></view>
+                  <text class="creator-credit">ID: {{item.creator.user_id_code || '-'}}</text>
+                  <text class="creator-credit">信用 {{item.creator.creditScore || 100}}分</text>
+                </view>
+              </view>
+              <view class="action-row">
+                <view wx:if="{{item.isCreator}}" class="btn-detail tap-shrink full-width" data-id="{{item._id}}" catchtap="tapDetail"><text>查看详情</text></view>
+                <block wx:elif="{{item.isJoined}}">
+                  <view class="btn-detail tap-shrink full-width btn-joined-pulse" data-id="{{item._id}}" catchtap="tapDetail"><text>已加入 · 查看详情</text></view>
+                </block>
+                <view wx:elif="{{item.isExpired || item.status === 'expired' || item.status === 'ended' || item.status === 'cancelled'}}" class="btn-detail tap-shrink full-width" data-id="{{item._id}}" catchtap="tapDetail"><text>已过出发时间</text></view>
+                <view wx:elif="{{item.remainSeats <= 0 || item.status === 'full'}}" class="btn-detail tap-shrink full-width" data-id="{{item._id}}" catchtap="tapDetail"><text>已满员</text></view>
+                <block wx:else>
+                  <view class="btn-detail tap-shrink" data-id="{{item._id}}" catchtap="tapDetail"><text>查看详情</text></view>
+                  <view class="btn-join grad-btn tap-shrink" data-item="{{item}}" catchtap="tapJoin"><text>立即加入</text></view>
+                </block>
+              </view>
+            </view>
+          </view>
+
+          <view wx:if="{{!loading && carpoolList.length === 0}}" class="empty-state">
+            <image class="empty-icon-img" src="/images/guide-icons/08.png" mode="aspectFit" />
+            <text class="empty-text">暂无同行信息</text>
+            <text class="empty-hint">快来发布第一条吧</text>
+          </view>
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:if="{{!hasMore && carpoolList.length > 0 && !loading}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+
+          <!-- 已过期行程 -->
+          <view wx:if="{{historyList.length > 0}}" class="history-section">
+            <view class="history-header tap-shrink" bindtap="toggleHistory">
+              <text class="history-title">已过期行程（{{historyList.length}}）</text>
+              <text class="history-sub">仅保留10天内</text>
+              <view class="history-arrow {{historyFolded ? '' : 'expanded'}}"></view>
+            </view>
+            <view wx:if="{{!historyFolded}}">
+              <view wx:for="{{historyList}}" wx:key="_id" class="carpool-card card tap-shrink" data-id="{{item._id}}" bindtap="tapDetail">
+                <view class="card-header">
+                  <view class="card-time"><text class="time-text">{{item._formattedTime}}</text><text class="time-ago">{{item._timeAgo}}</text></view>
+                  <view class="card-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</view>
+                </view>
+                <view class="route-block">
+                  <view class="route-line"><view class="line-dot start-dot"></view><view class="line-dash"></view><view class="line-dot end-dot"></view></view>
+                  <view class="route-info">
+                    <view class="route-from">{{item.from}}</view>
+                    <view class="route-seats"><text class="seats-left">还差{{item.remainSeats}}人</text><text class="seats-total"> / 共{{item.totalSeats}}人</text></view>
+                    <view class="route-to">{{item.to}}</view>
+                  </view>
+                </view>
+                <view class="card-footer">
+                  <view class="creator-info">
+                    <image class="creator-avatar" src="{{item.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                    <view class="creator-detail">
+                      <text class="creator-name">{{item.creator.nickName || '匿名用户'}}</text>
+                    </view>
+                  </view>
+                  <view class="action-row">
+                    <view class="btn-detail tap-shrink full-width" data-id="{{item._id}}" catchtap="tapDetail"><text>已过出发时间</text></view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space" style="height: 160rpx;"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- Tab 1: 发布 -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-pin"></view><text class="form-label-text">路线</text>
+            </view>
+            <view class="route-input-row">
+              <view class="route-input-item">
+                <text class="route-tag from">起</text>
+                <input class="route-input" placeholder="出发地" value="{{publishFrom}}" bindinput="onPublishFromInput"/>
+              </view>
+              <view class="route-swap-btn tap-shrink" bindtap="onPublishSwap">
+                <view class="route-swap-icon"></view>
+              </view>
+              <view class="route-input-item">
+                <text class="route-tag to">终</text>
+                <input class="route-input" placeholder="目的地" value="{{publishTo}}" bindinput="onPublishToInput"/>
+              </view>
+            </view>
+            <!-- 热门出发地快捷标签 -->
+            <view class="quick-time-block">
+              <view class="quick-time-group">
+                <view class="svg-ico svg-ico-flag"></view><text class="quick-time-title">热门出发地（默认示例大学）</text>
+                <view class="quick-chip-list">
+                  <view wx:for="{{publishHotDepartures}}" wx:key="name"
+                    class="quick-chip hot-c{{index}} {{publishFrom === item.value ? 'active' : ''}} tap-shrink"
+                    data-value="{{item.value}}" bindtap="onQuickDepartureTap">
+                    <text>{{item.name}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+            <!-- 热门目的地快捷标签 -->
+            <view class="quick-time-block">
+              <view class="quick-time-group">
+                <view class="svg-ico svg-ico-pin"></view><text class="quick-time-title">热门目的地（点击填充）</text>
+                <view class="quick-chip-list">
+                  <view wx:for="{{publishHotDestinations}}" wx:key="name"
+                    class="quick-chip hot-c{{item.hotColor}} {{publishTo === item.name ? 'active' : ''}} tap-shrink"
+                    data-value="{{item.name}}" bindtap="onQuickDestinationTap">
+                    <text>{{item.name}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-clock"></view><text class="form-label-text">出发时间</text>
+            </view>
+            <view class="time-row">
+              <picker mode="date" value="{{publishDate}}" bindchange="onPublishDateChange" class="time-picker">
+                <view class="time-display">
+                  <view class="svg-ico svg-ico-calendar"></view>
+                  <text class="time-value">{{publishDate || '选择日期'}}</text>
+                </view>
+              </picker>
+              <picker mode="time" value="{{publishTime}}" bindchange="onPublishTimeChange" class="time-picker">
+                <view class="time-display">
+                  <view class="svg-ico svg-ico-clock"></view>
+                  <text class="time-value">{{publishTime || '选择时间'}}</text>
+                </view>
+              </picker>
+            </view>
+            <!-- 快捷出发时间标签 -->
+            <view class="quick-time-block">
+              <view class="quick-time-group">
+                <view class="svg-ico svg-ico-calendar"></view><text class="quick-time-title">快捷日期</text>
+                <view class="quick-chip-list">
+                  <view wx:for="{{quickDates}}" wx:key="label" class="quick-chip hot-c{{item.hotColor}} {{publishDate === item.value ? 'active' : ''}} tap-shrink" data-value="{{item.value}}" data-label="{{item.label}}" bindtap="onQuickDateTap">
+                    <text>{{item.label}}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="quick-time-group">
+                <view class="svg-ico svg-ico-alarm"></view><text class="quick-time-title">几点出发</text>
+                <view class="quick-chip-list">
+                  <view wx:for="{{quickTimes}}" wx:key="name" class="quick-chip hot-c{{item.hotColor}} {{publishTime === item.name ? 'active' : ''}} tap-shrink" data-value="{{item.name}}" bindtap="onQuickTimeTap">
+                    <text>{{item.name}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-seat"></view><text class="form-label-text">座位数</text>
+            </view>
+            <view class="seat-row">
+              <input class="seat-input" type="number" placeholder="空余座位" value="{{publishSeats}}" bindinput="onPublishSeatsInput"/>
+              <text class="seat-unit">个座位</text>
+            </view>
+            <!-- 快捷座位数标签 -->
+            <view class="quick-time-block">
+              <view class="quick-chip-list">
+                <view wx:for="{{publishSeatOptions}}" wx:key="name"
+                  class="quick-chip hot-c{{item.hotColor}} {{String(publishSeats) === String(item.value) ? 'active' : ''}} tap-shrink"
+                  data-value="{{item.value}}" bindtap="onQuickSeatTap">
+                  <text>{{item.name}}座</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-phone"></view><text class="form-label-text">联系方式</text>
+              <text class="form-label-hint">（选填）</text>
+            </view>
+            <view class="contact-type-row">
+              <view wx:for="{{contactTypes}}" wx:key="*this"
+                class="contact-type-chip {{contactTypeIndex === index ? 'active' : ''}} tap-shrink"
+                data-index="{{index}}" bindtap="onContactTypeTap">{{item}}</view>
+            </view>
+            <view class="form-item" style="margin-top: 16rpx;">
+              <input class="contact-input" placeholder="输入你的{{contactTypeLabel}}" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="50"/>
+            </view>
+            <view class="quick-fill-capsule tap-shrink" bindtap="onQuickFillContact">{{quickFillLabel}}</view>
+          </view>
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-note"></view><text class="form-label-text">备注</text>
+              <text class="form-label-hint">（选填）</text>
+            </view>
+            <textarea class="form-textarea" placeholder="可选填：车门剩余、车型、特殊要求等..." value="{{publishNote}}" bindinput="onPublishNoteInput" maxlength="200"/>
+          </view>
+          <view class="card form-card">
+            <view class="form-label-row">
+              <view class="svg-ico svg-ico-tag"></view><text class="form-label-text">个性标签</text>
+              <text class="form-label-hint">（选填，可多选）</text>
+            </view>
+            <view class="quick-time-block">
+              <view class="quick-chip-list">
+                <view wx:for="{{availableTags}}" wx:key="name" class="quick-chip tag-chip hot-c{{item.hotColor}} {{item.active ? 'active' : ''}} tap-shrink" data-value="{{item.name}}" bindtap="onTagToggle">
+                  <text>{{item.name}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="card form-card">
+            <view class="notify-row">
+              <view class="notify-info">
+                <view class="notify-label-row">
+                  <view class="svg-ico svg-ico-bell"></view><text class="notify-label">微信消息通知</text>
+                  <text class="notify-recommend">推荐</text>
+                </view>
+                <text class="notify-hint">有人加入同行时通过微信服务号通知你</text>
+              </view>
+              <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#FF9500"/>
+            </view>
+          </view>
+          <view class="publish-btn-new tap-shrink" bindtap="onSubmitPublish">发布同行</view>
+          <view class="tab-bottom-space" style="height: calc(100rpx + 20rpx);"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+
+    <!-- Tab 2: 我的（子标签） -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+
+        <!-- 统计栏 -->
+        <view class="task-stats-bar">
+          <view class="task-stat-item {{taskSubTab === 0 ? 'active' : ''}}" data-index="0" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.joined}}</text>
+            <text class="ts-label">我的加入</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+          <view class="task-stat-item {{taskSubTab === 1 ? 'active' : ''}}" data-index="1" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.published}}</text>
+            <text class="ts-label">我的发布</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+          <view class="task-stat-item {{taskSubTab === 2 ? 'active' : ''}}" data-index="2" bindtap="onTaskSubTabTap">
+            <text class="ts-num">{{taskStats.completed}}</text>
+            <text class="ts-label">已结束</text>
+            <view class="task-stat-indicator"></view>
+          </view>
+        </view>
+
+        <!-- 我的加入 -->
+        <block wx:if="{{taskSubTab === 0}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{myJoinedTasks.length === 0}}" class="task-empty-state">
+            <text class="task-empty-text">还没有加入过拼车</text>
+            <text class="task-empty-hint">去大厅看看有没有合适的</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{myJoinedTasks}}" wx:key="_id" class="task-card tap-shrink" data-id="{{item._id}}" bindtap="tapDetail">
+              <view class="task-card-header">
+                <text class="task-card-title">{{item.from}} → {{item.to}}</text>
+                <view class="task-badge {{item.type === 'offer' ? 'badge-active' : 'badge-pending'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</view>
+              </view>
+              <view class="task-card-user-row">
+                <text class="task-card-nick" wx:if="{{item.creator}}">{{item.creator.nickName || '匿名用户'}}</text>
+                <text class="task-card-time">{{item._timeAgo}}</text>
+                <text class="task-countdown" wx:if="{{item._countdown}}">{{item._countdown}}</text>
+                <text class="cmc-seats" wx:if="{{item.remainSeats != null}}">{{item.remainSeats}}/{{item.totalSeats}}人</text>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <!-- 我的发布 -->
+        <block wx:if="{{taskSubTab === 1}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{myPublishedTasks.length === 0}}" class="task-empty-state">
+            <text class="task-empty-text">还没有发布过拼车</text>
+            <text class="task-empty-hint">去发布页发一条</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{myPublishedTasks}}" wx:key="_id" class="task-card tap-shrink" data-id="{{item._id}}" bindtap="tapDetail">
+              <view class="task-card-header">
+                <text class="task-card-title">{{item.from}} → {{item.to}}</text>
+                <view class="task-badge badge-active">{{item.status === 'active' ? '进行中' : '已满员'}}</view>
+              </view>
+              <view class="task-card-user-row">
+                <text class="task-card-time-left">{{item._formattedTime || item._timeAgo}}</text>
+                <text class="task-countdown" wx:if="{{item._countdown}}">{{item._countdown}}</text>
+                <text class="cmc-seats" wx:if="{{item.remainSeats != null}}">{{item.remainSeats}}/{{item.totalSeats}}人</text>
+                <view class="task-card-actions" wx:if="{{item.status === 'active' || item.status === 'full'}}">
+                  <view class="task-btn task-btn-edit tap-shrink" data-id="{{item._id}}" data-item="{{item}}" catchtap="onEditMyCarpool">编辑</view>
+                  <view class="task-btn task-btn-end tap-shrink" data-id="{{item._id}}" catchtap="onEndMyCarpool">结束</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <!-- 已结束 -->
+        <block wx:if="{{taskSubTab === 2}}">
+          <view wx:if="{{taskLoading}}" class="task-loading"><text>加载中...</text></view>
+          <view wx:elif="{{completedTasks.length === 0}}" class="task-empty-state">
+            <text class="task-empty-text">暂无已结束的拼车</text>
+          </view>
+          <view wx:else class="task-list">
+            <view wx:for="{{completedTasks}}" wx:key="_id" class="task-card tap-shrink" data-id="{{item._id}}" bindtap="tapDetail">
+              <view class="task-card-header">
+                <text class="task-card-title">{{item.from}} → {{item.to}}</text>
+                <view class="task-badge badge-done">已结束</view>
+              </view>
+              <view class="task-card-user-row">
+                <text class="task-card-time">{{item._timeAgo}}</text>
+                <view class="task-btn task-btn-edit tap-shrink" wx:if="{{item._source === 'published'}}" data-id="{{item._id}}" catchtap="onRePublishCarpool">
+                  <text>重新发布</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+        <view class="tab-bottom-space" style="height: 160rpx;"></view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- ========== 弹窗：我发布的拼车 ========== -->
+  <view wx:if="{{showMyPublishPopup}}" class="overlay-mask" bindtap="closeMyPublishPopup">
+    <view class="list-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeMyPublishPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">我发布的拼车</text>
+        <view class="popup-nav-placeholder"></view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onMyPublishLoadMore">
+        <view wx:if="{{!myPublishLoading && myPublishList.length === 0}}" class="popup-empty">
+          <text class="popup-empty-text">暂无发布</text>
+        </view>
+        <view wx:for="{{myPublishList}}" wx:key="_id" class="carpool-card card tap-shrink" data-item="{{item}}" bindtap="onMyPublishTap">
+          <view class="cc-header">
+            <text class="cc-time">{{item._formattedTime}}</text>
+            <text class="cc-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</text>
+            <text class="cc-status {{item.status}}">{{item.status === 'active' ? '进行中' : '已结束'}}</text>
+          </view>
+          <view class="cc-route">
+            <text class="cc-route-from">{{item.from}}</text>
+            <text class="cc-route-arrow">→</text>
+            <text class="cc-route-to">{{item.to}}</text>
+          </view>
+          <text class="cc-note" wx:if="{{item.note}}">{{item.note}}</text>
+          <view class="cc-footer">
+            <text class="cc-seats">余{{item.remainSeats}}/共{{item.totalSeats}}人</text>
+            <view class="lc-actions" wx:if="{{item.status === 'active'}}">
+              <view class="lc-btn tap-shrink" data-id="{{item._id}}" catchtap="onMyPublishEnd">结束</view>
+              <view class="lc-btn lc-btn-danger tap-shrink" data-id="{{item._id}}" catchtap="onMyPublishCancel">删除</view>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{myPublishLoading}}" class="popup-loading">加载中...</view>
+        <view wx:if="{{!myPublishHasMore && myPublishList.length > 0}}" class="popup-no-more">— 没有更多了 —</view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ========== 弹窗：已加入的拼车 ========== -->
+  <view wx:if="{{showMyJoinedPopup}}" class="overlay-mask" bindtap="closeMyJoinedPopup">
+    <view class="list-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeMyJoinedPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">已加入的拼车</text>
+        <view class="popup-nav-placeholder"></view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onMyJoinedLoadMore">
+        <view wx:if="{{!myJoinedLoading && myJoinedList.length === 0}}" class="popup-empty">
+          <text class="popup-empty-text">暂无加入的行程</text>
+        </view>
+        <view wx:for="{{myJoinedList}}" wx:key="_id" class="carpool-card card tap-shrink" data-item="{{item}}" bindtap="onMyJoinedTap">
+          <view class="cc-header">
+            <text class="cc-time">{{item._formattedTime}}</text>
+            <text class="cc-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</text>
+            <text class="cc-status {{item.status}}">{{item.status === 'active' ? '进行中' : '已结束'}}</text>
+          </view>
+          <view class="cc-route">
+            <text class="cc-route-from">{{item.from}}</text>
+            <text class="cc-route-arrow">→</text>
+            <text class="cc-route-to">{{item.to}}</text>
+          </view>
+          <text class="cc-note" wx:if="{{item.note}}">{{item.note}}</text>
+          <view class="cc-footer">
+            <text class="cc-author">司机：{{item.creator.nickName || '匿名'}}</text>
+            <view class="lc-actions" wx:if="{{item.status === 'active'}}">
+              <view class="lc-btn lc-btn-danger tap-shrink" data-id="{{item._id}}" catchtap="onMyJoinedCancel">取消加入</view>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{myJoinedLoading}}" class="popup-loading">加载中...</view>
+        <view wx:if="{{!myJoinedHasMore && myJoinedList.length > 0}}" class="popup-no-more">— 没有更多了 —</view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ========== 弹窗：历史拼车 ========== -->
+  <view wx:if="{{showMyHistoryPopup}}" class="overlay-mask" bindtap="closeMyHistoryPopup">
+    <view class="list-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeMyHistoryPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">历史拼车</text>
+        <view class="popup-nav-placeholder"></view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onMyHistoryLoadMore">
+        <view wx:if="{{!myHistoryLoading && myHistoryList.length === 0}}" class="popup-empty">
+          <text class="popup-empty-text">暂无历史同行</text>
+        </view>
+        <view wx:for="{{myHistoryList}}" wx:key="_id" class="carpool-card card tap-shrink" data-item="{{item}}" bindtap="onMyHistoryTap">
+          <view class="cc-header">
+            <text class="cc-time">{{item._formattedTime}}</text>
+            <text class="cc-type {{item.type === 'offer' ? 'type-offer' : 'type-find'}}">{{item.type === 'offer' ? '有空位' : '找同行'}}</text>
+            <text class="cc-status ended">已结束</text>
+          </view>
+          <view class="cc-route">
+            <text class="cc-route-from">{{item.from}}</text>
+            <text class="cc-route-arrow">→</text>
+            <text class="cc-route-to">{{item.to}}</text>
+          </view>
+          <text class="cc-note" wx:if="{{item.note}}">{{item.note}}</text>
+          <view class="cc-footer">
+            <text class="cc-seats">共{{item.totalSeats}}人</text>
+          </view>
+        </view>
+        <view wx:if="{{myHistoryLoading}}" class="popup-loading">加载中...</view>
+        <view wx:if="{{!myHistoryHasMore && myHistoryList.length > 0}}" class="popup-no-more">— 没有更多了 —</view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ========== 底部二级 TabBar ========== -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:if="{{currentTab === 0}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">行程大厅</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:if="{{currentTab === 1}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">发布</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:if="{{currentTab === 2}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 详情弹窗 Overlay ========== -->
+  <view class="overlay-mask {{showDetailOverlay ? 'visible' : ''}}" hidden="{{!showDetailOverlay}}" catchtap="closeDetailOverlay">
+    <view class="detail-overlay {{showDetailAnimating ? 'slide-up' : ''}}" catchtap="">
+      <view class="overlay-handle"><view class="handle-bar"></view></view>
+      <block wx:if="{{detailOverlayLoading}}">
+        <view class="overlay-loading"><view class="spinner-small"></view><text class="loading-text">加载中...</text></view>
+      </block>
+      <block wx:elif="{{detailOverlayData}}">
+        <scroll-view class="overlay-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+          <view class="ov-route">
+            <view class="ov-route-row"><view class="ov-dot ov-dot-from"></view><text class="ov-route-text">{{detailOverlayData.from}}</text></view>
+            <view class="ov-route-line"></view>
+            <view class="ov-route-row"><view class="ov-dot ov-dot-to"></view><text class="ov-route-text">{{detailOverlayData.to}}</text></view>
+            <view class="ov-type-badge {{detailOverlayData.type === 'offer' ? 'offer' : 'find'}}" style="position:absolute;right:0;top:0;">{{detailOverlayData.type === 'offer' ? '有空位' : '找同行'}}</view>
+          </view>
+          <view class="ov-info-grid">
+            <view class="ov-info-item"><text class="ov-info-label">出发时间</text><text class="ov-info-val">{{detailOverlayData._formattedTime || ''}}</text></view>
+            <view class="ov-info-item"><text class="ov-info-label">状态</text><view class="ov-status ov-status-{{detailOverlayData.status}}">{{detailOverlayStatusText}}</view></view>
+            <view class="ov-info-item"><text class="ov-info-label">座位情况</text><text class="ov-info-val">还差 {{detailOverlayData.remainSeats}} 人 / 共 {{detailOverlayData.totalSeats}} 人</text></view>
+            <view class="ov-info-item" wx:if="{{detailOverlayPriceText}}"><text class="ov-info-label">费用</text><text class="ov-info-val ov-price">{{detailOverlayPriceText}}</text></view>
+            <view class="ov-info-item" wx:if="{{detailOverlayVehicleText}}"><text class="ov-info-label">车辆信息</text><text class="ov-info-val">{{detailOverlayVehicleText}}</text></view>
+            <view class="ov-info-item" wx:if="{{detailOverlayData.note}}"><text class="ov-info-label">备注</text><text class="ov-info-val">{{detailOverlayData.note}}</text></view>
+            <view class="ov-info-item"><text class="ov-info-label">浏览/收藏</text><text class="ov-info-val">{{detailOverlayData.viewCount || 0}} / {{detailOverlayData.favoriteCount || 0}}</text></view>
+          </view>
+          <view class="ov-tags" wx:if="{{detailOverlayData.tags && detailOverlayData.tags.length > 0}}">
+            <text wx:for="{{detailOverlayData.tags}}" wx:key="*this" class="ov-tag">{{item}}</text>
+          </view>
+          <view class="ov-creator">
+            <image class="ov-avatar" src="{{detailOverlayData.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="ov-creator-info">
+              <text class="ov-creator-name">{{detailOverlayData.creator.nickName || '匿名用户'}}</text>
+              <text class="ov-creator-sub">ID: {{detailOverlayData.creator.user_id_code || '-'}}</text>
+              <text class="ov-creator-sub">信用 {{detailOverlayData.creator.creditScore || 100}} 分</text>
+            </view>
+          </view>
+          <view class="ov-participants" wx:if="{{detailOverlayData.participants && detailOverlayData.participants.length > 0}}">
+            <text class="ov-section-title">已加入 {{detailOverlayData.participants.length}} 人</text>
+            <view wx:for="{{detailOverlayData.participants}}" wx:key="_id" wx:for-item="p" class="ov-p-item">
+              <text class="ov-p-name">{{p.nickName || '用户'}}</text>
+              <text class="ov-p-credit">信用 {{p.creditScore || '-'}}</text>
+            </view>
+          </view>
+          <view class="ov-actions safe-bottom">
+            <block wx:if="{{detailOverlayData.isCreator}}">
+              <view class="ov-btn ov-btn-outline {{detailOverlayData.status !== 'active' && detailOverlayData.status !== 'full' ? 'disabled' : ''}}" wx:if="{{detailOverlayData.status === 'active' || detailOverlayData.status === 'full'}}" bindtap="endFromOverlay">结束行程</view>
+              <view class="ov-btn ov-btn-outline" bindtap="deleteFromOverlay" style="color:var(--danger);border-color:var(--danger-border)">取消发布</view>
+              <view class="ov-btn ov-btn-outline" bindtap="goOverlayGroupChat">群聊</view>
+              <view class="ov-btn ov-btn-icon" bindtap="favFromOverlay"><text style="font-size:36rpx;">{{detailOverlayData.isFavorited ? '★' : '☆'}}</text></view>
+            </block>
+            <block wx:elif="{{detailOverlayData.isJoined}}">
+              <view class="ov-btn ov-btn-outline" wx:if="{{detailOverlayData.status === 'active' || detailOverlayData.status === 'full'}}" bindtap="cancelJoinFromOverlay" style="color:var(--danger);border-color:var(--danger-border)">取消加入</view>
+              <view class="ov-btn ov-btn-primary" wx:if="{{detailOverlayData.contact}}" bindtap="onCopyContact"><text style="white-space:nowrap">复制联系方式</text></view>
+              <view class="ov-btn ov-btn-outline" bindtap="goOverlayGroupChat">群聊</view>
+              <view class="ov-btn ov-btn-icon" bindtap="favFromOverlay"><text style="font-size:36rpx;">{{detailOverlayData.isFavorited ? '★' : '☆'}}</text></view>
+            </block>
+            <block wx:else>
+              <view class="ov-btn ov-btn-primary" wx:if="{{!detailOverlayData.isExpired && detailOverlayData.remainSeats > 0 && detailOverlayData.status === 'active'}}" bindtap="joinFromOverlay">立即加入</view>
+              <view class="ov-btn ov-btn-disabled" wx:elif="{{detailOverlayData.isExpired}}">已结束</view>
+              <view class="ov-btn ov-btn-disabled" wx:elif="{{detailOverlayData.status === 'full'}}">已满员</view>
+              <view class="ov-btn ov-btn-icon" bindtap="favFromOverlay"><text style="font-size:36rpx;">{{detailOverlayData.isFavorited ? '★' : '☆'}}</text></view>
+            </block>
+          </view>
+        </scroll-view>
+      </block>
+      <block wx:else><view style="text-align:center;padding:60rpx;color:var(--text-hint);">加载失败</view></block>
+    </view>
+  </view>
+
+  <!-- ========== 加入成功弹窗 ========== -->
+  <view class="overlay-mask visible" wx:if="{{showJoinSuccessModal}}" catchtap="closeJoinSuccessModal">
+    <view class="join-success-modal" catchtap="">
+      <view class="jsm-icon"><view class="svg-ico svg-ico-party"></view></view>
+      <view class="jsm-title">已加入车队</view>
+      <view class="jsm-trip-card">
+        <view class="jsm-trip-route">
+          <view class="jsm-trip-dot from"></view><text class="jsm-trip-from">{{joinSuccessData.from}}</text>
+          <view class="jsm-trip-arrow">→</view>
+          <view class="jsm-trip-dot to"></view><text class="jsm-trip-to">{{joinSuccessData.to}}</text>
+        </view>
+        <view class="jsm-trip-meta" wx:if="{{joinSuccessData.time}}">
+          <view class="jsm-trip-time"><view class="svg-ico svg-ico-clock"></view><text>{{joinSuccessData.time}}</text></view>
+          <view class="jsm-trip-seats"><view class="svg-ico svg-ico-users"></view><text>{{joinSuccessData.seats}}</text></view>
+        </view>
+        <view class="jsm-trip-contact" wx:if="{{joinSuccessData.contact}}"><view class="svg-ico svg-ico-phone"></view><text>{{joinSuccessData.contact}}</text></view>
+      </view>
+      <view class="jsm-btns">
+        <view class="jsm-btn jsm-btn-group" bindtap="goGroupFromJoin">前往群聊</view>
+        <view class="jsm-btn jsm-btn-copy" wx:if="{{joinSuccessData.contact}}" bindtap="onCopyContactFromJoin">复制联系方式</view>
+      </view>
+      <view class="jsm-close" bindtap="closeJoinSuccessModal">我知道了</view>
+    </view>
+  </view>
+
+  <!-- ========== 地点选择弹窗 ========== -->
+  <view class="overlay-mask {{showLocationPopup ? 'visible' : ''}}" hidden="{{!showLocationPopup}}" catchtap="closeLocationPopup">
+    <view class="location-popup" catchtap="">
+      <view class="loc-pop-title">选择{{locationPopupType === 'from' ? '出发地' : '目的地'}}</view>
+      <view class="loc-search-row">
+        <input class="loc-search-input" placeholder="搜索或输入地点" value="{{locationSearchText}}" bindinput="onLocationSearchInput" confirm-type="done" bindconfirm="confirmCustomLocation"/>
+        <view class="loc-search-btn tap-shrink" bindtap="confirmCustomLocation">确定</view>
+      </view>
+      <view class="loc-common-title">常用地点</view>
+      <view class="loc-list">
+        <view wx:for="{{displayLocations}}" wx:key="*this" class="loc-item tap-shrink {{(item === '任意出发地' && isFromAny) || (item === '任意目的地' && isToAny) || ((item !== '任意出发地' && item !== '任意目的地') && (locationPopupType === 'from' ? from : to) === item) ? 'active' : ''}}" data-name="{{item}}" bindtap="selectLocation">
+          <text>{{item}}</text>
+          <text wx:if="{{(item === '任意出发地' && isFromAny) || (item === '任意目的地' && isToAny) || ((item !== '任意出发地' && item !== '任意目的地') && (locationPopupType === 'from' ? from : to) === item)}}" class="loc-check">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

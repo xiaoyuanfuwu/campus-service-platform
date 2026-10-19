@@ -1,0 +1,74 @@
+<!-- pages/recommend/recommend.wxml -->
+<view class="page-recommend">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">推荐</text>
+    <view class="nav-placeholder"></view>
+  </view>
+  <view class="content" style="padding-top: {{navBarHeight}}px;">
+    <view class="tab-bar">
+      <view wx:for="{{tabs}}" wx:key="key" class="tab-item {{activeTab === item.key ? 'active' : ''}}" data-key="{{item.key}}" bindtap="switchTab">{{item.label}}</view>
+    </view>
+
+    <!-- 热门路线 -->
+    <block wx:if="{{activeTab === 'hot'}}">
+      <view wx:for="{{hotRoutes}}" wx:key="_id" class="glass-card route-card">
+        <view class="route-info">
+          <text class="route-from">{{item.from || item.route}}</text>
+          <text class="arrow">→</text>
+          <text class="route-to">{{item.to || ''}}</text>
+        </view>
+        <view class="route-meta">
+          <text class="meta-item" wx:if="{{item.count}}">{{item.count}}人走过</text>
+          <text class="meta-item" wx:if="{{item.avgPrice}}">均价¥{{item.avgPrice}}</text>
+        </view>
+        <view class="btn-sm" data-from="{{item.from}}" data-to="{{item.to}}" bindtap="onEstimate">预估价格</view>
+      </view>
+      <view wx:if="{{!loading && hotRoutes.length === 0}}" class="empty-state">
+        <view class="empty-icon"><text><view class="svg-ico svg-ico-fire"></view></text></view>
+        <text class="empty-text">暂无热门路线</text>
+      </view>
+    </block>
+
+    <!-- 就近匹配 -->
+    <block wx:if="{{activeTab === 'nearby'}}">
+      <view wx:for="{{nearbyList}}" wx:key="_id" class="glass-card nearby-card">
+        <view class="user-row">
+          <image class="avatar" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+          <view class="user-info">
+            <text class="name">{{item.nickName || '用户'}}</text>
+            <text class="distance" wx:if="{{item.distance}}">距您{{item.distance}}</text>
+          </view>
+        </view>
+        <text class="info-content" wx:if="{{item.from}}">{{item.from}} → {{item.to}}</text>
+      </view>
+      <view wx:if="{{!loading && nearbyList.length === 0}}" class="empty-state">
+        <view class="empty-icon"><text><view class="svg-ico svg-ico-pin"></view></text></view>
+        <text class="empty-text">附近暂无同行</text>
+      </view>
+    </block>
+
+    <!-- 为你推荐 -->
+    <block wx:if="{{activeTab === 'forMe'}}">
+      <view wx:for="{{forMeList}}" wx:key="_id" class="glass-card route-card">
+        <view class="route-info">
+          <text class="route-from">{{item.from}}</text>
+          <text class="arrow">→</text>
+          <text class="route-to">{{item.to}}</text>
+        </view>
+        <text class="info-content" wx:if="{{item._formattedTime}}">{{item._formattedTime}}</text>
+        <text class="reason" wx:if="{{item.reason}}">{{item.reason}}</text>
+      </view>
+      <view wx:if="{{!loading && forMeList.length === 0}}" class="empty-state">
+        <view class="empty-icon"><text><view class="svg-ico svg-ico-sparkles"></view></text></view>
+        <text class="empty-text">暂无推荐</text>
+      </view>
+    </block>
+
+    <view wx:if="{{loading}}" class="loading-more">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+  </view>
+</view>

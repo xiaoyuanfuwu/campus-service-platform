@@ -1,0 +1,52 @@
+<!-- pages/user-profile/user-profile.wxml -->
+<view class="page-detail-info">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack"><view class="nav-back-icon"></view></view>
+    <text class="nav-title">用户资料</text>
+    <view class="nav-placeholder"></view>
+  </view>
+  <scroll-view scroll-y class="content" style="padding-top: {{navBarHeight}}px;">
+    <block wx:if="{{user}}">
+      <view class="profile-header glass-card">
+        <image class="profile-avatar" src="{{user.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <text class="profile-name">{{user.nickName || '用户'}}</text>
+        <view class="profile-stats">
+          <view class="stat-item"><text class="stat-value">{{user.creditScore || 100}}</text><text class="stat-label">信用分</text></view>
+          <view class="stat-item"><text class="stat-value">{{user.tripCount || 0}}</text><text class="stat-label">同行次数</text></view>
+          <view class="stat-item"><text class="stat-value">{{user.goodRate || 100}}%</text><text class="stat-label">好评率</text></view>
+        </view>
+      </view>
+      <view class="section glass-card" wx:if="{{user.school}}">
+        <text class="section-title">学校</text><text class="info-content">{{user.school}}</text>
+      </view>
+      <view class="section glass-card" wx:if="{{user.bio}}">
+        <text class="section-title">个人简介</text><text class="info-content">{{user.bio}}</text>
+      </view>
+      <view class="section glass-card" wx:if="{{user.tags && user.tags.length > 0}}">
+        <text class="section-title">标签</text>
+        <view class="tag-row"><text wx:for="{{user.tags}}" wx:key="*this" class="tag-item">{{item}}</text></view>
+      </view>
+      <view class="section glass-card" wx:if="{{user.phone}}">
+        <text class="section-title">手机号</text><text class="info-content">{{user.phone}}</text>
+      </view>
+      <view class="reviews-section">
+        <text class="section-title" style="padding: 24rpx;">评价 ({{reviews.length}})</text>
+        <view wx:for="{{reviews}}" wx:key="_id" class="review-card glass-card">
+          <view class="review-header">
+            <text class="reviewer-name">{{item.isAnonymous ? '匿名用户' : (item.reviewer.nickName || '用户')}}</text>
+            <view class="stars-row"><text wx:for="{{[1,2,3,4,5]}}" wx:for-item="s" wx:key="*this" class="star">{{s <= item.rating ? '★' : '☆'}}</text></view>
+          </view>
+          <text class="review-content" wx:if="{{item.content}}">{{item.content}}</text>
+          <view class="tag-row" wx:if="{{item.tags && item.tags.length > 0}}"><text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="tag-item">{{tag}}</text></view>
+          <text class="info-time">{{item._timeAgo}}</text>
+        </view>
+        <view wx:if="{{reviews.length === 0}}" class="empty-hint">暂无评价</view>
+      </view>
+      <view class="action-bar">
+        <view class="btn-primary" bindtap="goChat">发消息</view>
+      </view>
+    </block>
+    <view class="loading" wx:elif="{{loading}}">加载中...</view>
+  </scroll-view>
+</view>

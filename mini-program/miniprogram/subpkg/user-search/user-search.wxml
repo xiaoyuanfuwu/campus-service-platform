@@ -1,0 +1,66 @@
+<!-- pages/user-search/user-search.wxml -->
+<view class="page-search">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 自定义导航栏 -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px; height: 44px;">
+    <view class="nav-back" bindtap="goBack">
+      <view class="nav-back-icon"></view>
+    </view>
+    <text class="nav-title">搜索用户</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="content" style="padding-top: {{navBarHeight}}px;">
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <view class="search-input-wrap">
+        <view class="search-icon"></view>
+        <input
+          class="search-input"
+          type="text"
+          value="{{keyword}}"
+          placeholder="昵称 / 学号 / 手机号"
+          placeholder-class="search-ph"
+          confirm-type="search"
+          bindinput="onInput"
+          bindconfirm="onSearch"
+        />
+        <view class="search-clear" wx:if="{{keyword}}" bindtap="onClear">×</view>
+      </view>
+      <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+    </view>
+
+    <!-- 加载中 -->
+    <view class="state-box" wx:if="{{loading}}">
+      <view class="spinner"></view>
+      <text class="state-text">搜索中...</text>
+    </view>
+
+    <!-- 已搜索但无结果 -->
+    <view class="empty-state" wx:elif="{{searched && results.length === 0}}">
+      <view class="empty-icon"><text><view class="svg-ico svg-ico-search"></view></text></view>
+      <text class="empty-text">未找到相关用户</text>
+    </view>
+
+    <!-- 结果列表 -->
+    <view class="result-list" wx:else>
+      <view
+        class="user-card glass-card tap-shrink"
+        wx:for="{{results}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="goUserProfile"
+      >
+        <view class="avatar-box">
+          <image wx:if="{{item.avatarUrl}}" class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="avatar avatar-text">{{item._avatarText}}</view>
+        </view>
+        <view class="user-info">
+          <text class="user-name">{{item.nickName || '未命名用户'}}</text>
+          <text class="user-desc">ID: {{item.user_id_code || '-'}} · {{item.school || ''}}</text>
+        </view>
+        <view class="arrow-right"></view>
+      </view>
+    </view>
+  </view>
+</view>

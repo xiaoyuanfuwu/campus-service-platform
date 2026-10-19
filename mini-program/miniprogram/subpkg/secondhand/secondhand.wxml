@@ -1,0 +1,537 @@
+<!-- pages/secondhand/secondhand.wxml — 二手市集 -->
+<view class="page-module">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">二手市集</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+
+  <!-- Swiper 三Tab -->
+  <swiper class="module-swiper" current="{{currentTab}}" bindchange="onSwiperChange" duration="250">
+    <!-- ============ Tab 0: 大厅 ============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onLoadMore" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullRefresh">
+        <!-- 搜索栏 -->
+        <view class="search-bar">
+          <view class="search-input-wrap">
+            <view class="svg-ico svg-ico-search"></view>
+            <input class="search-input" placeholder="搜索你想要的宝贝..." value="{{searchText}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+          </view>
+          <view class="search-btn tap-shrink" bindtap="onSearch">搜索</view>
+        </view>
+
+        <!-- 分类筛选 -->
+        <scroll-view class="category-bar" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="cat-item tap-shrink {{!searchText ? 'active' : ''}}" data-key="" bindtap="onFilterCategory">全部</view>
+          <view class="cat-item tap-shrink" data-key="书籍教材" bindtap="onFilterCategory"><view class="svg-ico svg-ico-book"></view>书籍教材</view>
+          <view class="cat-item tap-shrink" data-key="数码电子" bindtap="onFilterCategory"><view class="svg-ico svg-ico-laptop"></view>数码电子</view>
+          <view class="cat-item tap-shrink" data-key="生活用品" bindtap="onFilterCategory"><view class="svg-ico svg-ico-home"></view>生活用品</view>
+          <view class="cat-item tap-shrink" data-key="服饰鞋包" bindtap="onFilterCategory"><view class="svg-ico svg-ico-shirt"></view>服饰鞋包</view>
+          <view class="cat-item tap-shrink" data-key="运动器材" bindtap="onFilterCategory"><view class="svg-ico svg-ico-ball"></view>运动器材</view>
+          <view class="cat-item tap-shrink" data-key="其他" bindtap="onFilterCategory"><view class="svg-ico svg-ico-gift"></view>其他</view>
+        </scroll-view>
+
+        <!-- 骨架加载 -->
+        <view wx:if="{{loading && list.length === 0}}" class="loading-state">
+          <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this">
+            <view class="sk-thumb"></view>
+            <view class="sk-body">
+              <view class="sk-line sk-title"></view>
+              <view class="sk-line"></view>
+              <view class="sk-line sk-mid"></view>
+              <view class="sk-footer">
+                <view class="sk-line sk-price"></view>
+                <view class="sk-line sk-meta"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 错误 -->
+        <view wx:elif="{{error}}" class="empty-state">
+          <view class="empty-icon"><view class="svg-ico svg-ico-dizzy"></view></view>
+          <text class="empty-text">加载失败</text>
+          <text class="empty-hint">{{error}}</text>
+          <view class="retry-btn tap-shrink" bindtap="onRetry">点击重试</view>
+        </view>
+        <!-- 空状态 -->
+        <view wx:elif="{{!loading && list.length === 0}}" class="empty-state">
+          <image class="empty-icon-img" src="/images/guide-icons/03.png" mode="aspectFit" />
+          <text class="empty-text">{{config.empty}}</text>
+          <text class="empty-hint">快来发布第一条吧</text>
+        </view>
+        <!-- 列表 -->
+        <block wx:else>
+          <view class="post-list">
+            <view wx:for="{{list}}" wx:key="_id" class="post-card tap-shrink" data-id="{{item._id}}" data-module="{{moduleName}}" bindtap="tapDetail">
+              <!-- 图片区 -->
+              <view class="post-card-cover" wx:if="{{item.images && item.images.length > 0}}">
+                <image class="cover-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load></image>
+                <view class="img-count" wx:if="{{item.images.length > 1}}">
+                  <view class="svg-ico svg-ico-camera"></view><text class="img-count-text">{{item.images.length}}</text>
+                </view>
+                <view class="post-badge {{item.status === 'closed' ? 'badge-done' : 'badge-active'}} {{item.type === 'find' ? 'badge-find' : 'badge-offer'}}">{{item.status === 'closed' ? '已结束' : (item.type === 'find' ? '求购' : '出售')}}</view>
+              </view>
+              <view class="post-card-cover post-card-cover-empty" wx:else>
+                <view class="cover-placeholder"><view class="svg-ico svg-ico-{{item.type === 'find' ? 'search' : 'tag'}}"></view></view>
+                <view class="post-badge {{item.status === 'closed' ? 'badge-done' : 'badge-active'}} {{item.type === 'find' ? 'badge-find' : 'badge-offer'}}">{{item.status === 'closed' ? '已结束' : (item.type === 'find' ? '求购' : '出售')}}</view>
+              </view>
+              <!-- 信息区 -->
+              <view class="post-card-body">
+                <view class="post-card-title">{{item.title}}</view>
+                <view class="post-card-desc">{{item.summary || item.desc || item.content || item.note || '暂无描述'}}</view>
+                <view class="post-card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                  <text class="post-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+                </view>
+                <view class="post-card-footer">
+                  <view class="post-card-user">
+                    <image class="post-card-avatar" src="{{item.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+                    <view class="post-card-user-text">
+                      <view class="post-card-nick-row">
+                        <text class="post-card-nick">{{item.creator.nickName || '匿名'}}</text>
+                        <text class="post-card-credit" wx:if="{{item.creator.creditLevelText}}">{{item.creator.creditLevelText}}</text>
+                      </view>
+                      <view class="post-card-meta-sub" wx:if="{{item.creator.userCode}}">
+                        <text class="post-card-id">ID: {{item.creator.userCode}}</text>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="post-card-price" wx:if="{{item.price > 0}}">
+                    <text class="price-symbol">¥</text>
+                    <text class="price-num">{{item.price}}</text>
+                  </view>
+                  <view class="post-card-price price-free" wx:else>
+                    <text class="price-free-text">面议</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <!-- 加载更多 -->
+          <view wx:if="{{loading}}" class="loading-more"><text>加载中...</text></view>
+          <view wx:elif="{{!hasMore && list.length > 0}}" class="loading-more"><text class="no-more">— 没有更多了 —</text></view>
+        </block>
+        <!-- 底部 -->
+        <view class="page-footer">
+          <text class="footer-text">校园服务平台 · 仅限学习交流使用</text>
+          <text class="footer-icp-text">©2026 {{BRAND_NAME}} 版权所有</text>
+        </view>
+        <view class="tab-bottom-space"></view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ============ Tab 1: 发布 ============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="publish-form">
+          <!-- 编辑模式横条 -->
+          <view class="edit-mode-bar" wx:if="{{editMode}}">
+            <view class="edit-mode-cancel tap-shrink" bindtap="onCancelEdit">✕</view>
+            <text class="edit-mode-title">编辑模式</text>
+            <view class="edit-mode-placeholder"></view>
+          </view>
+          <!-- 发布类型 -->
+          <view class="card type-switch">
+            <text class="type-label">发布类型</text>
+            <view class="type-options">
+              <view class="type-option {{publishType === 'offer' ? 'active' : ''}}" data-type="offer" bindtap="onPublishTypeChange">
+                <view class="type-icon svg-ico svg-ico-tag"></view>
+                <text>出售</text>
+              </view>
+              <view class="type-option {{publishType === 'find' ? 'active' : ''}}" data-type="find" bindtap="onPublishTypeChange">
+                <view class="type-icon svg-ico svg-ico-search"></view>
+                <text>求购</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 标题（label + input 一行，醒目边框） -->
+          <view class="card form-card form-card-inline">
+            <view class="form-item form-item-inline">
+              <view class="form-label form-label-inline"><text>标题</text><text class="form-required">*</text></view>
+              <view class="form-field-wrap form-field-wrap-inline form-field-wrap-title">
+                <input class="form-input form-input-title" placeholder="{{publishType === 'find' ? '例如：求一本高数课本' : '一句话描述你的宝贝'}}" value="{{publishTitle}}" bindinput="onPublishTitleInput" maxlength="50"/>
+                <view class="form-counter">{{publishTitle.length || 0}}/50</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 描述 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>详细描述</text><text class="form-required">*</text></view>
+              <view class="form-field-wrap form-field-wrap-textarea">
+                <textarea class="form-textarea" placeholder="{{publishType === 'find' ? '想要的物品、用途、要求等...' : '成色、使用时长、转让原因...'}}" value="{{publishDesc}}" bindinput="onPublishDescInput" maxlength="500" auto-height/>
+                <view class="form-counter">{{publishDesc.length || 0}}/500</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 图片选择 -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>{{publishType === 'find' ? '参考图片' : '图片展示'}}</text><text class="form-hint">{{publishType === 'find' ? '选填，想要的东西照片' : '最多 6 张，首张为封面'}}</text></view>
+            </view>
+            <view class="image-picker">
+              <view class="img-item" wx:for="{{publishImages}}" wx:key="*this" data-index="{{index}}" data-url="{{item}}" bindtap="onPreviewPublishImage">
+                <image class="img-preview" src="{{item}}" mode="aspectFill"></image>
+                <view class="img-delete" catchtap="onDeletePublishImage" data-index="{{index}}">×</view>
+                <view class="img-cover-tag" wx:if="{{index === 0}}">封面</view>
+              </view>
+              <view class="img-add tap-shrink" wx:if="{{publishImages.length < 6}}" bindtap="onChoosePublishImage">
+                <text class="img-add-icon">+</text>
+                <text class="img-add-text">{{publishImages.length}}/6</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 分类（彩色胶囊标签，无 emoji） -->
+          <view class="card form-card">
+            <view class="form-item">
+              <view class="form-label"><text>分类</text></view>
+              <view class="tag-options">
+                <view class="tag-chip hot-c0 {{publishCategory === '书籍教材' ? 'active' : ''}}" data-value="书籍教材" bindtap="onPublishCategoryChange">书籍教材</view>
+                <view class="tag-chip hot-c1 {{publishCategory === '数码电子' ? 'active' : ''}}" data-value="数码电子" bindtap="onPublishCategoryChange">数码电子</view>
+                <view class="tag-chip hot-c2 {{publishCategory === '生活用品' ? 'active' : ''}}" data-value="生活用品" bindtap="onPublishCategoryChange">生活用品</view>
+                <view class="tag-chip hot-c3 {{publishCategory === '服饰鞋包' ? 'active' : ''}}" data-value="服饰鞋包" bindtap="onPublishCategoryChange">服饰鞋包</view>
+                <view class="tag-chip hot-c4 {{publishCategory === '运动器材' ? 'active' : ''}}" data-value="运动器材" bindtap="onPublishCategoryChange">运动器材</view>
+                <view class="tag-chip hot-c5 {{publishCategory === '其他' ? 'active' : ''}}" data-value="其他" bindtap="onPublishCategoryChange">其他</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 新旧程度（仅出售时显示） -->
+          <view class="card form-card" wx:if="{{publishType === 'offer'}}">
+            <view class="form-item">
+              <view class="form-label"><text>新旧程度</text></view>
+              <view class="tag-options">
+                <view class="tag-chip hot-c0 {{publishQuality === '全新' ? 'active' : ''}}" data-value="全新" bindtap="onPublishQualityChange">全新</view>
+                <view class="tag-chip hot-c1 {{publishQuality === '几乎全新' ? 'active' : ''}}" data-value="几乎全新" bindtap="onPublishQualityChange">几乎全新</view>
+                <view class="tag-chip hot-c2 {{publishQuality === '轻微使用' ? 'active' : ''}}" data-value="轻微使用" bindtap="onPublishQualityChange">轻微使用</view>
+                <view class="tag-chip hot-c3 {{publishQuality === '正常使用痕迹' ? 'active' : ''}}" data-value="正常使用痕迹" bindtap="onPublishQualityChange">正常使用</view>
+                <view class="tag-chip hot-c4 {{publishQuality === '有明显瑕疵' ? 'active' : ''}}" data-value="有明显瑕疵" bindtap="onPublishQualityChange">有瑕疵</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 求购 urgency (仅求购时显示) -->
+          <view class="card form-card" wx:if="{{publishType === 'find'}}">
+            <view class="form-item">
+              <view class="form-label"><text>急需程度</text></view>
+              <view class="tag-options">
+                <view class="tag-chip hot-c0 {{publishUrgency === '一般' ? 'active' : ''}}" data-value="一般" bindtap="onPublishUrgencyChange">一般</view>
+                <view class="tag-chip hot-c1 {{publishUrgency === '较急' ? 'active' : ''}}" data-value="较急" bindtap="onPublishUrgencyChange">较急</view>
+                <view class="tag-chip hot-c2 {{publishUrgency === '很急' ? 'active' : ''}}" data-value="很急" bindtap="onPublishUrgencyChange">很急</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 价格（彩色胶囊风格，¥ + 大字 input 一行；留空即面议） -->
+          <view class="card form-card">
+            <view class="form-item form-item-inline">
+              <view class="form-label form-label-inline">价格<text class="form-hint">(留空=面议)</text></view>
+              <view class="form-field-wrap form-field-wrap-inline form-field-price">
+                <text class="price-prefix">¥</text>
+                <input class="form-input form-input-price" type="digit" placeholder="0" value="{{publishPrice}}" bindinput="onPublishPriceInput"/>
+              </view>
+            </view>
+          </view>
+
+          <!-- 联系方式（多选一 + 一键填入） -->
+          <view class="card form-card form-card-contact">
+            <view class="contact-row">
+              <view class="contact-label">联系方式</view>
+              <view class="contact-type-row">
+                <view wx:for="{{contactTypes}}" wx:key="*this"
+                  class="contact-type-chip {{contactTypeIndex === index ? 'active' : ''}} tap-shrink"
+                  data-index="{{index}}" bindtap="onContactTypeTap">{{item}}</view>
+              </view>
+            </view>
+            <view class="contact-input-row">
+              <input class="contact-input" placeholder="输入你的{{contactTypeLabel}}" value="{{publishContact}}" bindinput="onPublishContactInput" maxlength="50"/>
+              <view class="contact-quick-fill tap-shrink" bindtap="onQuickFillContact">{{quickFillLabel}}</view>
+            </view>
+          </view>
+
+          <!-- 通知 -->
+          <view class="card form-card">
+            <view class="notify-row">
+              <view class="notify-info">
+                <view class="notify-label-row"><view class="svg-ico svg-ico-bell"></view><text class="notify-label">微信消息通知</text></view>
+                <text class="notify-hint">有人接单时通过微信服务号通知你</text>
+              </view>
+              <switch checked="{{notifySubscribed}}" bindchange="onNotifySwitch" color="#FF9500"/>
+            </view>
+          </view>
+
+          <view class="publish-btn tap-shrink" bindtap="onSubmitPublish" wx:if="{{!editMode}}">立即发布</view>
+          <view class="publish-btn publish-btn-edit tap-shrink" bindtap="onSaveEdit" wx:if="{{editMode}}">保存修改</view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+
+    <!-- ============ Tab 2: 我的（二手专属）============ -->
+    <swiper-item>
+      <scroll-view class="tab-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="mine-page">
+          <view class="mine-title">
+            <view class="svg-ico svg-ico-cart"></view>
+            <text class="mine-title-text">我的二手</text>
+          </view>
+          <view class="menu-group">
+            <view class="menu-item tap-shrink" bindtap="onMyPosts">
+              <view class="menu-icon svg-ico svg-ico-box"></view>
+              <text class="menu-text">我发布的</text>
+              <text class="menu-arrow">›</text>
+            </view>
+            <view class="menu-item tap-shrink" bindtap="onMyBought">
+              <view class="menu-icon svg-ico svg-ico-bag"></view>
+              <text class="menu-text">我买到的</text>
+              <text class="menu-arrow">›</text>
+            </view>
+            <view class="menu-item tap-shrink" bindtap="onMyFavorites">
+              <view class="menu-icon svg-ico svg-ico-star"></view>
+              <text class="menu-text">我的收藏</text>
+              <text class="menu-arrow">›</text>
+            </view>
+          </view>
+          <view class="tab-bottom-space"></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- ========== 弹窗：帖子详情 ========== -->
+  <view wx:if="{{showDetailPopup}}" class="overlay-mask" bindtap="closeDetailPopup">
+    <view class="detail-popup" catchtap="">
+      <!-- 顶部导航 -->
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeDetailPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">帖子详情</text>
+        <view class="popup-nav-right">
+          <view class="btn-fav tap-shrink {{detailPopup.isFavorited ? 'active' : ''}}" bindtap="onDetailFavToggle">
+            <view class="fav-heart svg-ico svg-ico-heart-{{detailPopup.isFavorited ? 'filled' : 'outline'}}"></view>
+          </view>
+        </view>
+      </view>
+
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <!-- 标题 -->
+        <view class="dp-card">
+          <view class="dp-title-row">
+            <text class="dp-title">{{detailPopup.title}}</text>
+            <view class="dp-status {{detailPopup.status === 'closed' ? 'closed' : 'active'}}">{{detailPopup.status === 'closed' ? '已结束' : '进行中'}}</view>
+          </view>
+          <view class="dp-type-row">
+            <text class="dp-type-badge {{detailPopup.type === 'find' ? 'badge-find' : 'badge-offer'}}">{{detailPopup.type === 'find' ? '求购' : '出售'}}</text>
+            <text class="dp-category tap-shrink" wx:if="{{detailPopup.category}}" data-key="{{detailPopup.category}}" bindtap="onDetailCategoryTap">{{detailPopup.category}}</text>
+            <text class="dp-quality" wx:if="{{detailPopup.quality}}">{{detailPopup.quality}}</text>
+          </view>
+        </view>
+
+        <!-- 描述 -->
+        <view class="dp-card" wx:if="{{detailPopup.desc}}">
+          <view class="dp-section-title">详细描述</view>
+          <text class="dp-desc">{{detailPopup.desc}}</text>
+        </view>
+
+        <!-- 图片 -->
+        <view class="dp-card dp-card-images" wx:if="{{detailPopup.hasImages}}">
+          <view class="dp-section-title">图片</view>
+          <!-- 单图：原比例显示 -->
+          <view wx:if="{{detailPopup.images.length === 1}}" class="dp-image-single">
+            <image class="dp-single-image tap-shrink"
+              src="{{detailPopup.images[0]}}" mode="widthFix"
+              data-url="{{detailPopup.images[0]}}" bindtap="onDetailPreviewImage"/>
+          </view>
+          <!-- 多图：3 列宫格 -->
+          <view wx:else class="dp-image-grid">
+            <view wx:for="{{detailPopup.images}}" wx:key="*this" class="dp-grid-cell">
+              <image class="dp-grid-image tap-shrink"
+                src="{{item}}" mode="aspectFill"
+                data-url="{{item}}" bindtap="onDetailPreviewImage"/>
+            </view>
+          </view>
+        </view>
+
+        <!-- 价格/联系 -->
+        <view class="dp-card" wx:if="{{detailPopup.price != null || detailPopup.contact}}">
+          <view class="dp-section-title">信息</view>
+          <view class="dp-info-row" wx:if="{{detailPopup.price != null}}">
+            <text class="dp-info-label">价格</text>
+            <text class="dp-info-value dp-price-value">{{detailPopup.priceText}}</text>
+          </view>
+          <view class="dp-info-row" wx:if="{{detailPopup.contact}}">
+            <text class="dp-info-label">联系方式</text>
+            <text class="dp-info-value">{{detailPopup.contact}}</text>
+          </view>
+          <view class="dp-info-row" wx:if="{{detailPopup.location}}">
+            <text class="dp-info-label">位置</text>
+            <text class="dp-info-value">{{detailPopup.location}}</text>
+          </view>
+        </view>
+
+        <!-- 发布者 -->
+        <view class="dp-card" wx:if="{{detailPopup.creator}}">
+          <view class="dp-section-title">发布者</view>
+          <view class="dp-user-row">
+            <image class="dp-avatar" src="{{detailPopup.creator.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"/>
+            <view class="dp-user-info">
+              <text class="dp-user-name">{{detailPopup.creator.nickName || '匿名'}}</text>
+              <view class="dp-user-time">{{detailPopup.formattedTime}}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+
+      <!-- 底部操作栏 -->
+      <view class="dp-action-bar">
+        <view class="dp-btn dp-btn-outline tap-shrink" wx:if="{{detailPopup.contact}}" bindtap="onDetailCopyContact">复制联系方式</view>
+        <view class="dp-btn dp-btn-primary tap-shrink" bindtap="openChat" wx:if="{{!detailPopup.isOwnPost}}">私信卖家</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 弹窗：列表（我发布的 / 我买到的） ========== -->
+  <view wx:if="{{showMyListPopup}}" class="overlay-mask" bindtap="closeMyListPopup">
+    <view class="list-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeMyListPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">{{myListTitle}}</text>
+        <view class="popup-nav-placeholder"></view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onMyListLoadMore">
+        <!-- 空状态 -->
+        <view wx:if="{{!myListLoading && myList.length === 0}}" class="popup-empty">
+          <text class="popup-empty-text">暂无内容</text>
+        </view>
+        <!-- 列表 -->
+        <block wx:for="{{myList}}" wx:key="_id">
+          <view class="list-card card tap-shrink" data-id="{{item._id}}" bindtap="onMyListItemTap">
+            <view class="lc-top">
+              <text class="lc-badge">{{item._moduleName || '二手'}}</text>
+              <text class="lc-title">{{item.title || '未命名'}}</text>
+            </view>
+            <view class="lc-meta-row" wx:if="{{item.price > 0}}">
+              <text class="lc-price">¥{{item.price}}</text>
+              <text class="lc-status {{item.status === 'closed' ? 'closed' : 'active'}}">{{item.status === 'closed' ? '已关闭' : '进行中'}}</text>
+            </view>
+            <view class="lc-meta-row" wx:else>
+              <text class="lc-price lc-price-free">面议</text>
+              <text class="lc-status {{item.status === 'closed' ? 'closed' : 'active'}}">{{item.status === 'closed' ? '已关闭' : '进行中'}}</text>
+            </view>
+            <text class="lc-desc" wx:if="{{item.desc || item.content || item.note}}">{{item.desc || item.content || item.note}}</text>
+            <view class="lc-images" wx:if="{{item.images && item.images.length > 0}}">
+              <image wx:for="{{item.images}}" wx:key="*this" wx:for-item="img" wx:if="{{index < 3}}" class="lc-img" src="{{img}}" mode="aspectFill"/>
+              <view wx:if="{{item.images.length > 3}}" class="lc-img-more">+{{item.images.length > 9 ? '9+' : (item.images.length - 3)}}</view>
+            </view>
+            <view class="lc-footer">
+              <text class="lc-time">{{item._timeAgo}}</text>
+              <view class="lc-actions" wx:if="{{myListType === 'publish' && item.status !== 'closed'}}">
+                <view class="lc-btn tap-shrink" data-id="{{item._id}}" catchtap="onMyListClose">结束</view>
+                <view class="lc-btn lc-btn-danger tap-shrink" data-id="{{item._id}}" catchtap="onMyListDelete">删除</view>
+              </view>
+            </view>
+          </view>
+        </block>
+        <view wx:if="{{myListLoading}}" class="popup-loading">加载中...</view>
+        <view wx:if="{{!myListHasMore && myList.length > 0}}" class="popup-no-more">— 没有更多了 —</view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ========== 弹窗：我的收藏 ========== -->
+  <view wx:if="{{showFavoritesPopup}}" class="overlay-mask" bindtap="closeFavoritesPopup">
+    <view class="list-popup" catchtap="">
+      <view class="popup-nav">
+        <view class="popup-nav-back tap-shrink" bindtap="closeFavoritesPopup">
+          <view class="back-arrow"></view>
+        </view>
+        <text class="popup-nav-title">我的收藏</text>
+        <view class="popup-nav-placeholder"></view>
+      </view>
+      <scroll-view class="popup-scroll" scroll-y enhanced show-scrollbar="{{false}}" bindscrolltolower="onFavoritesLoadMore">
+        <!-- 空状态 -->
+        <view wx:if="{{!favoritesLoading && favoritesList.length === 0}}" class="popup-empty">
+          <text class="popup-empty-text">暂无收藏</text>
+        </view>
+        <!-- 收藏列表（仅二手市集模块） -->
+        <view wx:for="{{favoritesList}}" wx:key="_id"
+          class="list-card card tap-shrink"
+          data-id="{{item._id}}" data-module="{{item._module}}" bindtap="onFavoritesItemTap">
+          <view class="lc-top">
+            <text class="lc-badge">{{item._moduleName || '二手'}}</text>
+            <text class="lc-title">{{item.title || '未命名'}}</text>
+          </view>
+          <view class="lc-meta-row">
+            <text class="lc-price" wx:if="{{item.price > 0}}">¥{{item.price}}</text>
+            <text class="lc-price lc-price-free" wx:else>面议</text>
+            <text class="lc-status active">进行中</text>
+          </view>
+          <text class="lc-desc" wx:if="{{item.desc || item.content || item.note}}">{{item.desc || item.content || item.note}}</text>
+          <view class="lc-footer">
+            <text class="lc-time">{{item._timeAgo || ''}}</text>
+            <view class="lc-btn lc-btn-danger tap-shrink" data-id="{{item._id}}" data-module="{{item._module}}" catchtap="onFavoritesRemove">取消收藏</view>
+          </view>
+        </view>
+        <view wx:if="{{favoritesLoading}}" class="popup-loading">加载中...</view>
+        <view wx:if="{{!favoritesHasMore && favoritesList.length > 0}}" class="popup-no-more">— 没有更多了 —</view>
+        <view class="dp-bottom-space"></view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部 TabBar -->
+  <view class="shared-tabbar">
+    <view class="tabbar-card">
+      <view class="tabbar-items">
+        <view class="tabbar-item {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:if="{{currentTab === 0}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab1.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab0}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:if="{{currentTab === 1}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab2.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">{{config.tab1}}</text>
+        </view>
+        <view class="tabbar-item {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">
+          <view class="tb-icon-wrap">
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:if="{{currentTab === 2}}" mode="aspectFit"></image>
+            <image class="tb-icon-img" src="/images/tabbar/tab0.png" wx:else mode="aspectFit"></image>
+          </view>
+          <text class="tb-label">我的</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

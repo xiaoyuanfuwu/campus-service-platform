@@ -1,0 +1,80 @@
+<!-- pages/announcement-detail/announcement-detail.wxml -->
+<view class="page-ann-detail">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏 -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">公告详情</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+  <view class="content">
+    <block wx:if="{{detail}}">
+      <!-- 合并卡片：标题 + 内容 -->
+      <view class="ann-card glass-card">
+        <text class="ann-title">{{detail.title}}</text>
+        <view class="ann-meta">
+          <text><view class="svg-ico svg-ico-eye"></view> {{detail.viewCount || 0}} 次浏览</text>
+        </view>
+        <view class="ann-divider"></view>
+        <rich-text class="ann-content" nodes="{{richContent}}"></rich-text>
+        <!-- 底部操作栏 -->
+        <view class="ann-card-footer">
+          <text class="ann-footer-time">{{detail._timeText}}</text>
+          <view class="like-btn {{detail.isLiked ? 'active' : ''}}" bindtap="onLike">
+            <text class="heart-icon">{{detail.isLiked ? '♥' : '♡'}}</text>
+            <text class="like-count">{{detail.likeCount || 0}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 留言区 -->
+      <view class="comment-section">
+        <view class="comment-header">
+          <text class="comment-title">留言 ({{comments.length}})</text>
+        </view>
+        <!-- 发留言（放到上面） -->
+        <view class="comment-input-box">
+          <input class="comment-input" placeholder="写留言..." value="{{commentText}}" bindinput="onCommentInput" maxlength="500" confirm-type="send" bindconfirm="onSendComment" />
+          <view class="comment-send-btn {{sendingComment ? 'disabled' : ''}}" bindtap="onSendComment">
+            <text>发送</text>
+          </view>
+        </view>
+        <!-- 留言列表 -->
+        <view class="comment-list" wx:if="{{comments.length > 0}}">
+          <view class="comment-item glass-card" wx:for="{{comments}}" wx:key="id">
+            <view class="comment-top">
+              <image class="comment-avatar" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+              <text class="comment-name">{{item.nickName}}</text>
+              <text class="comment-time">{{item.createTimeText || ''}}</text>
+              <view class="comment-del" wx:if="{{item.userId === myUserId}}" data-id="{{item.id}}" catchtap="onDeleteComment">删除</view>
+            </view>
+            <text class="comment-body">{{item.content}}</text>
+          </view>
+        </view>
+        <view class="comment-empty" wx:elif="{{!commentLoading}}">
+          <text>暂无留言，来说两句吧～</text>
+        </view>
+      </view>
+    </block>
+    <view class="loading-more" wx:elif="{{loading}}">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+  </view>
+</view>

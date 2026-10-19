@@ -1,0 +1,70 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Mini Program
+miniprogram_npm/
+unpackage/dist/
+project.private.config.json
+
+# Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Backend runtime files
+backend/uploads/
+
+# Temporary
+tmp/
+temp/
+.tmp/
+
+# Local backups / previews
+*.bak
+*.bak.*
+*.v[0-9]*
+*.v[0-9]-*
+calendar-preview*.html
+calendar-h5.html
+calendar.html

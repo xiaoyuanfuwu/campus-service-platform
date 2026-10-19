@@ -1,0 +1,68 @@
+<!-- pages/announcement/announcement.wxml -->
+<view class="page-announcement">
+  <view class="page-bg {{pageBgClass}}" style="{{pageBgStyle}}"></view>
+  <!-- 状态栏背景填充 -->
+  <view class="msg-status-bg" style="height: {{statusBarHeight}}px;"></view>
+  <!-- 顶部栏（与其他页面一致的鸭子风格） -->
+  <view class="msg-top-bar" style="padding-top:{{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="nav-back tap-shrink" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <view class="brand-logo">
+        <view class="top-duck-icon">
+          <view class="td-head"></view>
+          <view class="td-eye"></view>
+          <view class="td-beak"></view>
+          <view class="td-body"></view>
+          <view class="td-wing"></view>
+          <view class="td-tail"></view>
+        </view>
+        <view class="brand-name">信息公告</view>
+      </view>
+    </view>
+  </view>
+  <view class="msg-top-bar-spacer" style="height: {{statusBarHeight + 44}}px;"></view>
+  <scroll-view scroll-y class="content" bindscrolltolower="loadMore">
+    <view wx:if="{{list.length === 0 && !loading}}" class="empty-state">
+      <view class="empty-icon"><text><view class="svg-ico svg-ico-megaphone"></view></text></view>
+      <text class="empty-text">暂无公告</text>
+    </view>
+    <view class="ann-card glass-card" wx:for="{{list}}" wx:key="_id" data-id="{{item._id}}" bindtap="goDetail">
+      <view class="ann-top">
+        <text class="ann-title">{{item.title}}</text>
+        <text class="ann-badge" wx:if="{{item.isTop}}">置顶</text>
+      </view>
+      <text class="ann-summary">{{item.summary || item.content}}</text>
+      <view class="ann-footer">
+        <text class="ann-time">{{item._timeText}}</text>
+        <text class="ann-views"><view class="svg-ico svg-ico-eye"></view> {{item.viewCount || 0}}</text>
+      </view>
+    </view>
+    <view class="loading-more" wx:if="{{loading}}">
+      <view class="spinner"></view>
+      <text>加载中...</text>
+    </view>
+  </scroll-view>
+
+  <!-- ===== 公告详情弹窗 ===== -->
+  <view class="ann-modal {{showModal ? 'show' : ''}}" catchtap="closeModal">
+    <view class="ann-modal-mask"></view>
+    <view class="ann-modal-card" catchtap="">
+      <view class="ann-modal-header">
+        <text class="ann-modal-title">{{modalDetail.title}}</text>
+        <view class="ann-modal-close" bindtap="closeModal">✕</view>
+      </view>
+      <scroll-view scroll-y class="ann-modal-body">
+        <rich-text class="ann-modal-content" nodes="{{modalDetail.richContent}}"></rich-text>
+      </scroll-view>
+      <view class="ann-modal-meta">
+        <text>{{modalDetail._timeText}}</text>
+        <text><view class="svg-ico svg-ico-eye"></view> {{modalDetail.viewCount || 0}}</text>
+      </view>
+      <view class="ann-modal-actions">
+        <view class="ann-modal-btn tap-shrink" bindtap="closeModal">确定</view>
+      </view>
+    </view>
+  </view>
+</view>
